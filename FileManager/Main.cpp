@@ -1,4 +1,5 @@
 #include "InputForm.h"
+#include "ChoosableButton.h"
 
 
 int main() {
@@ -6,9 +7,10 @@ int main() {
 	HANDLE rHndl = GetStdHandle(STD_INPUT_HANDLE);
 	Color one = Color(Red << 4 | Green);
 	Color two = Color(Black << 4 | Yellow);
-	InputForm first("", defaultDeactiveColor);
-	first.setActiveColor(defaultActiveColor);
-	first.setDeactiveColor(defaultDeactiveColor);
+	ChoosableButton first("This is my sentence");
+	
+	//first.setTextAndColor("this is experiment");
+	//first.setTextAndColor("");
 	first.setPosition({ 1, 1 });
 	first.appearOnConsole(wHndl);
 	DWORD numEventsRead = 0;
@@ -18,23 +20,24 @@ int main() {
 		ReadConsoleInput(rHndl, eventsBuffer, 128, &numEventsRead);
 		for (int i = 0; i < numEventsRead; i++) {
 			if (eventsBuffer[i].EventType == MOUSE_EVENT) {
-				if (eventsBuffer[i].Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
-					if (first.isGettingInput()) {
-						first.changeState();
+				if (first.isMouseOnButton(eventsBuffer[i])) {
+					if (!first.isHover()) {
+						first.setHoverState(true);
+						first.appearOnConsole(wHndl);
 					}
-					if (first.isMouseOnButton(eventsBuffer[i])) {
-						first.changeState();
+					if (eventsBuffer[i].Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
+						first.changeChosenState();
+						first.appearOnConsole(wHndl);
+					}
+				}
+				else {
+					if (first.isHover()) {
+						first.setHoverState(false);
+						first.appearOnConsole(wHndl);
 					}
 				}
 			}
-			else if (eventsBuffer[i].EventType == KEY_EVENT) {
-				if (eventsBuffer[i].Event.KeyEvent.bKeyDown) {
-					if (first.isGettingInput()) {
-						first.takeInput(eventsBuffer[i], wHndl);
-					}
-				}
-			}
-		first.appearOnConsole(wHndl);
+		
 		}
 	}
 	

@@ -5,26 +5,25 @@
 ChoosableButton::ChoosableButton() : 
 	buttonColor{ defaultButtonColor }, 
 	chosenButtonColor {defaultChosenButtonColor},
-	hoverColor {defaultHoverColor}
-{}
+	hoverColor {defaultHoverColor},
+	hoverOnChosenColor{ defaultHoverOnChosenColor }
+{
+	setColor(buttonColor);
+}
 
-ChoosableButton::ChoosableButton(const std::string &s, Color c) : 
-	TextLine(s, c),
+ChoosableButton::ChoosableButton(const std::string &s) : 
+	TextLine(s),
 	buttonColor{ defaultButtonColor },
 	chosenButtonColor{ defaultChosenButtonColor },
-	hoverColor{ defaultHoverColor }
-{}
-
-COORD ChoosableButton::getEndPosition() {
-	return COORD{ (short)(startPosition.X + sentenceSymbols.size()), (short)startPosition.Y };
+	hoverColor{ defaultHoverColor },
+	hoverOnChosenColor{ defaultHoverOnChosenColor }
+{
+	setColor(buttonColor);
 }
 
-bool ChoosableButton::isMouseOnButton(const INPUT_RECORD &event) {
-	return event.Event.MouseEvent.dwMousePosition.X >= startPosition.X
-		&& event.Event.MouseEvent.dwMousePosition.X <= getEndPosition().X 
-		&& event.Event.MouseEvent.dwMousePosition.Y >= startPosition.X 
-		&& event.Event.MouseEvent.dwMousePosition.Y <= getEndPosition().Y;
-}
+
+
+
 
 void ChoosableButton::setButtonColor(Color c) {
 	buttonColor = c;
@@ -34,4 +33,44 @@ void ChoosableButton::setChosenButtonColor(Color c) {
 }
 void ChoosableButton::setHovercolor(Color c) {
 	hoverColor = c;
+}
+
+void ChoosableButton::setHoverOnChosenColor(Color c) {
+	hoverOnChosenColor = c;
+}
+
+void ChoosableButton::changeChosenState() {
+	if (isChosen()) {
+		chosenState = false;
+	}
+	else {
+		chosenState = true;
+	}
+}
+
+void ChoosableButton::setHoverState(bool s) {
+	hoverState = s;
+}
+
+bool ChoosableButton::isChosen() {
+	return chosenState;
+}
+bool ChoosableButton::isHover() {
+	return hoverState;
+}
+
+void ChoosableButton::appearOnConsole(HANDLE &hndl) {
+	if (chosenState && hoverState) {
+		setColor(hoverOnChosenColor);
+	}
+	else if (chosenState) {
+		setColor(chosenButtonColor);
+	}
+	else if (hoverState) {
+		setColor(hoverColor);
+	}
+	else {
+		setColor(buttonColor);
+	}
+	TextLine::appearOnConsole(hndl);
 }

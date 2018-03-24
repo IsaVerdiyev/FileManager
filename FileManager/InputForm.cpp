@@ -2,34 +2,38 @@
 
 
 
-InputForm::InputForm() : ChoosableButton(), 
+InputForm::InputForm() : TextLine(), 
 	activeColor{defaultActiveColor},
 	deactiveColor {defaultDeactiveColor}
-{}
+{
+	setColor(deactiveColor);
+}
 
-InputForm::InputForm(const std::string &s, Color c) : ChoosableButton(s, c),
+InputForm::InputForm(const std::string &s) : TextLine(s),
 	activeColor{ defaultActiveColor },
 	deactiveColor{ defaultDeactiveColor }
-{}
+{
+	setColor(deactiveColor);
+}
 
 bool InputForm::isGettingInput() {
 	return gettingInput;
 }
 
 void InputForm::takeInput(const INPUT_RECORD &event, HANDLE &hndl) {
-	CHAR_INFO c;
 	if(event.Event.KeyEvent.wVirtualKeyCode == VK_BACK) {
 		if (sentenceSymbols.size() != 1) {
-			eraseFromConsoleLastSymbol(hndl, COORD{ static_cast<short>(startPosition.X + sentenceSymbols.size() - 1), startPosition.Y });
 			sentenceSymbols.erase(sentenceSymbols.end() - 2);
 		}
 	}
+	else if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
+		changeState();
+	}
 	else {
+		CHAR_INFO c;
 		c.Char.AsciiChar = event.Event.KeyEvent.uChar.AsciiChar;
-		getText()[getText().size() - 1] = c;
-		c.Char.AsciiChar = '\0';
-		getText().push_back(c);
-		setColor(activeColor);
+		c.Attributes = activeColor;
+		getText().insert(getText().end() - 1, c);
 	}
 }
 
@@ -51,9 +55,14 @@ void InputForm::changeState() {
 	}
 }
 
-void InputForm::eraseFromConsoleLastSymbol(HANDLE &hndl, COORD &&pos) {
-	SetConsoleTextAttribute(hndl, defaultBackground);
-	SetConsoleCursorPosition(hndl, pos);
-	std::cout << '\0';
-	SetConsoleCursorPosition(hndl, { 0, 0 });
+void InputForm::appearOnConsole(HANDLE &hndl) {
+	if (isGettingInput()) {
+		setColor(activeColor);
+	}
+	else {
+		setColor(deactiveColor);
+	}
+	TextLine::appearOnConsole(hndl);
 }
+
+
