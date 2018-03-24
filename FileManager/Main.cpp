@@ -1,4 +1,4 @@
-#include "ChoosableButton.h"
+#include "InputForm.h"
 
 
 int main() {
@@ -6,8 +6,10 @@ int main() {
 	HANDLE rHndl = GetStdHandle(STD_INPUT_HANDLE);
 	Color one = Color(Red << 4 | Green);
 	Color two = Color(Black << 4 | Yellow);
-	ChoosableButton first("first", one);
-	first.setPosition(COORD{ 20, 20 });
+	InputForm first("", defaultDeactiveColor);
+	first.setActiveColor(defaultActiveColor);
+	first.setDeactiveColor(defaultDeactiveColor);
+	first.setPosition({ 1, 1 });
 	first.appearOnConsole(wHndl);
 	DWORD numEventsRead = 0;
 	INPUT_RECORD eventsBuffer[128];
@@ -16,11 +18,20 @@ int main() {
 		ReadConsoleInput(rHndl, eventsBuffer, 128, &numEventsRead);
 		for (int i = 0; i < numEventsRead; i++) {
 			if (eventsBuffer[i].EventType == MOUSE_EVENT) {
-				if (first.isMouseOnButton(eventsBuffer[i])) {
-					first.setColor(two);
+				if (eventsBuffer[i].Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
+					if (first.isGettingInput()) {
+						first.changeState();
+					}
+					if (first.isMouseOnButton(eventsBuffer[i])) {
+						first.changeState();
+					}
 				}
-				else {
-					first.setColor(one);
+			}
+			else if (eventsBuffer[i].EventType == KEY_EVENT) {
+				if (eventsBuffer[i].Event.KeyEvent.bKeyDown) {
+					if (first.isGettingInput()) {
+						first.takeInput(eventsBuffer[i], wHndl);
+					}
 				}
 			}
 		first.appearOnConsole(wHndl);

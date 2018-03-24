@@ -21,4 +21,16 @@ enum Color {
 	SameColor
 };
 
+extern const Color defaultBackground;
+
+extern const Color defaultColor;
+
+extern const Color defaultButtonColor;
+extern const Color defaultChosenButtonColor;
+extern const Color defaultHoverColor;
+
+extern const Color defaultActiveColor;
+extern const Color defaultDeactiveColor;
+
+
 #endif // Col

@@ -117,10 +117,13 @@
   <ItemGroup>
     <ClInclude Include="ChoosableButton.h" />
     <ClInclude Include="Colors.h" />
+    <ClInclude Include="InputForm.h" />
     <ClInclude Include="TextLine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ChoosableButton.cpp" />
+    <ClCompile Include="Colors.cpp" />
+    <ClCompile Include="InputForm.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="TextLine.cpp" />
   </ItemGroup>

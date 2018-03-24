@@ -1,7 +1,8 @@
 #include "TextLine.h"
 #include <iostream>
 
-TextLine::TextLine() {}
+
+TextLine::TextLine() : TextLine("")  {}
 
 TextLine::TextLine(const std::string &s, Color c) {
 	setTextAndColor(s, c);
@@ -17,6 +18,9 @@ void TextLine::appearOnConsole(HANDLE &hndl, COORD beginningPosition, Color c) {
 }
 
 void TextLine::setColor(Color c) {
+	if (c == SameColor) {
+		c = static_cast<Color>(sentenceSymbols[0].Attributes);
+	}
 	for (CHAR_INFO &symbol : sentenceSymbols) {
 		symbol.Attributes = c;
 	}
@@ -41,7 +45,7 @@ void TextLine::setTextAndColor(const std::string &s, Color c) {
 	setSymbols(s);
 	if (c == SameColor) {
 		if (sentenceSymbols[0].Attributes != sentenceSymbols[sentenceSymbols.size() - 1].Attributes) {
-			setColor((Color)sentenceSymbols[0].Attributes);
+			setColor();
 		}
 	}
 	else {
@@ -60,4 +64,8 @@ void TextLine::appearOnConsole(HANDLE &hndl, Color c) {
 	SMALL_RECT writeArea{ startPosition.X, startPosition.Y, startPosition.X + sentenceSymbols.size() - 1, startPosition.Y };
 	COORD bufferSize{ sentenceSymbols.size(), 1 };
 	WriteConsoleOutputA(hndl, &sentenceSymbols[0], bufferSize, { 0, 0 }, &writeArea);
+}
+
+std::vector<CHAR_INFO> &TextLine::getText() {
+	return sentenceSymbols;
 }
