@@ -12,11 +12,11 @@ public:
 	InputForm();
 	InputForm(const std::string &s);
 	void changeState();
-	void takeInput(const INPUT_RECORD &event, HANDLE &hndl);
+	void takeInput(const INPUT_RECORD &event);
 	bool isGettingInput();
 	void setActiveColor(Color c);
 	void setDeactiveColor(Color c);
-	void appearOnConsole(HANDLE &hndl) override;
+	void appearOnConsoleScreen(HANDLE &hndl) override;
 };
 
 

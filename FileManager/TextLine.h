@@ -4,10 +4,14 @@
 #include <string>
 #include <vector>
 #include <Windows.h>
+#include <memory>
 #include "Colors.h"
 
 class TextLine {
 protected:
+	bool isOnScreen;
+	bool positionChanged;
+	bool lengthChanged;
 	COORD startPosition;
 	std::vector<CHAR_INFO> sentenceSymbols;
 	std::vector<CHAR_INFO> eraseArray;
@@ -16,8 +20,8 @@ protected:
 	void setSymbols(const std::string &s);
 	int minLength = 1;
 	void setMinLengthArray();
-	void createEraseArray();
 	void setColorOfMinArray(Color c = SameColor);
+	void createEraseArray(HANDLE &hndl);
 public:
 	TextLine();
 	TextLine(const std::string &s, Color c = SameColor);
@@ -27,8 +31,9 @@ public:
 	std::vector<CHAR_INFO> &getText();
 	void setMinLength(int length);
 	void putCharInfoArrayInConsoleBuffer(HANDLE &hndl, std::vector<CHAR_INFO> &symbolsArray, COORD pos);
-	void appearOnConsole(HANDLE &hndl, COORD beginningPosition);
-	virtual void appearOnConsole(HANDLE &hndl);
+	void appearOnConsoleScreen(HANDLE &hndl, COORD beginningPosition);
+	virtual void appearOnConsoleScreen(HANDLE &hndl);
+	void removeFromConsoleScreen(HANDLE &hndl);
 	COORD getEndPosition();
 	bool isMouseOnButton(const INPUT_RECORD &event);
 };

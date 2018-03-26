@@ -20,7 +20,8 @@ bool InputForm::isGettingInput() {
 	return gettingInput;
 }
 
-void InputForm::takeInput(const INPUT_RECORD &event, HANDLE &hndl) {
+void InputForm::takeInput(const INPUT_RECORD &event) {
+	lengthChanged = true;
 	if(event.Event.KeyEvent.wVirtualKeyCode == VK_BACK) {
 		if (sentenceSymbols.size() != 1) {
 			sentenceSymbols.erase(sentenceSymbols.end() - 2);
@@ -55,14 +56,14 @@ void InputForm::changeState() {
 	}
 }
 
-void InputForm::appearOnConsole(HANDLE &hndl) {
+void InputForm::appearOnConsoleScreen(HANDLE &hndl) {
 	if (isGettingInput()) {
 		setColor(activeColor);
 	}
 	else {
 		setColor(deactiveColor);
 	}
-	TextLine::appearOnConsole(hndl);
+	TextLine::appearOnConsoleScreen(hndl);
 }
 
 

@@ -59,7 +59,7 @@ bool ChoosableButton::isHover() {
 	return hoverState;
 }
 
-void ChoosableButton::appearOnConsole(HANDLE &hndl) {
+void ChoosableButton::refreshStateColor() {
 	if (chosenState && hoverState) {
 		setColor(hoverOnChosenColor);
 	}
@@ -72,5 +72,17 @@ void ChoosableButton::appearOnConsole(HANDLE &hndl) {
 	else {
 		setColor(buttonColor);
 	}
-	TextLine::appearOnConsole(hndl);
+}
+
+void ChoosableButton::appearOnConsoleScreen(HANDLE &hndl) {
+	refreshStateColor();
+	TextLine::appearOnConsoleScreen(hndl);
+}
+
+bool ChoosableButton::getChosenState() {
+	return chosenState;
+}
+
+bool ChoosableButton::getHoverState() {
+	return hoverState;
 }

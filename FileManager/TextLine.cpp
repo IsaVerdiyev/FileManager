@@ -4,7 +4,10 @@
 
 TextLine::TextLine() : TextLine("")  {}
 
-TextLine::TextLine(const std::string &s, Color c) {
+TextLine::TextLine(const std::string &s, Color c) : 
+	isOnScreen{ false },
+	positionChanged {true}
+	{
 	setTextAndColor(s, c);
 	setMinLengthArray();
 }
@@ -26,6 +29,7 @@ void TextLine::setSymbols(const std::string &s) {
 }
 
 void TextLine::setPosition(COORD pos) {
+	positionChanged = true;
 	startPosition = pos;
 }
 
@@ -40,6 +44,7 @@ void TextLine::setColor(Color c) {
 }
 
 void TextLine::setTextAndColor(const std::string &s, Color c) {
+	lengthChanged = true;
 	setSymbols(s);
 	setColor(c);
 }
@@ -50,6 +55,7 @@ std::vector<CHAR_INFO> &TextLine::getText() {
 }
 
 void TextLine::setMinLength(int length) {
+	lengthChanged = true;
 	minLength = length;
 	setMinLengthArray();
 }
@@ -74,15 +80,11 @@ void TextLine::setColorOfMinArray(Color c) {
 }
 
 
-void TextLine::createEraseArray() {
-	oldStartPosition = startPosition;
+void TextLine::createEraseArray(HANDLE &hndl) {
 	eraseArray.clear();
-	CHAR_INFO c;
-	c.Attributes = defaultBackground;
-	c.Char.AsciiChar = NULL;
-	for (int i = 0; i < ((sentenceSymbols.size() > minLengthArray.size()) ? sentenceSymbols.size() : minLengthArray.size()); i++) {
-		eraseArray.push_back(c);
-	}
+	eraseArray.resize(getEndPosition().X - startPosition.X);
+	SMALL_RECT readArea{ startPosition.X, startPosition.Y, getEndPosition().X - 1, getEndPosition().Y };
+	ReadConsoleOutput(hndl, &eraseArray[0], { static_cast<short>(sentenceSymbols.size()), 1 }, { 0, 0 }, &readArea);
 }
 
 void TextLine::putCharInfoArrayInConsoleBuffer(HANDLE &hndl, std::vector<CHAR_INFO> &symbolsArray, COORD pos) {
@@ -93,18 +95,26 @@ void TextLine::putCharInfoArrayInConsoleBuffer(HANDLE &hndl, std::vector<CHAR_IN
 	}
 }
 
-void TextLine::appearOnConsole(HANDLE &hndl) {
-	putCharInfoArrayInConsoleBuffer(hndl, eraseArray, oldStartPosition);
-	createEraseArray();
+void TextLine::appearOnConsoleScreen(HANDLE &hndl) {
+	if (isOnScreen && (lengthChanged || positionChanged)) {
+		removeFromConsoleScreen(hndl);
+	}
+	if (lengthChanged || positionChanged) {
+		oldStartPosition = startPosition;
+		createEraseArray(hndl);
+		positionChanged = false;
+		lengthChanged = false;
+	}
 	if (minLengthArray.size() > sentenceSymbols.size()) {
 		putCharInfoArrayInConsoleBuffer(hndl, minLengthArray, startPosition);
 	}
 	putCharInfoArrayInConsoleBuffer(hndl, sentenceSymbols, startPosition);
+	isOnScreen = true;
 }
 
-void TextLine::appearOnConsole(HANDLE &hndl, COORD beginningPosition) {
+void TextLine::appearOnConsoleScreen(HANDLE &hndl, COORD beginningPosition) {
 	setPosition(beginningPosition);
-	appearOnConsole(hndl);
+	appearOnConsoleScreen(hndl);
 }
 
 COORD TextLine::getEndPosition() {
@@ -117,3 +127,10 @@ bool TextLine::isMouseOnButton(const INPUT_RECORD &event) {
 		&& event.Event.MouseEvent.dwMousePosition.Y >= startPosition.X
 		&& event.Event.MouseEvent.dwMousePosition.Y <= getEndPosition().Y;
 }
+
+void TextLine::removeFromConsoleScreen(HANDLE &hndl) {
+	putCharInfoArrayInConsoleBuffer(hndl, eraseArray, oldStartPosition);
+	isOnScreen = false;
+}
+
+

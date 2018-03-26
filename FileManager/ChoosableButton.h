@@ -6,11 +6,11 @@
 class ChoosableButton : public TextLine {
 	bool chosenState = false;
 	bool hoverState = false;
-public:
 	Color buttonColor;
 	Color chosenButtonColor;
 	Color hoverColor;
 	Color hoverOnChosenColor;
+public:
 	ChoosableButton();
 	ChoosableButton(const std::string &s);
 	void setButtonColor(Color c);
@@ -21,7 +21,10 @@ public:
 	void setHoverState(bool s);
 	bool isChosen();
 	bool isHover();
-	void appearOnConsole(HANDLE &hndl) override;
+	void refreshStateColor();
+	void appearOnConsoleScreen(HANDLE &hndl) override;
+	bool getChosenState();
+	bool getHoverState();
 };
 
 #endif CB
