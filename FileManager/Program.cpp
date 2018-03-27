@@ -18,6 +18,7 @@ Program::Program() :
 {
 	setDisks();
 	items.setMenuItems(disks);
+	items.setStartPosition({ 5, 5 });
 	outputHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	inputHandle = GetStdHandle(STD_INPUT_HANDLE);
 	SetConsoleMode(inputHandle, ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS);

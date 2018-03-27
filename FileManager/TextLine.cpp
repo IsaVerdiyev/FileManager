@@ -117,6 +117,12 @@ void TextLine::appearOnConsoleScreen(HANDLE &hndl, COORD beginningPosition) {
 	appearOnConsoleScreen(hndl);
 }
 
+//std::unique_ptr<COORD> TextLine::getEndPosition() {
+//	COORD endPosition{ (short)(startPosition.X + (sentenceSymbols.size() > minLength ? sentenceSymbols.size() : minLength)), (short)startPosition.Y };
+//	std::unique_ptr<COORD> pointer = std::make_unique<COORD>(endPosition);
+//	return pointer;
+//}
+
 COORD TextLine::getEndPosition() {
 	return COORD{ (short)(startPosition.X + (sentenceSymbols.size() > minLength ? sentenceSymbols.size() : minLength)), (short)startPosition.Y };
 }
@@ -124,7 +130,7 @@ COORD TextLine::getEndPosition() {
 bool TextLine::isMouseOnButton(const INPUT_RECORD &event) {
 	return event.Event.MouseEvent.dwMousePosition.X >= startPosition.X
 		&& event.Event.MouseEvent.dwMousePosition.X <= getEndPosition().X
-		&& event.Event.MouseEvent.dwMousePosition.Y >= startPosition.X
+		&& event.Event.MouseEvent.dwMousePosition.Y >= startPosition.Y
 		&& event.Event.MouseEvent.dwMousePosition.Y <= getEndPosition().Y;
 }
 

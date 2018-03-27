@@ -34,6 +34,7 @@ public:
 	void appearOnConsoleScreen(HANDLE &hndl, COORD beginningPosition);
 	virtual void appearOnConsoleScreen(HANDLE &hndl);
 	void removeFromConsoleScreen(HANDLE &hndl);
+	//std::unique_ptr<COORD> getEndPosition();
 	COORD getEndPosition();
 	bool isMouseOnButton(const INPUT_RECORD &event);
 };
