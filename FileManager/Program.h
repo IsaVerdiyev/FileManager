@@ -8,10 +8,12 @@ class Program {
 	std::vector<std::string> disks;
 	bool CTRLisPressed;
 	bool activePart;
+	bool disksChosen;
 	HANDLE outputHandle;
 	HANDLE inputHandle;
 	Menu options;
 	Menu items;
+	Menu diskOptions;
 	std::string path;
 	INPUT_RECORD eventsBuffer[128];
 public:

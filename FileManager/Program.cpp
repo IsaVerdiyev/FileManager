@@ -12,8 +12,10 @@ Program::Program() :
 		"Create folder",
 		"Delete"
 		}),
+	diskOptions( std::vector<std::string>{"Open", "Size"} ),
 	path("This PC"),
 	CTRLisPressed{false},
+	disksChosen {true},
 	activePart {FILES}
 {
 	setDisks();
@@ -56,7 +58,7 @@ void Program::performCycleOfEvents() {
 				checkMouseEvent(eventsBuffer[i]);
 			}
 			else if (eventsBuffer[i].EventType == KEY_EVENT) {
-
+				checkKeyEvent(eventsBuffer[i]);
 			}
 		}
 		
@@ -66,6 +68,11 @@ void Program::performCycleOfEvents() {
 void Program::checkMouseEvent(INPUT_RECORD &event) {
 	if (activePart == FILES) {
 		for (int i = 0; i < items.getButtons().size(); i++) {
+			if (!CTRLisPressed  && event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
+				if (items.getButtons()[i].getChosenState()) {
+					items.getButtons()[i].changeChosenState();
+				}
+			}
 			if (items.getButtons()[i].isMouseOnButton(event)) {
 				items.getButtons()[i].setHoverState(true);
 				if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
@@ -73,19 +80,46 @@ void Program::checkMouseEvent(INPUT_RECORD &event) {
 						items.getButtons()[i].changeChosenState();
 					}
 				}
-			}
-			else {
-				items.getButtons()[i].setHoverState(false);
-				if (!CTRLisPressed) {
-					if (items.getButtons()[i].getChosenState()) {
-						items.getButtons()[i].changeChosenState();
+				else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
+					activePart = OPTIONS;
+					if (disksChosen) {
+						diskOptions.setStartPosition(COORD{ event.Event.MouseEvent.dwMousePosition.X, event.Event.MouseEvent.dwMousePosition.Y });
+						diskOptions.drawMenu(outputHandle);
+						break;
 					}
 				}
 			}
-		}
+			else {
+				items.getButtons()[i].setHoverState(false);
+			/*	if (!CTRLisPressed) {
+					if (items.getButtons()[i].getChosenState()) {
+						items.getButtons()[i].changeChosenState();
+					}
+				}*/
+			}
 		items.drawMenu(outputHandle);
+		}
 	}
 	else if (activePart == OPTIONS) {
+		activePart = FILES;
+		if (disksChosen) {
+			for (int i = 0; i < diskOptions.getButtons().size(); i++) {
+				if (diskOptions.getButtons()[i].isMouseOnButton(event)) {
+					activePart = OPTIONS;
+				}
+			}
+			if (activePart != OPTIONS) {
+				diskOptions.removeMenuFromScreen(outputHandle);
+			}
+		}
+	}
+}
 
+void Program::checkKeyEvent(INPUT_RECORD &event) {
+	if (event.Event.KeyEvent.wVirtualKeyCode == VK_CONTROL && event.Event.KeyEvent.bKeyDown) {
+		CTRLisPressed = true;
+	}
+	else if (!event.Event.KeyEvent.bKeyDown) {
+		CTRLisPressed = false;
 	}
 }
