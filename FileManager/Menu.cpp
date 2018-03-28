@@ -62,3 +62,14 @@ std::vector<ChoosableButton> &Menu::getButtons() {
 std::vector<std::string> &Menu::getMenuItemStrings() {
 	return menuItemStrings;
 }
+
+void Menu::setHoverColor(Color c) {
+	for (ChoosableButton &button : menuItemButtons) {
+		button.setHovercolor(c);
+	}
+}
+void Menu::setStandardColor(Color c) {
+	for (ChoosableButton &button : menuItemButtons) {
+		button.setButtonColor(c);
+	}
+}

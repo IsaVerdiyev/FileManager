@@ -8,8 +8,9 @@ Program::Program() :
 	options(std::vector<std::string> {
 		"Open",
 		"Rename",
-		"Move",
+		"Cut",
 		"Copy",
+		"Paste",
 		"Size",
 		"Create file",
 		"Create folder",
@@ -23,6 +24,10 @@ Program::Program() :
 	setDisks();
 	items.setMenuItems(disks);
 	items.setStartPosition({ 5, 5 });
+	options.setHoverColor(static_cast<Color>(Green << 4 | White));
+	options.setStandardColor(static_cast<Color>(Red << 4 | White));
+	diskOptions.setHoverColor(static_cast<Color>(Green << 4 | White));
+	diskOptions.setStandardColor(static_cast<Color>(Red << 4 | White));
 	outputHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	inputHandle = GetStdHandle(STD_INPUT_HANDLE);
 	SetConsoleMode(inputHandle, ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS);
@@ -172,6 +177,7 @@ void Program::performFilesPartEvents(INPUT_RECORD &event) {
 				}
 			}
 			else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
+				items.getButtons()[i].turnChosenStateOn();
 				activePart = OPTIONS;
 				optionsDrawing = true;
 				if (path == "") {

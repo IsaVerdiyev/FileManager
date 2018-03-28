@@ -21,6 +21,8 @@ public:
 	void drawMenu(HANDLE &hndl);
 	std::vector<ChoosableButton> &getButtons();
 	std::vector<std::string> &getMenuItemStrings();
+	void setHoverColor(Color c);
+	void setStandardColor(Color c);
 };
 
 
