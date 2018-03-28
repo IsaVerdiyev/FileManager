@@ -58,3 +58,7 @@ void Menu::setStartPosition(COORD pos) {
 std::vector<ChoosableButton> &Menu::getButtons() {
 	return menuItemButtons;
 }
+
+std::vector<std::string> &Menu::getMenuItemStrings() {
+	return menuItemStrings;
+}

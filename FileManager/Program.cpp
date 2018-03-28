@@ -1,5 +1,8 @@
 #include "Program.h"
+#pragma warning(disable : 4996);
 
+
+#include <iostream>//temp===============
 
 Program::Program() :
 	options(std::vector<std::string> {
@@ -13,9 +16,8 @@ Program::Program() :
 		"Delete"
 		}),
 	diskOptions( std::vector<std::string>{"Open", "Size"} ),
-	path("This PC"),
+	path(""),
 	CTRLisPressed{false},
-	disksChosen {true},
 	activePart {FILES}
 {
 	setDisks();
@@ -38,7 +40,9 @@ void Program::setDisks() {
 	{
 		char szDisk[80];
 		lstrcpy(szDisk, pointerToDrivesString);
-		disks.push_back({ szDisk });
+		disks.push_back( szDisk );
+		//disks[disks.size() - 1].erase(disks[disks.size() - 1].end() - 1);
+		disks[disks.size() - 1].erase(disks[disks.size() - 1].end() - 1);
 
 		while (*pointerToDrivesString) {
 			pointerToDrivesString++;
@@ -61,48 +65,56 @@ void Program::performCycleOfEvents() {
 				checkKeyEvent(eventsBuffer[i]);
 			}
 		}
-		
 	}
 }
 
 void Program::checkMouseEvent(INPUT_RECORD &event) {
 	if (activePart == FILES) {
 		for (int i = 0; i < items.getButtons().size(); i++) {
-			if (!CTRLisPressed  && event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
-				if (items.getButtons()[i].getChosenState()) {
-					items.getButtons()[i].changeChosenState();
-				}
-			}
 			if (items.getButtons()[i].isMouseOnButton(event)) {
 				items.getButtons()[i].setHoverState(true);
 				if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
 					if (!items.getButtons()[i].getChosenState()) {
 						items.getButtons()[i].changeChosenState();
 					}
+					else {
+						if (CTRLisPressed) {
+							items.getButtons()[i].changeChosenState();
+						}
+						else if (HelperFunctions::is_dir((path + "/" + items.getMenuItemStrings()[i]).c_str())) {
+							openFolder(i);
+						}
+						continue;
+					}
 				}
 				else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
 					activePart = OPTIONS;
-					if (disksChosen) {
+					if (path == "") {
 						diskOptions.setStartPosition(COORD{ event.Event.MouseEvent.dwMousePosition.X, event.Event.MouseEvent.dwMousePosition.Y });
 						diskOptions.drawMenu(outputHandle);
+						break;
+					}
+					else {
+						options.setStartPosition(COORD{ event.Event.MouseEvent.dwMousePosition.X, event.Event.MouseEvent.dwMousePosition.Y });
+						options.drawMenu(outputHandle);
 						break;
 					}
 				}
 			}
 			else {
 				items.getButtons()[i].setHoverState(false);
-			/*	if (!CTRLisPressed) {
+				if (!CTRLisPressed  && event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
 					if (items.getButtons()[i].getChosenState()) {
 						items.getButtons()[i].changeChosenState();
 					}
-				}*/
+				}
 			}
-		items.drawMenu(outputHandle);
+			items.drawMenu(outputHandle);
 		}
 	}
 	else if (activePart == OPTIONS) {
 		activePart = FILES;
-		if (disksChosen) {
+		if (path == "") {
 			for (int i = 0; i < diskOptions.getButtons().size(); i++) {
 				if (diskOptions.getButtons()[i].isMouseOnButton(event)) {
 					activePart = OPTIONS;
@@ -110,6 +122,16 @@ void Program::checkMouseEvent(INPUT_RECORD &event) {
 			}
 			if (activePart != OPTIONS) {
 				diskOptions.removeMenuFromScreen(outputHandle);
+			}
+		}
+		else {
+			for (int i = 0; i < options.getButtons().size(); i++) {
+				if (options.getButtons()[i].isMouseOnButton(event)) {
+					activePart = OPTIONS;
+				}
+			}
+			if (activePart != OPTIONS) {
+				options.removeMenuFromScreen(outputHandle);
 			}
 		}
 	}
@@ -122,4 +144,65 @@ void Program::checkKeyEvent(INPUT_RECORD &event) {
 	else if (!event.Event.KeyEvent.bKeyDown) {
 		CTRLisPressed = false;
 	}
+}
+
+
+void Program::setNewPath(int index) {
+	std::string addedPath = items.getMenuItemStrings()[index];
+	if (addedPath == "..") {
+		size_t pos = path.find_last_of('/');
+		if (pos == std::string::npos) {
+			path = "";
+		}
+		else {
+			path.erase(pos);
+		}
+	}
+	else {
+		if (path != "") {
+			path += "/" + addedPath;
+		}
+		else {
+			path += addedPath;
+		}
+	}
+}
+
+void Program::openFolder(int index) {
+	setNewPath(index);
+	items.removeMenuFromScreen(outputHandle);
+	items.setMenuItems(getNewItemStringsFromNewPath());
+	items.drawMenu(outputHandle);
+}
+
+std::vector<std::string> Program::getNewItemStringsFromNewPath() {
+	std::vector<std::string> newItemNameStrings;
+	std::string searchedPath(path + "/*");
+	newItemNameStrings = getFiles(searchedPath);
+	return newItemNameStrings;
+}
+
+std::vector<std::string> Program::getFiles(std::string searchedPath) {
+	if (searchedPath == "/*") {
+		return disks;
+	}
+	std::vector<std::string> ar;
+
+	_finddata_t fileinfo;
+	intptr_t done;
+	done = _findfirst(searchedPath.c_str(), &fileinfo);
+	if (done == -1) {
+		_findclose(done);
+		return ar;
+	}
+	do {
+		if (!(fileinfo.attrib & _A_SYSTEM) && strcmp(".", fileinfo.name) && strcmp(fileinfo.name, "..") ) {
+			ar.push_back(std::string(fileinfo.name));
+		}
+	} while (_findnext(done, &fileinfo) == 0);
+	_findclose(done);
+	if (searchedPath != "") {
+		ar.insert(ar.begin(), "..");
+	}
+	return ar;
 }
