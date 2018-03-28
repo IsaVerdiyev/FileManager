@@ -25,6 +25,10 @@ public:
 	void appearOnConsoleScreen(HANDLE &hndl) override;
 	bool getChosenState();
 	bool getHoverState();
+	bool turnHoverOn();
+	bool turnHoverOff();
+	bool turnChosenStateOn();
+	bool turnChosenStateOff();
 };
 
 #endif CB

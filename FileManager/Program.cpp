@@ -17,7 +17,7 @@ Program::Program() :
 		}),
 	diskOptions( std::vector<std::string>{"Open", "Size"} ),
 	path(""),
-	CTRLisPressed{false},
+	CtrlisPressed{false},
 	activePart {FILES}
 {
 	setDisks();
@@ -79,10 +79,10 @@ void Program::checkMouseEvent(INPUT_RECORD &event) {
 
 void Program::checkKeyEvent(INPUT_RECORD &event) {
 	if (event.Event.KeyEvent.wVirtualKeyCode == VK_CONTROL && event.Event.KeyEvent.bKeyDown) {
-		CTRLisPressed = true;
+		CtrlisPressed = true;
 	}
 	else if (!event.Event.KeyEvent.bKeyDown) {
-		CTRLisPressed = false;
+		CtrlisPressed = false;
 	}
 }
 
@@ -148,16 +148,22 @@ std::vector<std::string> Program::getFiles(std::string searchedPath) {
 }
 
 void Program::performFilesPartEvents(INPUT_RECORD &event) {
+	bool itemsDrawing = false;
+	bool optionsDrawing = false;
 	for (int i = 0; i < items.getButtons().size(); i++) {
 		if (items.getButtons()[i].isMouseOnButton(event)) {
-			items.getButtons()[i].setHoverState(true);
+			if (items.getButtons()[i].turnHoverOn()) {
+				itemsDrawing = true;
+			}
 			if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
-				if (!items.getButtons()[i].getChosenState()) {
-					items.getButtons()[i].changeChosenState();
+				if (items.getButtons()[i].turnChosenStateOn()) {
+					itemsDrawing = true;
 				}
 				else {
-					if (CTRLisPressed) {
-						items.getButtons()[i].changeChosenState();
+					if (CtrlisPressed) {
+						items.getButtons()[i].turnChosenStateOff();
+						itemsDrawing = true;
+						
 					}
 					else if (HelperFunctions::is_dir((path + "/" + items.getMenuItemStrings()[i]).c_str())) {
 						openFolder(i);
@@ -167,27 +173,38 @@ void Program::performFilesPartEvents(INPUT_RECORD &event) {
 			}
 			else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
 				activePart = OPTIONS;
+				optionsDrawing = true;
 				if (path == "") {
 					diskOptions.setStartPosition(COORD{ event.Event.MouseEvent.dwMousePosition.X, event.Event.MouseEvent.dwMousePosition.Y });
-					diskOptions.drawMenu(outputHandle);
-					break;
 				}
 				else {
 					options.setStartPosition(COORD{ event.Event.MouseEvent.dwMousePosition.X, event.Event.MouseEvent.dwMousePosition.Y });
-					options.drawMenu(outputHandle);
-					break;
 				}
 			}
 		}
 		else {
-			items.getButtons()[i].setHoverState(false);
-			if (!CTRLisPressed  && event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
-				if (items.getButtons()[i].getChosenState()) {
-					items.getButtons()[i].changeChosenState();
+			if (items.getButtons()[i].turnHoverOff()) {
+				itemsDrawing = true;
+			}
+			if (!CtrlisPressed  && (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED))) {
+				if (items.getButtons()[i].turnChosenStateOff()) {
+					itemsDrawing = true;
 				}
 			}
 		}
+	}
+	if (itemsDrawing) {
 		items.drawMenu(outputHandle);
+		itemsDrawing = false;
+	}
+	if (optionsDrawing) {
+		if (path == "") {
+			diskOptions.drawMenu(outputHandle);
+		}
+		else {
+			options.drawMenu(outputHandle);
+		}
+		optionsDrawing = false;
 	}
 }
 

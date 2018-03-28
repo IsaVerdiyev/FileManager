@@ -86,3 +86,43 @@ bool ChoosableButton::getChosenState() {
 bool ChoosableButton::getHoverState() {
 	return hoverState;
 }
+
+bool ChoosableButton::turnHoverOn() {
+	if (!hoverState) {
+		hoverState = true;
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+
+bool ChoosableButton::turnHoverOff() {
+	if (hoverState) {
+		hoverState = false;
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool ChoosableButton::turnChosenStateOn() {
+	if (!chosenState) {
+		chosenState = true;
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+bool ChoosableButton::turnChosenStateOff() {
+	if (chosenState) {
+		chosenState = false;
+		return true;
+	}
+	else {
+		return false;
+	}
+}

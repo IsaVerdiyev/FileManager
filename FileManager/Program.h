@@ -8,7 +8,7 @@
 class Program {
 	enum menuPart {FILES, OPTIONS};
 	std::vector<std::string> disks;
-	bool CTRLisPressed;
+	bool CtrlisPressed;
 	menuPart activePart;
 	HANDLE outputHandle;
 	HANDLE inputHandle;
