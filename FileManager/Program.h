@@ -27,6 +27,8 @@ public:
 	void openFolder(int index);
 	std::vector<std::string> getNewItemStringsFromNewPath();
 	std::vector<std::string> getFiles(std::string path);
+	void performFilesPartEvents(INPUT_RECORD &event);
+	void performOptionsEvents(INPUT_RECORD &event);
 };
 
 #endif // Prog

@@ -70,70 +70,10 @@ void Program::performCycleOfEvents() {
 
 void Program::checkMouseEvent(INPUT_RECORD &event) {
 	if (activePart == FILES) {
-		for (int i = 0; i < items.getButtons().size(); i++) {
-			if (items.getButtons()[i].isMouseOnButton(event)) {
-				items.getButtons()[i].setHoverState(true);
-				if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
-					if (!items.getButtons()[i].getChosenState()) {
-						items.getButtons()[i].changeChosenState();
-					}
-					else {
-						if (CTRLisPressed) {
-							items.getButtons()[i].changeChosenState();
-						}
-						else if (HelperFunctions::is_dir((path + "/" + items.getMenuItemStrings()[i]).c_str())) {
-							openFolder(i);
-						}
-						continue;
-					}
-				}
-				else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
-					activePart = OPTIONS;
-					if (path == "") {
-						diskOptions.setStartPosition(COORD{ event.Event.MouseEvent.dwMousePosition.X, event.Event.MouseEvent.dwMousePosition.Y });
-						diskOptions.drawMenu(outputHandle);
-						break;
-					}
-					else {
-						options.setStartPosition(COORD{ event.Event.MouseEvent.dwMousePosition.X, event.Event.MouseEvent.dwMousePosition.Y });
-						options.drawMenu(outputHandle);
-						break;
-					}
-				}
-			}
-			else {
-				items.getButtons()[i].setHoverState(false);
-				if (!CTRLisPressed  && event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
-					if (items.getButtons()[i].getChosenState()) {
-						items.getButtons()[i].changeChosenState();
-					}
-				}
-			}
-			items.drawMenu(outputHandle);
-		}
+		performFilesPartEvents(event);
 	}
 	else if (activePart == OPTIONS) {
-		activePart = FILES;
-		if (path == "") {
-			for (int i = 0; i < diskOptions.getButtons().size(); i++) {
-				if (diskOptions.getButtons()[i].isMouseOnButton(event)) {
-					activePart = OPTIONS;
-				}
-			}
-			if (activePart != OPTIONS) {
-				diskOptions.removeMenuFromScreen(outputHandle);
-			}
-		}
-		else {
-			for (int i = 0; i < options.getButtons().size(); i++) {
-				if (options.getButtons()[i].isMouseOnButton(event)) {
-					activePart = OPTIONS;
-				}
-			}
-			if (activePart != OPTIONS) {
-				options.removeMenuFromScreen(outputHandle);
-			}
-		}
+		performOptionsEvents(event);
 	}
 }
 
@@ -205,4 +145,72 @@ std::vector<std::string> Program::getFiles(std::string searchedPath) {
 		ar.insert(ar.begin(), "..");
 	}
 	return ar;
+}
+
+void Program::performFilesPartEvents(INPUT_RECORD &event) {
+	for (int i = 0; i < items.getButtons().size(); i++) {
+		if (items.getButtons()[i].isMouseOnButton(event)) {
+			items.getButtons()[i].setHoverState(true);
+			if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
+				if (!items.getButtons()[i].getChosenState()) {
+					items.getButtons()[i].changeChosenState();
+				}
+				else {
+					if (CTRLisPressed) {
+						items.getButtons()[i].changeChosenState();
+					}
+					else if (HelperFunctions::is_dir((path + "/" + items.getMenuItemStrings()[i]).c_str())) {
+						openFolder(i);
+					}
+					continue;
+				}
+			}
+			else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
+				activePart = OPTIONS;
+				if (path == "") {
+					diskOptions.setStartPosition(COORD{ event.Event.MouseEvent.dwMousePosition.X, event.Event.MouseEvent.dwMousePosition.Y });
+					diskOptions.drawMenu(outputHandle);
+					break;
+				}
+				else {
+					options.setStartPosition(COORD{ event.Event.MouseEvent.dwMousePosition.X, event.Event.MouseEvent.dwMousePosition.Y });
+					options.drawMenu(outputHandle);
+					break;
+				}
+			}
+		}
+		else {
+			items.getButtons()[i].setHoverState(false);
+			if (!CTRLisPressed  && event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
+				if (items.getButtons()[i].getChosenState()) {
+					items.getButtons()[i].changeChosenState();
+				}
+			}
+		}
+		items.drawMenu(outputHandle);
+	}
+}
+
+void Program::performOptionsEvents(INPUT_RECORD &event) {
+	activePart = FILES;
+	if (path == "") {
+		for (int i = 0; i < diskOptions.getButtons().size(); i++) {
+			if (diskOptions.getButtons()[i].isMouseOnButton(event)) {
+				activePart = OPTIONS;
+			}
+		}
+		if (activePart != OPTIONS) {
+			diskOptions.removeMenuFromScreen(outputHandle);
+		}
+	}
+	else {
+		for (int i = 0; i < options.getButtons().size(); i++) {
+			if (options.getButtons()[i].isMouseOnButton(event)) {
+				activePart = OPTIONS;
+			}
+		}
+		if (activePart != OPTIONS) {
+			options.removeMenuFromScreen(outputHandle);
+		}
+	}
 }
