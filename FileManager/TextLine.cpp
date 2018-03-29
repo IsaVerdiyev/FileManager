@@ -96,10 +96,8 @@ void TextLine::putCharInfoArrayInConsoleBuffer(HANDLE &hndl, std::vector<CHAR_IN
 }
 
 void TextLine::appearOnConsoleScreen(HANDLE &hndl) {
-	if (isOnScreen && (lengthChanged || positionChanged)) {
-		removeFromConsoleScreen(hndl);
-	}
 	if (lengthChanged || positionChanged) {
+		removeFromConsoleScreen(hndl);
 		oldStartPosition = startPosition;
 		createEraseArray(hndl);
 		positionChanged = false;
@@ -135,8 +133,10 @@ bool TextLine::isMouseOnButton(const INPUT_RECORD &event) {
 }
 
 void TextLine::removeFromConsoleScreen(HANDLE &hndl) {
-	putCharInfoArrayInConsoleBuffer(hndl, eraseArray, oldStartPosition);
-	isOnScreen = false;
+	if (isOnScreen) {
+		putCharInfoArrayInConsoleBuffer(hndl, eraseArray, oldStartPosition);
+		isOnScreen = false;
+	}
 }
 
 

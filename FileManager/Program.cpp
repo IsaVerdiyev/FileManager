@@ -117,7 +117,6 @@ void Program::openFolder(int index) {
 	setNewPath(index);
 	items.removeMenuFromScreen(outputHandle);
 	items.setMenuItems(getNewItemStringsFromNewPath());
-	items.drawMenu(outputHandle);
 }
 
 std::vector<std::string> Program::getNewItemStringsFromNewPath() {
@@ -162,22 +161,24 @@ void Program::performFilesPartEvents(INPUT_RECORD &event) {
 			}
 			if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
 				if (items.getButtons()[i].turnChosenStateOn()) {
+					chosenButtons.push_back(i);
 					itemsDrawing = true;
 				}
 				else {
 					if (CtrlisPressed) {
 						items.getButtons()[i].turnChosenStateOff();
-						itemsDrawing = true;
-						
+						chosenButtons.erase(std::remove(chosenButtons.begin(), chosenButtons.end(), i), chosenButtons.end());
 					}
 					else if (HelperFunctions::is_dir((path + "/" + items.getMenuItemStrings()[i]).c_str())) {
 						openFolder(i);
 					}
-					continue;
+					itemsDrawing = true;
 				}
 			}
 			else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
-				items.getButtons()[i].turnChosenStateOn();
+				if (items.getButtons()[i].turnChosenStateOn()) {
+					chosenButtons.push_back(i);
+				}
 				activePart = OPTIONS;
 				optionsDrawing = true;
 				if (path == "") {
@@ -194,6 +195,7 @@ void Program::performFilesPartEvents(INPUT_RECORD &event) {
 			}
 			if (!CtrlisPressed  && (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED))) {
 				if (items.getButtons()[i].turnChosenStateOff()) {
+					chosenButtons.erase(std::remove(chosenButtons.begin(), chosenButtons.end(), i), chosenButtons.end());
 					itemsDrawing = true;
 				}
 			}
@@ -216,24 +218,40 @@ void Program::performFilesPartEvents(INPUT_RECORD &event) {
 
 void Program::performOptionsEvents(INPUT_RECORD &event) {
 	activePart = FILES;
+	Menu *pointerToOptionsMenu;
+	bool drawOptions = false;
 	if (path == "") {
-		for (int i = 0; i < diskOptions.getButtons().size(); i++) {
-			if (diskOptions.getButtons()[i].isMouseOnButton(event)) {
-				activePart = OPTIONS;
-			}
-		}
-		if (activePart != OPTIONS) {
-			diskOptions.removeMenuFromScreen(outputHandle);
-		}
+		pointerToOptionsMenu = &diskOptions;
 	}
 	else {
-		for (int i = 0; i < options.getButtons().size(); i++) {
-			if (options.getButtons()[i].isMouseOnButton(event)) {
-				activePart = OPTIONS;
+		pointerToOptionsMenu = &options;
+	}
+	for (int i = 0; i < pointerToOptionsMenu->getButtons().size(); i++) {
+		if (pointerToOptionsMenu->getButtons()[i].isMouseOnButton(event)) {
+			activePart = OPTIONS;
+			if (!pointerToOptionsMenu->getButtons()[i].turnHoverOn()) {
+					drawOptions = true;
+			}
+			if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
+				if (i == OPEN) {
+					if (HelperFunctions::is_dir((path + "/" + items.getMenuItemStrings()[chosenButtons[chosenButtons.size() - 1]]).c_str())) {
+						pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
+						openFolder(chosenButtons[chosenButtons.size() - 1]);
+						activePart = FILES;
+					}
+				}
 			}
 		}
-		if (activePart != OPTIONS) {
-			options.removeMenuFromScreen(outputHandle);
+		else {
+			pointerToOptionsMenu->getButtons()[i].turnHoverOff();
 		}
 	}
+	if (activePart != OPTIONS) {
+		pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
+		items.drawMenu(outputHandle);
+	}
+	else {
+		pointerToOptionsMenu->drawMenu(outputHandle);
+	}
+	
 }

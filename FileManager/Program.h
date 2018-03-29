@@ -4,10 +4,12 @@
 #include "Menu.h"
 #include <io.h>;
 #include "HelperFunctions.h"
+#include <algorithm>
 
 class Program {
 	enum menuPart {FILES, OPTIONS};
 	std::vector<std::string> disks;
+	std::vector<int> chosenButtons;
 	bool CtrlisPressed;
 	menuPart activePart;
 	HANDLE outputHandle;
@@ -17,6 +19,8 @@ class Program {
 	Menu diskOptions;
 	std::string path;
 	INPUT_RECORD eventsBuffer[128];
+	enum optionsEnum { OPEN, RENAME, CUT, COPY, PASTE, SIZE, CREATE_FILE, CREATE_FOLDER, DEL };
+	enum diskOptionsEnum { OPEN_DISK, SIZE_DISK };
 public:
 	Program();
 	void setDisks();
