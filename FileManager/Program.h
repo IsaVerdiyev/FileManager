@@ -25,6 +25,11 @@ class Program {
 	INPUT_RECORD eventsBuffer[128];
 	enum optionsEnum { OPEN, RENAME, CUT, COPY, PASTE, SIZE, CREATE_FILE, CREATE_FOLDER, DEL };
 	enum diskOptionsEnum { OPEN_DISK, SIZE_DISK };
+	bool itemsDrawing;
+	bool optionsDrawing;
+	bool errorDrawing;
+	bool mouseClicked;
+	bool drawOptions;
 public:
 	Program();
 	void setDisks();
@@ -37,6 +42,10 @@ public:
 	std::vector<std::string> getFiles(std::string path);
 	void performFilesPartEvents(INPUT_RECORD &event);
 	void performOptionsEvents(INPUT_RECORD &event);
+	void handleFilesPartEventsWhenLeftMouseButtonPressed(ChoosableButton &button, INPUT_RECORD &event);
+	void handleEventsWhenRightMouseButtonPressedOfFilesPart(ChoosableButton &button, INPUT_RECORD &event);
+	void drawItemsAccordingToStates();
+	void handleEventsWhenMouseIsNotOnItems(ChoosableButton &button, INPUT_RECORD &event);
 };
 
 #endif // Prog
