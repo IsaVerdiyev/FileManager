@@ -115,11 +115,7 @@ void TextLine::appearOnConsoleScreen(HANDLE &hndl, COORD beginningPosition) {
 	appearOnConsoleScreen(hndl);
 }
 
-//std::unique_ptr<COORD> TextLine::getEndPosition() {
-//	COORD endPosition{ (short)(startPosition.X + (sentenceSymbols.size() > minLength ? sentenceSymbols.size() : minLength)), (short)startPosition.Y };
-//	std::unique_ptr<COORD> pointer = std::make_unique<COORD>(endPosition);
-//	return pointer;
-//}
+
 
 COORD TextLine::getEndPosition() {
 	return COORD{ (short)(startPosition.X + (sentenceSymbols.size() > minLength ? sentenceSymbols.size() : minLength)), (short)startPosition.Y };
