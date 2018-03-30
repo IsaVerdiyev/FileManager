@@ -6,6 +6,7 @@
 #include "HelperFunctions.h"
 #include <algorithm>
 #include <experimental\filesystem>
+#include "ErrorStrings.h";
 
 namespace fs = std::experimental::filesystem;
 

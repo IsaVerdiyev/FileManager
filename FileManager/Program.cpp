@@ -203,7 +203,7 @@ void Program::performOptionsEvents(INPUT_RECORD &event) {
 						activePart = FILES;
 					}
 					else {
-						error.setTextAndColor("Is not folder");
+						error.setTextAndColor(isNotFolderError);
 						errorDrawing = true;
 					}
 				}
@@ -256,7 +256,7 @@ void Program::handleFilesPartEventsWhenLeftMouseButtonPressed(ChoosableButton &b
 				openFolder(index);
 			}
 			else {
-				error.setTextAndColor("Is not folder");
+				error.setTextAndColor(isNotFolderError);
 				errorDrawing = true;
 			}
 			itemsDrawing = true;
