@@ -33,7 +33,7 @@ Program::Program() :
 	SetConsoleMode(inputHandle, ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS);
 	items.drawMenu(outputHandle);
 	error.setColor(static_cast<Color>(Red << 4 | White));
-	error.setPosition({ 30, 20 });
+	error.setPosition({ 90, 28 });
 }
 
 
@@ -120,40 +120,34 @@ std::string Program::getNewPath(int index) {
 void Program::openFolder(int index) {
 	path = getNewPath(index);
 	items.removeMenuFromScreen(outputHandle);
-	items.setMenuItems(getNewItemStringsFromNewPath());
+	items.setMenuItems(getContentOfFolder(path));
 }
 
-std::vector<std::string> Program::getNewItemStringsFromNewPath() {
-	std::vector<std::string> newItemNameStrings;
-	std::string searchedPath(path + "/*");
-	newItemNameStrings = getFiles(searchedPath);
-	return newItemNameStrings;
-}
 
-std::vector<std::string> Program::getFiles(std::string searchedPath) {
-	if (searchedPath == "/*") {
-		return disks;
-	}
-	std::vector<std::string> ar;
-
-	_finddata_t fileinfo;
-	intptr_t done;
-	done = _findfirst(searchedPath.c_str(), &fileinfo);
-	if (done == -1) {
-		_findclose(done);
-		return ar;
-	}
-	do {
-		if (!(fileinfo.attrib & _A_SYSTEM) && strcmp(".", fileinfo.name) && strcmp(fileinfo.name, "..") ) {
-			ar.push_back(std::string(fileinfo.name));
-		}
-	} while (_findnext(done, &fileinfo) == 0);
-	_findclose(done);
-	if (searchedPath != "") {
-		ar.insert(ar.begin(), "..");
-	}
-	return ar;
-}
+//std::vector<std::string> Program::getFiles(std::string searchedPath) {
+//	if (searchedPath == "/*") {
+//		return disks;
+//	}
+//	std::vector<std::string> ar;
+//
+//	_finddata_t fileinfo;
+//	intptr_t done;
+//	done = _findfirst(searchedPath.c_str(), &fileinfo);
+//	if (done == -1) {
+//		_findclose(done);
+//		return ar;
+//	}
+//	do {
+//		if (!(fileinfo.attrib & _A_SYSTEM) && strcmp(".", fileinfo.name) && strcmp(fileinfo.name, "..") ) {
+//			ar.push_back(std::string(fileinfo.name));
+//		}
+//	} while (_findnext(done, &fileinfo) == 0);
+//	_findclose(done);
+//	if (searchedPath != "") {
+//		ar.insert(ar.begin(), "..");
+//	}
+//	return ar;
+//}
 
 void Program::performFilesPartEvents(INPUT_RECORD &event) {
 	itemsDrawing = false;
@@ -203,7 +197,7 @@ void Program::performOptionsEvents(INPUT_RECORD &event) {
 				mouseClicked = true;
 				if (i == OPEN) {
 					std::string searchedPath = getNewPath(chosenButtons[chosenButtons.size() - 1]);
-					if (sf::is_directory(searchedPath) || searchedPath == "") {
+					if (fs::is_directory(searchedPath) || searchedPath == "") {
 						pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
 						openFolder(chosenButtons[chosenButtons.size() - 1]);
 						activePart = FILES;
@@ -211,6 +205,11 @@ void Program::performOptionsEvents(INPUT_RECORD &event) {
 					else {
 						error.setTextAndColor("Is not folder");
 						errorDrawing = true;
+					}
+				}
+				else if (pointerToOptionsMenu == &options) {
+					if (i == RENAME) {
+
 					}
 				}
 			}
@@ -253,7 +252,7 @@ void Program::handleFilesPartEventsWhenLeftMouseButtonPressed(ChoosableButton &b
 		}
 		else {
 			std::string searchedPath = getNewPath(index);
-			if (sf::is_directory(searchedPath.c_str()) || searchedPath == "") {
+			if (fs::is_directory(searchedPath.c_str()) || searchedPath == "") {
 				openFolder(index);
 			}
 			else {
@@ -302,6 +301,7 @@ void Program::drawItemsAccordingToStates() {
 	}
 }
 
+
 void Program::handleEventsWhenMouseIsNotOnItems(ChoosableButton &button, INPUT_RECORD &event) {
 	int index = &button - &items.getButtons()[0];
 	if (button.turnHoverOff()) {
@@ -314,4 +314,18 @@ void Program::handleEventsWhenMouseIsNotOnItems(ChoosableButton &button, INPUT_R
 			itemsDrawing = true;
 		}
 	}
+}
+
+std::vector<std::string> Program::getContentOfFolder(std::string path) {
+	if (path == "") {
+		return disks;
+	}
+	std::vector<std::string> ar;
+	ar.push_back("..");
+	for (auto &p : fs::directory_iterator(path)) {
+		std::string itemName = p.path().filename().string();
+		itemName += p.path().extension().string();
+		ar.push_back(itemName);
+	}
+	return ar;
 }
