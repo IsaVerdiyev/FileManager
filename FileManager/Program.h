@@ -12,6 +12,7 @@ namespace fs = std::experimental::filesystem;
 
 class Program {
 	TextLine error;
+	TextLine info;
 	enum menuPart {FILES, OPTIONS};
 	std::vector<std::string> disks;
 	std::vector<int> chosenButtons;
@@ -30,7 +31,7 @@ class Program {
 	bool optionsDrawing;
 	bool errorDrawing;
 	bool mouseClicked;
-	bool drawOptions;
+	bool infoDrawing;
 public:
 	Program();
 	void setDisks();
@@ -46,6 +47,7 @@ public:
 	void drawItemsAccordingToStates();
 	void handleEventsWhenMouseIsNotOnItems(ChoosableButton &button, INPUT_RECORD &event);
 	std::vector<std::string> getContentOfFolder(std::string path);
+
 };
 
 #endif // Prog
