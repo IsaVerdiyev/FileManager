@@ -139,4 +139,8 @@ bool TextLine::getIsOnScreenState() {
 	return isOnScreen;
 }
 
+int TextLine::getMinLength() {
+	return minLength;
+}
+
 

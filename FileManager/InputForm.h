@@ -11,12 +11,13 @@ public:
 	Color deactiveColor;
 	InputForm();
 	InputForm(const std::string &s);
-	void changeState();
 	void takeInput(const INPUT_RECORD &event);
 	bool isGettingInput();
 	void setActiveColor(Color c);
 	void setDeactiveColor(Color c);
 	void appearOnConsoleScreen(HANDLE &hndl) override;
+	bool turnInputStateOn();
+	bool turnInputStateOff();
 };
 
 

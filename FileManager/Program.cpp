@@ -6,7 +6,7 @@
 
 Program::Program() :
 	options(std::vector<std::string> {
-	"Open",
+		"Open",
 		"Rename",
 		"Cut",
 		"Copy",
@@ -14,12 +14,11 @@ Program::Program() :
 		"Size",
 		"Create file",
 		"Create folder",
-		"Delete"
-}),
-diskOptions(std::vector<std::string>{"Open", "Size"}),
-path(""),
-CtrlisPressed{ false },
-activePart{ FILES }
+		"Delete"}),
+	diskOptions(std::vector<std::string>{"Open", "Size"}),
+	path(""),
+	CtrlisPressed{ false },
+	activePart{ FILES }
 {
 	setDisks();
 	items.setMenuItems(disks);
@@ -36,48 +35,50 @@ activePart{ FILES }
 	error.setPosition({ 90, 28 });
 	info.setPosition({ 90, 15 });
 	info.setColor(defaultColor);
+	pointerToOptionsMenu = &diskOptions;
 }
 
 
-void Program::setDisks() {
-	int sz = GetLogicalDriveStrings(NULL, 0);
-	char* szLogicalDrives = new char[sz];
-	GetLogicalDriveStrings(sz, szLogicalDrives);
+	void Program::setDisks() {
+		int sz = GetLogicalDriveStrings(NULL, 0);
+		char* szLogicalDrives = new char[sz];
+		GetLogicalDriveStrings(sz, szLogicalDrives);
 
-	char *pointerToDrivesString = szLogicalDrives;
-	while (*pointerToDrivesString)
-	{
-		char szDisk[80];
-		lstrcpy(szDisk, pointerToDrivesString);
-		disks.push_back(szDisk);
-		//disks[disks.size() - 1].erase(disks[disks.size() - 1].end() - 1);
-		disks[disks.size() - 1].erase(disks[disks.size() - 1].end() - 1);
+		char *pointerToDrivesString = szLogicalDrives;
+		while (*pointerToDrivesString)
+		{
+			char szDisk[80];
+			lstrcpy(szDisk, pointerToDrivesString);
+			disks.push_back(szDisk);
+			//disks[disks.size() - 1].erase(disks[disks.size() - 1].end() - 1);
+			disks[disks.size() - 1].erase(disks[disks.size() - 1].end() - 1);
 
-		while (*pointerToDrivesString) {
+			while (*pointerToDrivesString) {
+				pointerToDrivesString++;
+			}
 			pointerToDrivesString++;
 		}
-		pointerToDrivesString++;
+		delete[] szLogicalDrives;
 	}
-	delete[] szLogicalDrives;
-}
 
-void Program::performCycleOfEvents() {
-	bool isRunning = true;
-	DWORD numEventsRead = 0;
-	while (isRunning) {
-		ReadConsoleInput(inputHandle, eventsBuffer, 128, &numEventsRead);
-		for (int i = 0; i < numEventsRead; i++) {
-			if (eventsBuffer[i].EventType == MOUSE_EVENT) {
-				checkMouseEvent(eventsBuffer[i]);
+	void Program::performCycleOfEvents() {
+		bool isRunning = true;
+		DWORD numEventsRead = 0;
+		while (isRunning) {
+			ReadConsoleInput(inputHandle, eventsBuffer, 128, &numEventsRead);
+			for (int i = 0; i < numEventsRead; i++) {
+				if (eventsBuffer[i].EventType == MOUSE_EVENT) {
+					checkMouseEvent(eventsBuffer[i]);
+				}
+				else if (eventsBuffer[i].EventType == KEY_EVENT) {
+					checkKeyEvent(eventsBuffer[i]);
+				}
 			}
-			else if (eventsBuffer[i].EventType == KEY_EVENT) {
-				checkKeyEvent(eventsBuffer[i]);
-			}
+			drawItemsAccordingToStates();
 		}
 	}
-}
 
-void Program::checkMouseEvent(INPUT_RECORD &event) {
+	void Program::checkMouseEvent(INPUT_RECORD &event) {
 		if (activePart == FILES) {
 			performFilesPartEvents(event);
 		}
@@ -86,44 +87,47 @@ void Program::checkMouseEvent(INPUT_RECORD &event) {
 		}
 	}
 
-void Program::checkKeyEvent(INPUT_RECORD &event) {
+	void Program::checkKeyEvent(INPUT_RECORD &event) {
 		if (event.Event.KeyEvent.wVirtualKeyCode == VK_CONTROL && event.Event.KeyEvent.bKeyDown) {
 			CtrlisPressed = true;
 		}
 		else if (!event.Event.KeyEvent.bKeyDown) {
 			CtrlisPressed = false;
 		}
+		if (input.isGettingInput()) {
+			input.takeInput(event);
+		}
 	}
 
 
-std::string Program::getNewPath(int index) {
-	std::string searchedPath = path;
-	std::string addedPath = items.getMenuItemStrings()[index];
-	if (addedPath == "..") {
-		size_t pos = searchedPath.find_last_of('/');
-		if (pos == std::string::npos) {
-			searchedPath = "";
+	std::string Program::getNewPath(int index) {
+		std::string searchedPath = path;
+		std::string addedPath = items.getMenuItemStrings()[index];
+		if (addedPath == "..") {
+			size_t pos = searchedPath.find_last_of('/');
+			if (pos == std::string::npos) {
+				searchedPath = "";
+			}
+			else {
+				searchedPath.erase(pos);
+			}
 		}
 		else {
-			searchedPath.erase(pos);
+			if (searchedPath != "") {
+				searchedPath += "/" + addedPath;
+			}
+			else {
+				searchedPath += addedPath;
+			}
 		}
+		return searchedPath;
 	}
-	else {
-		if (searchedPath != "") {
-			searchedPath += "/" + addedPath;
-		}
-		else {
-			searchedPath += addedPath;
-		}
-	}
-	return searchedPath;
-}
 
-void Program::openFolder(int index) {
-	path = getNewPath(index);
-	items.removeMenuFromScreen(outputHandle);
-	items.setMenuItems(getContentOfFolder(path));
-}
+	void Program::openFolder(int index) {
+		path = getNewPath(index);
+		items.removeMenuFromScreen(outputHandle);
+		items.setMenuItems(getContentOfFolder(path));
+	}
 
 
 	//std::vector<std::string> Program::getFiles(std::string searchedPath) {
@@ -151,228 +155,254 @@ void Program::openFolder(int index) {
 		//	return ar;
 		//}
 
-void Program::performFilesPartEvents(INPUT_RECORD &event) {
-	itemsDrawing = false;
-	optionsDrawing = false;
-	errorDrawing = false;
-	mouseClicked = false;
-	infoDrawing = false;
-	for (int i = 0; i < items.getButtons().size(); i++) {
-		if (items.getButtons()[i].isMouseOnButton(event)) {
-			if (items.getButtons()[i].turnHoverOn()) {
-				itemsDrawing = true;
-			}
-			if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
-				mouseClicked = true;
-				handleFilesPartEventsWhenLeftMouseButtonPressed(items.getButtons()[i], event);
-			}
-			else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
-				mouseClicked = true;
-				handleEventsWhenRightMouseButtonPressedOfFilesPart(items.getButtons()[i], event);
-			}
+	void Program::performFilesPartEvents(INPUT_RECORD &event) {
+		itemsDrawing = false;
+		optionsDrawing = false;
+		errorDrawing = false;
+		mouseClicked = false;
+		infoDrawing = false;
+		if (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) && !input.isMouseOnButton(event)) {
+			input.turnInputStateOff();
 		}
-		else {
-			handleEventsWhenMouseIsNotOnItems(items.getButtons()[i], event);
-		}
-	}
-	drawItemsAccordingToStates();
-}
-
-void Program::performOptionsEvents(INPUT_RECORD &event) {
-	activePart = FILES;
-	Menu *pointerToOptionsMenu;
-	optionsDrawing = false;
-	errorDrawing = false;
-	mouseClicked = false;
-	infoDrawing = false;
-	if (path == "") {
-		pointerToOptionsMenu = &diskOptions;
-	}
-	else {
-		pointerToOptionsMenu = &options;
-	}
-	for (int i = 0; i < pointerToOptionsMenu->getButtons().size(); i++) {
-		if (pointerToOptionsMenu->getButtons()[i].isMouseOnButton(event)) {
-			activePart = OPTIONS;
-			if (pointerToOptionsMenu->getButtons()[i].turnHoverOn()) {
-				optionsDrawing = true;
-			}
-			if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
-				mouseClicked = true;
-				if (i == OPEN) {
-					std::string searchedPath = getNewPath(chosenButtons[chosenButtons.size() - 1]);
-					if (fs::is_directory(searchedPath) || searchedPath == "") {
-						pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
-						openFolder(chosenButtons[chosenButtons.size() - 1]);
-						activePart = FILES;
+		if (!isRenameProcess) {
+			for (int i = 0; i < items.getButtons().size(); i++) {
+				if (items.getButtons()[i].isMouseOnButton(event)) {
+					if (items.getButtons()[i].turnHoverOn()) {
+						itemsDrawing = true;
 					}
-					else {
-						error.setTextAndColor(isNotFolderError);
-						errorDrawing = true;
+					if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
+						mouseClicked = true;
+						handleFilesPartEventsWhenLeftMouseButtonPressed(items.getButtons()[i], event);
+					}
+					else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
+						mouseClicked = true;
+						handleEventsWhenRightMouseButtonPressedOfFilesPart(items.getButtons()[i], event);
 					}
 				}
-				else if (i == SIZE) {
-					std::string searchedPath = getNewPath(chosenButtons[chosenButtons.size() - 1]);
-					long double size = 0;
-					try {
-						if (!fs::is_directory(searchedPath) && searchedPath != "") {
-							size = fs::file_size(searchedPath) / 1024;
+				else {
+					handleEventsWhenMouseIsNotOnItems(items.getButtons()[i], event);
+				}
+			}
+		}
+	}
+
+	void Program::performOptionsEvents(INPUT_RECORD &event) {
+		activePart = FILES;
+		optionsDrawing = false;
+		errorDrawing = false;
+		mouseClicked = false;
+		infoDrawing = false;
+		//if (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) && !input.isMouseOnButton(event)) {
+		//	isRenameProcess = false;
+		//}
+		for (int i = 0; i < pointerToOptionsMenu->getButtons().size(); i++) {
+			if (pointerToOptionsMenu->getButtons()[i].isMouseOnButton(event)) {
+				activePart = OPTIONS;
+				if (pointerToOptionsMenu->getButtons()[i].turnHoverOn()) {
+					optionsDrawing = true;
+				}
+				if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
+					mouseClicked = true;
+					if (i == OPEN) {
+						std::string searchedPath = getNewPath(chosenButtons[chosenButtons.size() - 1]);
+						if (fs::is_directory(searchedPath) || searchedPath == "") {
+							pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
+							openFolder(chosenButtons[chosenButtons.size() - 1]);
+							activePart = FILES;
+							itemsDrawing = true;
 						}
 						else {
-							for (auto &p : fs::recursive_directory_iterator(searchedPath)) {
-								if (!fs::is_directory(p)) {
-									size += fs::file_size(p) / 1024;
+							error.setTextAndColor(isNotFolderError);
+							errorDrawing = true;
+						}
+					}
+					else if (i == SIZE) {
+						std::string searchedPath = getNewPath(chosenButtons[chosenButtons.size() - 1]);
+						long double size = 0;
+						try {
+							if (!fs::is_directory(searchedPath) && searchedPath != "") {
+								size = fs::file_size(searchedPath) / 1024;
+							}
+							else {
+								for (auto &p : fs::recursive_directory_iterator(searchedPath)) {
+									if (!fs::is_directory(p)) {
+										size += fs::file_size(p) / 1024;
+									}
 								}
 							}
-						}
-						optionsDrawing = false;
-						activePart = FILES;
-						std::string dimensionName = " kilobytes";
-						if (size > 1024) {
-							size /= 1024;
-							dimensionName = " megabytes";
+							optionsDrawing = false;
+							activePart = FILES;
+							std::string dimensionName = " kilobytes";
 							if (size > 1024) {
 								size /= 1024;
-								dimensionName = " gigabytes";
+								dimensionName = " megabytes";
+								if (size > 1024) {
+									size /= 1024;
+									dimensionName = " gigabytes";
+								}
 							}
+							info.setTextAndColor("Size is: " + std::to_string(size) + dimensionName);
+							infoDrawing = true;
 						}
-						info.setTextAndColor("Size is: " + std::to_string(size) + dimensionName);
-						infoDrawing = true;
+						catch (...) {
+							error.setTextAndColor("Error while counting size");
+							errorDrawing = true;
+						}
 					}
-					catch (...) {
-						error.setTextAndColor("Error while counting size");
-						errorDrawing = true;
+					else if (i == RENAME) {
+						try {
+							activePart = FILES;
+							optionsDrawing = false;
+							isRenameProcess = true;
+							input.setTextAndColor(items.getMenuItemStrings()[chosenButtons[chosenButtons.size() - 1]]);
+							input.setMinLength(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getMinLength());
+							input.turnInputStateOn();
+						}
+						catch (...) {
+							error.setTextAndColor("Error: Couldn't rename file");
+							errorDrawing = true;
+						}
 					}
 				}
-				else if (i == RENAME) {
-
+				else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
+					mouseClicked = true;
 				}
-			}
-			else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
-				mouseClicked = true;
-			}
-		}
-		else {
-			pointerToOptionsMenu->getButtons()[i].turnHoverOff();
-		}
-	}
-	if (mouseClicked && !errorDrawing) {
-		error.removeFromConsoleScreen(outputHandle);
-	}
-	if (mouseClicked && !infoDrawing) {
-		info.removeFromConsoleScreen(outputHandle);
-	}
-	if (activePart != OPTIONS) {
-		pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
-		items.drawMenu(outputHandle);
-	}
-	else {
-		if (optionsDrawing) {
-			pointerToOptionsMenu->drawMenu(outputHandle);
-		}
-	}
-	if (errorDrawing || error.getIsOnScreenState()) {
-		error.appearOnConsoleScreen(outputHandle);
-	}
-	if (infoDrawing || info.getIsOnScreenState()) {
-		info.appearOnConsoleScreen(outputHandle);
-	}
-
-}
-
-void Program::handleFilesPartEventsWhenLeftMouseButtonPressed(ChoosableButton &button, INPUT_RECORD &event) {
-	int index = &button - &items.getButtons()[0];
-	if (button.turnChosenStateOn()) {
-		chosenButtons.push_back(index);
-		itemsDrawing = true;
-	}
-	else {
-		if (CtrlisPressed) {
-			button.turnChosenStateOff();
-			chosenButtons.erase(std::remove(chosenButtons.begin(), chosenButtons.end(), index), chosenButtons.end());
-		}
-		else {
-			std::string searchedPath = getNewPath(index);
-			if (fs::is_directory(searchedPath.c_str()) || searchedPath == "") {
-				openFolder(index);
 			}
 			else {
-				error.setTextAndColor(isNotFolderError);
-				errorDrawing = true;
+				pointerToOptionsMenu->getButtons()[i].turnHoverOff();
 			}
+		}
+	}
+
+	void Program::handleFilesPartEventsWhenLeftMouseButtonPressed(ChoosableButton &button, INPUT_RECORD &event) {
+		int index = &button - &items.getButtons()[0];
+		if (button.turnChosenStateOn()) {
+			chosenButtons.push_back(index);
 			itemsDrawing = true;
-		}
-	}
-}
-
-void Program::handleEventsWhenRightMouseButtonPressedOfFilesPart(ChoosableButton &button, INPUT_RECORD &event) {
-	int index = &button - &items.getButtons()[0];
-	if (button.turnChosenStateOn()) {
-		chosenButtons.push_back(index);
-	}
-	activePart = OPTIONS;
-	optionsDrawing = true;
-	if (path == "") {
-		diskOptions.setStartPosition(COORD{ event.Event.MouseEvent.dwMousePosition.X, event.Event.MouseEvent.dwMousePosition.Y });
-	}
-	else {
-		options.setStartPosition(COORD{ event.Event.MouseEvent.dwMousePosition.X, event.Event.MouseEvent.dwMousePosition.Y });
-	}
-}
-
-void Program::drawItemsAccordingToStates() {
-	if (mouseClicked) {
-		info.removeFromConsoleScreen(outputHandle);
-		if (!errorDrawing) {
-			error.removeFromConsoleScreen(outputHandle);
-		}
-	}
-	if (itemsDrawing) {
-		items.drawMenu(outputHandle);
-		itemsDrawing = false;
-	}
-	if (optionsDrawing) {
-		if (path == "") {
-			diskOptions.drawMenu(outputHandle);
 		}
 		else {
-			options.drawMenu(outputHandle);
+			if (CtrlisPressed) {
+				button.turnChosenStateOff();
+				chosenButtons.erase(std::remove(chosenButtons.begin(), chosenButtons.end(), index), chosenButtons.end());
+				itemsDrawing = true;
+			}
+			else {
+				std::string searchedPath = getNewPath(index);
+				if (fs::is_directory(searchedPath.c_str()) || searchedPath == "") {
+					openFolder(index);
+					itemsDrawing = true;
+				}
+				else {
+					error.setTextAndColor(isNotFolderError);
+					errorDrawing = true;
+				}
+			}
 		}
-		optionsDrawing = false;
 	}
-	if (errorDrawing || error.getIsOnScreenState()) {
-		error.appearOnConsoleScreen(outputHandle);
+
+	void Program::handleEventsWhenRightMouseButtonPressedOfFilesPart(ChoosableButton &button, INPUT_RECORD &event) {
+		int index = &button - &items.getButtons()[0];
+		if (button.turnChosenStateOn()) {
+			chosenButtons.push_back(index);
+		}
+		optionsDrawing = true;
+		if (path == "") {
+			pointerToOptionsMenu = &diskOptions;
+		}
+		else {
+			pointerToOptionsMenu = &options;
+		}
+		pointerToOptionsMenu->setStartPosition(COORD{ event.Event.MouseEvent.dwMousePosition.X, event.Event.MouseEvent.dwMousePosition.Y });
 	}
-	if (infoDrawing || info.getIsOnScreenState()) {
-		info.appearOnConsoleScreen(outputHandle);
+
+	void Program::drawItemsAccordingToStates() {
+		if (mouseClicked) {
+			info.removeFromConsoleScreen(outputHandle);
+			if (!errorDrawing) {
+				error.removeFromConsoleScreen(outputHandle);
+			}
+		}
+		if (activePart == FILES) {
+			pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
+			if (itemsDrawing) {
+				items.drawMenu(outputHandle);
+				itemsDrawing = false;
+			}
+			if (optionsDrawing) {
+				pointerToOptionsMenu->drawMenu(outputHandle);
+				activePart = OPTIONS;
+				optionsDrawing = false;
+			}
+			else {
+				pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
+			}
+		}
+		if (activePart == OPTIONS) {
+			if (optionsDrawing) {
+				pointerToOptionsMenu->drawMenu(outputHandle);
+			}
+		}
+		if (errorDrawing || error.getIsOnScreenState()) {
+			error.appearOnConsoleScreen(outputHandle);
+		}
+		if (infoDrawing || info.getIsOnScreenState()) {
+			info.appearOnConsoleScreen(outputHandle);
+		}
+		if (isRenameProcess) {
+			input.appearOnConsoleScreen(outputHandle);
+		}
+		/*
+		if (mouseClicked && !errorDrawing) {
+			error.removeFromConsoleScreen(outputHandle);
+		}
+		if (mouseClicked && !infoDrawing) {
+			info.removeFromConsoleScreen(outputHandle);
+		}
+		if (activePart != OPTIONS) {
+			pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
+			items.drawMenu(outputHandle);
+		}
+		else {
+			if (optionsDrawing) {
+				pointerToOptionsMenu->drawMenu(outputHandle);
+			}
+		}
+		if (errorDrawing || error.getIsOnScreenState()) {
+			error.appearOnConsoleScreen(outputHandle);
+		}
+		if (infoDrawing || info.getIsOnScreenState()) {
+			info.appearOnConsoleScreen(outputHandle);
+		}
+		if (isRenameProcess) {
+			input.appearOnConsoleScreen(outputHandle);
+		}*/
 	}
-}
 
 
-void Program::handleEventsWhenMouseIsNotOnItems(ChoosableButton &button, INPUT_RECORD &event) {
-	int index = &button - &items.getButtons()[0];
-	if (button.turnHoverOff()) {
-		itemsDrawing = true;
-	}
-	if (!CtrlisPressed && (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED))) {
-		mouseClicked = true;
-		if (button.turnChosenStateOff()) {
-			chosenButtons.erase(std::remove(chosenButtons.begin(), chosenButtons.end(), index), chosenButtons.end());
+	void Program::handleEventsWhenMouseIsNotOnItems(ChoosableButton &button, INPUT_RECORD &event) {
+		int index = &button - &items.getButtons()[0];
+		if (button.turnHoverOff()) {
 			itemsDrawing = true;
 		}
+		if (!CtrlisPressed && (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED))) {
+			mouseClicked = true;
+			if (button.turnChosenStateOff()) {
+				chosenButtons.erase(std::remove(chosenButtons.begin(), chosenButtons.end(), index), chosenButtons.end());
+				itemsDrawing = true;
+			}
+		}
 	}
-}
 
-std::vector<std::string> Program::getContentOfFolder(std::string path) {
-	if (path == "") {
-		return disks;
+	std::vector<std::string> Program::getContentOfFolder(std::string path) {
+		if (path == "") {
+			return disks;
+		}
+		std::vector<std::string> ar;
+		ar.push_back("..");
+		for (auto &p : fs::directory_iterator(path)) {
+			std::string itemName = p.path().filename().string();
+			//itemName += p.path().extension().string();
+			ar.push_back(itemName);
+		}
+		return ar;
 	}
-	std::vector<std::string> ar;
-	ar.push_back("..");
-	for (auto &p : fs::directory_iterator(path)) {
-		std::string itemName = p.path().filename().string();
-		//itemName += p.path().extension().string();
-		ar.push_back(itemName);
-	}
-	return ar;
-}

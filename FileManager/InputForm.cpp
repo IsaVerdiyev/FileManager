@@ -28,7 +28,7 @@ void InputForm::takeInput(const INPUT_RECORD &event) {
 		}
 	}
 	else if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
-		changeState();
+		turnInputStateOff();
 	}
 	else {
 		CHAR_INFO c;
@@ -45,14 +45,24 @@ void InputForm::setDeactiveColor(Color c) {
 	deactiveColor = c;
 }
 
-void InputForm::changeState() {
+bool InputForm::turnInputStateOn() {
+	if (!gettingInput) {
+		gettingInput = true;
+		setColor(activeColor);
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+bool InputForm::turnInputStateOff() {
 	if (gettingInput) {
 		gettingInput = false;
 		setColor(deactiveColor);
+		return true;
 	}
 	else {
-		gettingInput = true;
-		setColor(activeColor);
+		return false;
 	}
 }
 

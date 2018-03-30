@@ -7,12 +7,14 @@
 #include <algorithm>
 #include <experimental\filesystem>
 #include "ErrorStrings.h";
+#include "InputForm.h"
 
 namespace fs = std::experimental::filesystem;
 
 class Program {
 	TextLine error;
 	TextLine info;
+	InputForm input;
 	enum menuPart {FILES, OPTIONS};
 	std::vector<std::string> disks;
 	std::vector<int> chosenButtons;
@@ -25,6 +27,7 @@ class Program {
 	Menu diskOptions;
 	std::string path;
 	INPUT_RECORD eventsBuffer[128];
+	Menu *pointerToOptionsMenu;
 	enum optionsEnum { OPEN, RENAME, CUT, COPY, PASTE, SIZE, CREATE_FILE, CREATE_FOLDER, DEL };
 	enum diskOptionsEnum { OPEN_DISK, SIZE_DISK };
 	bool itemsDrawing;
@@ -32,6 +35,7 @@ class Program {
 	bool errorDrawing;
 	bool mouseClicked;
 	bool infoDrawing;
+	bool isRenameProcess = false;
 public:
 	Program();
 	void setDisks();
