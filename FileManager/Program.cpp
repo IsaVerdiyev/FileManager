@@ -32,6 +32,8 @@ Program::Program() :
 	inputHandle = GetStdHandle(STD_INPUT_HANDLE);
 	SetConsoleMode(inputHandle, ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS);
 	items.drawMenu(outputHandle);
+	error.setColor(static_cast<Color>(Red << 4 | White));
+	error.setPosition({ 30, 20 });
 }
 
 

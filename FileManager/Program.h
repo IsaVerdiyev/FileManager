@@ -10,6 +10,7 @@
 namespace sf = std::experimental::filesystem;
 
 class Program {
+	TextLine error;
 	enum menuPart {FILES, OPTIONS};
 	std::vector<std::string> disks;
 	std::vector<int> chosenButtons;

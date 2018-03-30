@@ -139,4 +139,8 @@ void TextLine::removeFromConsoleScreen(HANDLE &hndl) {
 	}
 }
 
+bool TextLine::getIsOnScreenState() {
+	return isOnScreen;
+}
+
 

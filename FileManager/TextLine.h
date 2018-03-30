@@ -37,6 +37,7 @@ public:
 	//std::unique_ptr<COORD> getEndPosition();
 	COORD getEndPosition();
 	bool isMouseOnButton(const INPUT_RECORD &event);
+	bool getIsOnScreenState();
 };
 
 
