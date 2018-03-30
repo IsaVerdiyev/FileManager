@@ -7,7 +7,6 @@
 
 class HelperFunctions {
 public:
-	static bool is_dir(const char* path);
 	static std::vector<std::string> createArrayOfSubStrings(std::string str, char delimeter);
 };
 

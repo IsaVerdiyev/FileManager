@@ -5,6 +5,9 @@
 #include <io.h>;
 #include "HelperFunctions.h"
 #include <algorithm>
+#include <experimental\filesystem>
+
+namespace sf = std::experimental::filesystem;
 
 class Program {
 	enum menuPart {FILES, OPTIONS};
@@ -27,7 +30,7 @@ public:
 	void performCycleOfEvents();
 	void checkMouseEvent(INPUT_RECORD &event);
 	void checkKeyEvent(INPUT_RECORD &event);
-	void setNewPath(int index);
+	std::string getNewPath(int index);
 	void openFolder(int index);
 	std::vector<std::string> getNewItemStringsFromNewPath();
 	std::vector<std::string> getFiles(std::string path);

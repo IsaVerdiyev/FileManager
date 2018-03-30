@@ -2,19 +2,7 @@
 #include "HelperFunctions.h"
 
 
-bool HelperFunctions::is_dir(const char* path) {
-	struct stat s;
-	if (stat(path, &s) == 0)
-	{
-		if (s.st_mode & S_IFDIR)
-		{
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-}
+
 
 std::vector<std::string> HelperFunctions::createArrayOfSubStrings(std::string str, char delimeter) {
 	std::vector<std::string> stringArray;

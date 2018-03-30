@@ -92,29 +92,31 @@ void Program::checkKeyEvent(INPUT_RECORD &event) {
 }
 
 
-void Program::setNewPath(int index) {
+std::string Program::getNewPath(int index) {
+	std::string searchedPath = path;
 	std::string addedPath = items.getMenuItemStrings()[index];
 	if (addedPath == "..") {
-		size_t pos = path.find_last_of('/');
+		size_t pos = searchedPath.find_last_of('/');
 		if (pos == std::string::npos) {
-			path = "";
+			searchedPath = "";
 		}
 		else {
-			path.erase(pos);
+			searchedPath.erase(pos);
 		}
 	}
 	else {
-		if (path != "") {
-			path += "/" + addedPath;
+		if (searchedPath != "") {
+			searchedPath += "/" + addedPath;
 		}
 		else {
-			path += addedPath;
+			searchedPath += addedPath;
 		}
 	}
+	return searchedPath;
 }
 
 void Program::openFolder(int index) {
-	setNewPath(index);
+	path = getNewPath(index);
 	items.removeMenuFromScreen(outputHandle);
 	items.setMenuItems(getNewItemStringsFromNewPath());
 }
@@ -169,10 +171,13 @@ void Program::performFilesPartEvents(INPUT_RECORD &event) {
 						items.getButtons()[i].turnChosenStateOff();
 						chosenButtons.erase(std::remove(chosenButtons.begin(), chosenButtons.end(), i), chosenButtons.end());
 					}
-					else if (HelperFunctions::is_dir((path + "/" + items.getMenuItemStrings()[i]).c_str())) {
+					else {
+						std::string searchedPath = getNewPath(i);
+						if(sf::is_directory(searchedPath.c_str()) || searchedPath == "") {
 						openFolder(i);
 					}
 					itemsDrawing = true;
+				}
 				}
 			}
 			else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
@@ -234,7 +239,8 @@ void Program::performOptionsEvents(INPUT_RECORD &event) {
 			}
 			if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
 				if (i == OPEN) {
-					if (HelperFunctions::is_dir((path + "/" + items.getMenuItemStrings()[chosenButtons[chosenButtons.size() - 1]]).c_str())) {
+					std::string searchedPath = getNewPath(chosenButtons[chosenButtons.size() - 1]);
+					if (sf::is_directory(searchedPath) || searchedPath == "") {
 						pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
 						openFolder(chosenButtons[chosenButtons.size() - 1]);
 						activePart = FILES;
