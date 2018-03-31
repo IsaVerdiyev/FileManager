@@ -39,6 +39,7 @@ public:
 	bool getIsOnScreenState();
 	int getMinLength();
 	COORD getStartPosition();
+	std::string getTextString();
 };
 
 

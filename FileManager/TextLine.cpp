@@ -147,4 +147,12 @@ COORD TextLine::getStartPosition() {
 	return startPosition;
 }
 
+std::string TextLine::getTextString() {
+	std::string sentence;
+	for (CHAR_INFO &c : sentenceSymbols) {
+		sentence.push_back(c.Char.AsciiChar);
+	}
+	return sentence;
+}
+
 

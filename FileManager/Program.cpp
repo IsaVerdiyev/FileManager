@@ -98,6 +98,9 @@ Program::Program() :
 			if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0x5a) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
 				input.takeInput(event);
 			}
+			if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
+				isRenameProcess = false;
+			}
 		}
 	}
 
@@ -165,26 +168,28 @@ Program::Program() :
 		infoDrawing = false;
 		if (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) && !input.isMouseOnButton(event)) {
 			input.turnInputStateOff();
+			isRenameProcess = false;
 		}
 		if (!isRenameProcess) {
-			for (int i = 0; i < items.getButtons().size(); i++) {
-				if (items.getButtons()[i].isMouseOnButton(event)) {
-					if (items.getButtons()[i].turnHoverOn()) {
-						itemsDrawing = true;
+				for (int i = 0; i < items.getButtons().size(); i++) {
+					if (items.getButtons()[i].isMouseOnButton(event)) {
+						if (items.getButtons()[i].turnHoverOn()) {
+							itemsDrawing = true;
+						}
+						if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
+							mouseClicked = true;
+							handleFilesPartEventsWhenLeftMouseButtonPressed(items.getButtons()[i], event);
+						}
+						else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
+							mouseClicked = true;
+							handleEventsWhenRightMouseButtonPressedOfFilesPart(items.getButtons()[i], event);
+						}
 					}
-					if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
-						mouseClicked = true;
-						handleFilesPartEventsWhenLeftMouseButtonPressed(items.getButtons()[i], event);
-					}
-					else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
-						mouseClicked = true;
-						handleEventsWhenRightMouseButtonPressedOfFilesPart(items.getButtons()[i], event);
+					else {
+						handleEventsWhenMouseIsNotOnItems(items.getButtons()[i], event);
 					}
 				}
-				else {
-					handleEventsWhenMouseIsNotOnItems(items.getButtons()[i], event);
-				}
-			}
+			
 		}
 	}
 
@@ -252,19 +257,13 @@ Program::Program() :
 						}
 					}
 					else if (i == RENAME) {
-						try {
-							activePart = FILES;
-							optionsDrawing = false;
-							isRenameProcess = true;
-							input.setTextAndColor(items.getMenuItemStrings()[chosenButtons[chosenButtons.size() - 1]]);
-							input.setMinLength(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getMinLength());
-							input.setPosition(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getStartPosition());
-							input.turnInputStateOn();
-						}
-						catch (...) {
-							error.setTextAndColor("Error: Couldn't rename file");
-							errorDrawing = true;
-						}
+						activePart = FILES;
+						optionsDrawing = false;
+						isRenameProcess = true;
+						input.setTextAndColor(items.getMenuItemStrings()[chosenButtons[chosenButtons.size() - 1]]);
+						input.setMinLength(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getMinLength());
+						input.setPosition(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getStartPosition());
+						input.turnInputStateOn();
 					}
 				}
 				else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
@@ -351,6 +350,29 @@ Program::Program() :
 		}
 		if (isRenameProcess) {
 			input.appearOnConsoleScreen(outputHandle);
+		}
+		else {
+			if (input.getIsOnScreenState()) {
+				input.removeFromConsoleScreen(outputHandle);
+				try {
+					if (items.getMenuItemStrings()[chosenButtons[chosenButtons.size() - 1]] != "..") {
+						std::string searchedPath = getNewPath(chosenButtons[chosenButtons.size() - 1]);
+						fs::rename(searchedPath, path + "/" + input.getTextString());
+						items.removeMenuFromScreen(outputHandle);
+						items.setMenuItems(getContentOfFolder(path));
+						itemsDrawing = true;
+						drawItemsAccordingToStates();
+					}
+					else {
+						throw;
+					}
+				}
+				catch (...) {
+					error.setTextAndColor(cantRenameError);
+					errorDrawing = true;
+				}
+
+			}
 		}
 		/*
 		if (mouseClicked && !errorDrawing) {
