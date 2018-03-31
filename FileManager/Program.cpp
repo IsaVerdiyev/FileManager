@@ -256,6 +256,7 @@ Program::Program() :
 							isRenameProcess = true;
 							input.setTextAndColor(items.getMenuItemStrings()[chosenButtons[chosenButtons.size() - 1]]);
 							input.setMinLength(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getMinLength());
+							/*input.setPosition(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getS)*/
 							input.turnInputStateOn();
 						}
 						catch (...) {
@@ -326,12 +327,10 @@ Program::Program() :
 			pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
 			if (itemsDrawing) {
 				items.drawMenu(outputHandle);
-				//itemsDrawing = false;
 			}
 			if (optionsDrawing) {
 				pointerToOptionsMenu->drawMenu(outputHandle);
 				activePart = OPTIONS;
-				//optionsDrawing = false;
 			}
 			else {
 				pointerToOptionsMenu->removeMenuFromScreen(outputHandle);

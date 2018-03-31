@@ -38,6 +38,7 @@ public:
 	bool isMouseOnButton(const INPUT_RECORD &event);
 	bool getIsOnScreenState();
 	int getMinLength();
+	COORD getStartPosition();
 };
 
 

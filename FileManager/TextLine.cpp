@@ -143,4 +143,8 @@ int TextLine::getMinLength() {
 	return minLength;
 }
 
+COORD TextLine::getStartPosition() {
+	return startPosition;
+}
+
 
