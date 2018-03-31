@@ -94,8 +94,10 @@ Program::Program() :
 		else if (!event.Event.KeyEvent.bKeyDown) {
 			CtrlisPressed = false;
 		}
-		if (input.isGettingInput()) {
-			input.takeInput(event);
+		if (input.isGettingInput() && event.Event.KeyEvent.bKeyDown) {
+			if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0x5a) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
+				input.takeInput(event);
+			}
 		}
 	}
 
@@ -256,7 +258,7 @@ Program::Program() :
 							isRenameProcess = true;
 							input.setTextAndColor(items.getMenuItemStrings()[chosenButtons[chosenButtons.size() - 1]]);
 							input.setMinLength(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getMinLength());
-							/*input.setPosition(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getS)*/
+							input.setPosition(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getStartPosition());
 							input.turnInputStateOn();
 						}
 						catch (...) {
