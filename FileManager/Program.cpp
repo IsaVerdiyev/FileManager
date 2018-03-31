@@ -75,6 +75,7 @@ Program::Program() :
 				}
 			}
 			drawItemsAccordingToStates();
+			doRenameOperations();
 		}
 	}
 
@@ -348,32 +349,7 @@ Program::Program() :
 		if (infoDrawing || info.getIsOnScreenState()) {
 			info.appearOnConsoleScreen(outputHandle);
 		}
-		if (isRenameProcess) {
-			input.appearOnConsoleScreen(outputHandle);
-		}
-		else {
-			if (input.getIsOnScreenState()) {
-				input.removeFromConsoleScreen(outputHandle);
-				try {
-					if (items.getMenuItemStrings()[chosenButtons[chosenButtons.size() - 1]] != "..") {
-						std::string searchedPath = getNewPath(chosenButtons[chosenButtons.size() - 1]);
-						fs::rename(searchedPath, path + "/" + input.getTextString());
-						items.removeMenuFromScreen(outputHandle);
-						items.setMenuItems(getContentOfFolder(path));
-						itemsDrawing = true;
-						drawItemsAccordingToStates();
-					}
-					else {
-						throw;
-					}
-				}
-				catch (...) {
-					error.setTextAndColor(cantRenameError);
-					errorDrawing = true;
-				}
-
-			}
-		}
+		
 		/*
 		if (mouseClicked && !errorDrawing) {
 			error.removeFromConsoleScreen(outputHandle);
@@ -428,4 +404,33 @@ Program::Program() :
 			ar.push_back(itemName);
 		}
 		return ar;
+	}
+
+	void Program::doRenameOperations() {
+		if (isRenameProcess) {
+			input.appearOnConsoleScreen(outputHandle);
+		}
+		else {
+			if (input.getIsOnScreenState()) {
+				input.removeFromConsoleScreen(outputHandle);
+				try {
+					if (items.getMenuItemStrings()[chosenButtons[chosenButtons.size() - 1]] != "..") {
+						std::string searchedPath = getNewPath(chosenButtons[chosenButtons.size() - 1]);
+						fs::rename(searchedPath, path + "/" + input.getTextString());
+						items.removeMenuFromScreen(outputHandle);
+						items.setMenuItems(getContentOfFolder(path));
+						itemsDrawing = true;
+						drawItemsAccordingToStates();
+					}
+					else {
+						throw;
+					}
+				}
+				catch (...) {
+					error.setTextAndColor(cantRenameError);
+					errorDrawing = true;
+				}
+
+			}
+		}
 	}

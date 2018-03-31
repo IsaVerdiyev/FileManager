@@ -51,6 +51,7 @@ public:
 	void drawItemsAccordingToStates();
 	void handleEventsWhenMouseIsNotOnItems(ChoosableButton &button, INPUT_RECORD &event);
 	std::vector<std::string> getContentOfFolder(std::string path);
+	void doRenameOperations();
 
 };
 
