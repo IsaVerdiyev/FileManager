@@ -326,12 +326,12 @@ Program::Program() :
 			pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
 			if (itemsDrawing) {
 				items.drawMenu(outputHandle);
-				itemsDrawing = false;
+				//itemsDrawing = false;
 			}
 			if (optionsDrawing) {
 				pointerToOptionsMenu->drawMenu(outputHandle);
 				activePart = OPTIONS;
-				optionsDrawing = false;
+				//optionsDrawing = false;
 			}
 			else {
 				pointerToOptionsMenu->removeMenuFromScreen(outputHandle);

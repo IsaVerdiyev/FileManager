@@ -84,7 +84,7 @@ void TextLine::createEraseArray(HANDLE &hndl) {
 	eraseArray.clear();
 	eraseArray.resize(getEndPosition().X - startPosition.X);
 	SMALL_RECT readArea{ startPosition.X, startPosition.Y, getEndPosition().X - 1, getEndPosition().Y };
-	ReadConsoleOutput(hndl, &eraseArray[0], { static_cast<short>(sentenceSymbols.size()), 1 }, { 0, 0 }, &readArea);
+	ReadConsoleOutput(hndl, &eraseArray[0], { static_cast<short>(sentenceSymbols.size() > minLength ? sentenceSymbols.size() : minLength), 1 }, { 0, 0 }, &readArea);
 }
 
 void TextLine::putCharInfoArrayInConsoleBuffer(HANDLE &hndl, std::vector<CHAR_INFO> &symbolsArray, COORD pos) {
