@@ -96,7 +96,7 @@ Program::Program() :
 			CtrlisPressed = false;
 		}
 		if (input.isGettingInput() && event.Event.KeyEvent.bKeyDown) {
-			if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0x5a) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
+			if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0x5a) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE) {
 				input.takeInput(event);
 			}
 			if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
