@@ -6,7 +6,7 @@
 
 Program::Program() :
 	options(std::vector<std::string> {
-		"Open",
+	"Open",
 		"Rename",
 		"Cut",
 		"Copy",
@@ -16,9 +16,9 @@ Program::Program() :
 		"Create folder",
 		"Delete"}),
 	diskOptions(std::vector<std::string>{"Open", "Size"}),
-	path(""),
-	CtrlisPressed{ false },
-	activePart{ FILES }
+		path(""),
+		CtrlisPressed{ false },
+		activePart{ FILES }
 {
 	setDisks();
 	items.setMenuItems(disks);
@@ -172,25 +172,25 @@ Program::Program() :
 			isRenameProcess = false;
 		}
 		if (!isRenameProcess) {
-				for (int i = 0; i < items.getButtons().size(); i++) {
-					if (items.getButtons()[i].isMouseOnButton(event)) {
-						if (items.getButtons()[i].turnHoverOn()) {
-							itemsDrawing = true;
-						}
-						if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
-							mouseClicked = true;
-							handleFilesPartEventsWhenLeftMouseButtonPressed(items.getButtons()[i], event);
-						}
-						else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
-							mouseClicked = true;
-							handleEventsWhenRightMouseButtonPressedOfFilesPart(items.getButtons()[i], event);
-						}
+			for (int i = 0; i < items.getButtons().size(); i++) {
+				if (items.getButtons()[i].isMouseOnButton(event)) {
+					if (items.getButtons()[i].turnHoverOn()) {
+						itemsDrawing = true;
 					}
-					else {
-						handleEventsWhenMouseIsNotOnItems(items.getButtons()[i], event);
+					if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
+						mouseClicked = true;
+						handleFilesPartEventsWhenLeftMouseButtonPressed(items.getButtons()[i], event);
+					}
+					else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
+						mouseClicked = true;
+						handleEventsWhenRightMouseButtonPressedOfFilesPart(items.getButtons()[i], event);
 					}
 				}
-			
+				else {
+					handleEventsWhenMouseIsNotOnItems(items.getButtons()[i], event);
+				}
+			}
+
 		}
 	}
 
@@ -265,6 +265,19 @@ Program::Program() :
 						input.setMinLength(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getMinLength());
 						input.setPosition(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getStartPosition());
 						input.turnInputStateOn();
+					}
+				}
+				else if (i == CUT) {
+					bufferPathes();
+					deleteAfterMovingFile = true;
+				}
+				else if (i == COPY) {
+					deleteAfterMovingFile = false;
+					bufferPathes();
+				}
+				else if (i == PASTE) {
+					if (deleteAfterMovingFile) {
+
 					}
 				}
 				else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
@@ -349,7 +362,7 @@ Program::Program() :
 		if (infoDrawing || info.getIsOnScreenState()) {
 			info.appearOnConsoleScreen(outputHandle);
 		}
-		
+
 		/*
 		if (mouseClicked && !errorDrawing) {
 			error.removeFromConsoleScreen(outputHandle);
@@ -431,6 +444,15 @@ Program::Program() :
 					errorDrawing = true;
 				}
 
+			}
+		}
+	}
+
+	void Program::bufferPathes() {
+		savedPathes.clear();
+		for (int index : chosenButtons) {
+			if (index != 0) {
+				savedPathes.push_back(path + "/" + items.getMenuItemStrings()[index]);
 			}
 		}
 	}
