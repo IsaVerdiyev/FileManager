@@ -132,12 +132,13 @@ Program::Program() :
 
 	std::string Program::getNewPath(const std::string &name) {
 		std::string newPath;
-		if (path != "") {
-			newPath = path + "/" + name;
+		if (name == "..") {
+				newPath = path + "/" + name;
 		}
 		else {
-			newPath = path + name;
+			newPath = path + "/" + items.getMenuItemStrings()[chosenButtons[chosenButtons.size() - 1]] + "/" + name;
 		}
+		
 		return newPath;
 	}
 
