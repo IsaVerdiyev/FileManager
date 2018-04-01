@@ -37,7 +37,7 @@ class Program {
 	bool infoDrawing;
 	bool isRenameProcess = false;
 	bool deleteAfterMovingFile = false;
-	std::vector<std::string> savedPathes;
+	std::vector<std::string> savedPathesInCutAndCopy;
 public:
 	Program();
 	void setDisks();
@@ -54,7 +54,7 @@ public:
 	void handleEventsWhenMouseIsNotOnItems(ChoosableButton &button, INPUT_RECORD &event);
 	std::vector<std::string> getContentOfFolder(std::string path);
 	void doRenameOperations();
-	void bufferPathes();
+	void savePathes();
 };
 
 #endif // Prog

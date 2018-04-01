@@ -268,12 +268,12 @@ Program::Program() :
 					}
 				}
 				else if (i == CUT) {
-					bufferPathes();
+					savePathes();
 					deleteAfterMovingFile = true;
 				}
 				else if (i == COPY) {
 					deleteAfterMovingFile = false;
-					bufferPathes();
+					savePathes();
 				}
 				else if (i == PASTE) {
 					if (deleteAfterMovingFile) {
@@ -448,11 +448,11 @@ Program::Program() :
 		}
 	}
 
-	void Program::bufferPathes() {
-		savedPathes.clear();
+	void Program::savePathes() {
+		savedPathesInCutAndCopy.clear();
 		for (int index : chosenButtons) {
 			if (index != 0) {
-				savedPathes.push_back(path + "/" + items.getMenuItemStrings()[index]);
+				savedPathesInCutAndCopy.push_back(path + "/" + items.getMenuItemStrings()[index]);
 			}
 		}
 	}
