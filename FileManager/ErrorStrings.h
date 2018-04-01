@@ -8,5 +8,11 @@ extern const std::string isNotFolderError;
 
 extern const std::string cantRenameError;
 
+extern const std::string cantRemoveError;
+
+extern const std::string cantCopyError;
+
+extern const std::string cantDeleteError;
+
 
 #endif

@@ -76,6 +76,7 @@ Program::Program() :
 			}
 			drawItemsAccordingToStates();
 			doRenameOperations();
+			doPasteProcess();
 		}
 	}
 
@@ -129,10 +130,24 @@ Program::Program() :
 		return searchedPath;
 	}
 
+	std::string Program::getNewPath(const std::string &name) {
+		std::string newPath;
+		if (path != "") {
+			newPath = path + "/" + name;
+		}
+		else {
+			newPath = path + name;
+		}
+		return newPath;
+	}
+
+
+
 	void Program::openFolder(int index) {
 		path = getNewPath(index);
 		items.removeMenuFromScreen(outputHandle);
 		items.setMenuItems(getContentOfFolder(path));
+		chosenButtons.clear();
 	}
 
 
@@ -173,6 +188,7 @@ Program::Program() :
 		}
 		if (!isRenameProcess) {
 			for (int i = 0; i < items.getButtons().size(); i++) {
+				
 				if (items.getButtons()[i].isMouseOnButton(event)) {
 					if (items.getButtons()[i].turnHoverOn()) {
 						itemsDrawing = true;
@@ -266,18 +282,53 @@ Program::Program() :
 						input.setPosition(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getStartPosition());
 						input.turnInputStateOn();
 					}
-				}
-				else if (i == CUT) {
-					savePathes();
-					deleteAfterMovingFile = true;
-				}
-				else if (i == COPY) {
-					deleteAfterMovingFile = false;
-					savePathes();
-				}
-				else if (i == PASTE) {
-					if (deleteAfterMovingFile) {
-
+					else if (i == CUT) {
+						activePart = FILES;
+						optionsDrawing = false;
+						savePathes();
+						deleteAfterMovingFile = true;
+					}
+					else if (i == COPY) {
+						activePart = FILES;
+						optionsDrawing = false;
+						deleteAfterMovingFile = false;
+						savePathes();
+					}
+					else if (i == PASTE) {
+						activePart = FILES;
+						optionsDrawing = false;
+						if (deleteAfterMovingFile) {
+							error.setTextAndColor(cantRemoveError);
+							for (std::string &oldPath : savedPathesInCutAndCopy) {
+								try {
+									fs::rename(oldPath, getNewPath(getFileOrFolderName(oldPath)));
+								}
+								catch (...) {
+									error.setTextAndColor(error.getTextString() + " \"" + getFileOrFolderName(oldPath) + "\",");
+									errorDrawing = true;
+								}
+							}
+							savedPathesInCutAndCopy.clear();
+						}
+						else {
+							error.setTextAndColor(cantCopyError);
+							for (std::string &oldPath : savedPathesInCutAndCopy) {
+								for (std::string &oldPath : savedPathesInCutAndCopy) {
+									try {
+										fs::copy(oldPath, getNewPath(getFileOrFolderName(oldPath)), fs::copy_options::recursive);
+									}
+									catch (...) {
+										error.setTextAndColor(error.getTextString() + " \"" + getFileOrFolderName(oldPath) + "\",");
+										errorDrawing = true;
+									}
+								}
+							}
+						}
+						std::string errorString = error.getTextString();
+						errorString.erase(errorString.end() - 1);
+						error.setTextAndColor(errorString);
+						isPasteProcess = true;
+						chosenButtons.clear();
 					}
 				}
 				else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
@@ -430,10 +481,7 @@ Program::Program() :
 					if (items.getMenuItemStrings()[chosenButtons[chosenButtons.size() - 1]] != "..") {
 						std::string searchedPath = getNewPath(chosenButtons[chosenButtons.size() - 1]);
 						fs::rename(searchedPath, path + "/" + input.getTextString());
-						items.removeMenuFromScreen(outputHandle);
-						items.setMenuItems(getContentOfFolder(path));
-						itemsDrawing = true;
-						drawItemsAccordingToStates();
+						refreshItems();
 					}
 					else {
 						throw;
@@ -456,3 +504,24 @@ Program::Program() :
 			}
 		}
 	}
+
+	std::string Program::getFileOrFolderName(std::string &oldPath) {
+		size_t pos = oldPath.find_last_of('/');
+		std::string name = oldPath.substr(pos + 1);
+		return name;
+	}
+
+	void Program::refreshItems() {
+		items.removeMenuFromScreen(outputHandle);
+		items.setMenuItems(getContentOfFolder(path));
+		itemsDrawing = true;
+		drawItemsAccordingToStates();
+	}
+
+	void Program::doPasteProcess() {
+		if (isPasteProcess) {
+			refreshItems();
+			isPasteProcess = false;
+		}
+	}
+
