@@ -81,7 +81,10 @@ Program::Program() :
 	}
 
 	void Program::checkMouseEvent(INPUT_RECORD &event) {
-		if (activePart == FILES) {
+		if (event.Event.MouseEvent.dwEventFlags & MOUSE_WHEELED) {
+			scroll(event);
+		}
+		else if (activePart == FILES) {
 			performFilesPartEvents(event);
 		}
 		else if (activePart == OPTIONS) {
@@ -525,3 +528,18 @@ Program::Program() :
 		}
 	}
 
+	void Program::scroll(INPUT_RECORD &event) {
+		CONSOLE_SCREEN_BUFFER_INFO screenInfo;
+		SMALL_RECT win;
+		
+		if (!GetConsoleScreenBufferInfo(outputHandle, &screenInfo)) {
+			return;
+		}
+		win = screenInfo.srWindow;
+
+		int delta = static_cast<short> HIWORD(event.Event.MouseEvent.dwButtonState) / 100;
+		win.Top += delta;
+		win.Bottom += delta;
+
+		SetConsoleWindowInfo(outputHandle, TRUE, &win);
+	}

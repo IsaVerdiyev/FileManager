@@ -44,6 +44,7 @@ public:
 	void setDisks();
 	void performCycleOfEvents();
 	void checkMouseEvent(INPUT_RECORD &event);
+	void scroll(INPUT_RECORD &event);
 	void checkKeyEvent(INPUT_RECORD &event);
 	std::string getNewPath(int index);
 	std::string getNewPath(const std::string &name);
