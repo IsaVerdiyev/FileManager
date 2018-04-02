@@ -315,14 +315,12 @@ Program::Program() :
 						else {
 							error.setTextAndColor(cantCopyError);
 							for (std::string &oldPath : savedPathesInCutAndCopy) {
-								for (std::string &oldPath : savedPathesInCutAndCopy) {
-									try {
-										fs::copy(oldPath, getNewPath(getFileOrFolderName(oldPath)), fs::copy_options::recursive);
-									}
-									catch (...) {
-										error.setTextAndColor(error.getTextString() + " \"" + getFileOrFolderName(oldPath) + "\",");
-										errorDrawing = true;
-									}
+								try {
+									fs::copy(oldPath, getNewPath(getFileOrFolderName(oldPath)), fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+								}
+								catch (...) {
+									error.setTextAndColor(error.getTextString() + " \"" + getFileOrFolderName(oldPath) + "\",");
+									errorDrawing = true;
 								}
 							}
 						}
