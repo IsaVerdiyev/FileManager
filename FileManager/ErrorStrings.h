@@ -14,5 +14,11 @@ extern const std::string cantCopyError;
 
 extern const std::string cantDeleteError;
 
+extern const std::string cantCreateFolder;
+
+extern const std::string cantCreateFile;
+
+
+
 
 #endif

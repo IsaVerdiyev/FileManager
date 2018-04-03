@@ -2,7 +2,7 @@
 #pragma warning(disable : 4996);
 
 
-#include <iostream>//temp===============
+
 
 Program::Program() :
 	options(std::vector<std::string> {
@@ -77,6 +77,7 @@ Program::Program() :
 			drawItemsAccordingToStates();
 			doRenameOperations();
 			doPasteProcess();
+			doCreateProcess();
 		}
 	}
 
@@ -155,6 +156,11 @@ Program::Program() :
 		chosenButtons.clear();
 	}
 
+	void Program::openFolder(std::string path) {
+		items.removeMenuFromScreen(outputHandle);
+		items.setMenuItems(getContentOfFolder(path));
+		chosenButtons.clear();
+	}
 
 	//std::vector<std::string> Program::getFiles(std::string searchedPath) {
 		//	if (searchedPath == "/*") {
@@ -279,13 +285,7 @@ Program::Program() :
 						}
 					}
 					else if (i == RENAME) {
-						activePart = FILES;
-						optionsDrawing = false;
-						isRenameProcess = true;
-						input.setTextAndColor(items.getMenuItemStrings()[chosenButtons[chosenButtons.size() - 1]]);
-						input.setMinLength(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getMinLength());
-						input.setPosition(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getStartPosition());
-						input.turnInputStateOn();
+						startRenaming();
 					}
 					else if (i == CUT) {
 						activePart = FILES;
@@ -332,6 +332,49 @@ Program::Program() :
 						error.setTextAndColor(errorString);
 						isPasteProcess = true;
 						chosenButtons.clear();
+					}
+					else if (i == CREATE_FOLDER) {
+						activePart = FILES;
+						optionsDrawing = false;
+						itemsDrawing = true;
+						try {
+							fs::create_directory(path + "/NEW TEMP FOLDER");
+						}
+						catch (...) {
+							error.setTextAndColor(cantCreateFolder);
+							errorDrawing = true;
+						}
+						openFolder(path);
+					}
+					else if (i == CREATE_FILE) {
+						activePart = FILES;
+						optionsDrawing = false;
+						itemsDrawing = true;
+						std::ofstream newFile(path + "/NEW CREATED FILE");
+						if (newFile) {
+							newFile.close();
+						}
+						else {
+							error.setTextAndColor(cantCreateFile);
+							errorDrawing = true;
+						}
+						openFolder(path);
+					}
+					else if (i == DEL) {
+						//pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
+						activePart = FILES;
+						optionsDrawing = false;
+						itemsDrawing = true;
+						try {
+							if (chosenButtons[chosenButtons.size() - 1]) {
+								fs::remove_all(getNewPath(chosenButtons[chosenButtons.size() - 1]));
+							}
+						}
+						catch (...) {
+							error.setTextAndColor(cantDeleteError);
+							errorDrawing = true;
+						}
+						openFolder(path);
 					}
 				}
 				else if (event.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
@@ -542,4 +585,23 @@ Program::Program() :
 		win.Bottom -= delta;
 
 		SetConsoleWindowInfo(outputHandle, TRUE, &win);
+	}
+
+	void Program::startRenaming() {
+		activePart = FILES;
+		optionsDrawing = false;
+		isRenameProcess = true;
+		input.setTextAndColor(items.getMenuItemStrings()[chosenButtons[chosenButtons.size() - 1]]);
+		input.setMinLength(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getMinLength());
+		input.setPosition(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getStartPosition());
+		input.turnInputStateOn();
+	}
+
+	void Program::doCreateProcess() {
+		if (create) {
+			create = false;
+			items.setMenuItems(getContentOfFolder(path));
+			itemsDrawing = true;
+			drawItemsAccordingToStates();
+		}
 	}

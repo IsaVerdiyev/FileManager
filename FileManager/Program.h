@@ -8,6 +8,7 @@
 #include <experimental\filesystem>
 #include "ErrorStrings.h";
 #include "InputForm.h"
+#include <fstream>
 
 namespace fs = std::experimental::filesystem;
 
@@ -37,6 +38,7 @@ class Program {
 	bool infoDrawing;
 	bool isRenameProcess = false;
 	bool deleteAfterMovingFile = false;
+	bool create = false;
 	bool isPasteProcess = false;
 	std::vector<std::string> savedPathesInCutAndCopy;
 public:
@@ -49,8 +51,10 @@ public:
 	std::string getNewPath(int index);
 	std::string getNewPath(const std::string &name);
 	void openFolder(int index);
+	void openFolder(std::string path);
 	void performFilesPartEvents(INPUT_RECORD &event);
 	void performOptionsEvents(INPUT_RECORD &event);
+	void startRenaming();
 	void handleFilesPartEventsWhenLeftMouseButtonPressed(ChoosableButton &button, INPUT_RECORD &event);
 	void handleEventsWhenRightMouseButtonPressedOfFilesPart(ChoosableButton &button, INPUT_RECORD &event);
 	void drawItemsAccordingToStates();
@@ -61,6 +65,7 @@ public:
 	std::string getFileOrFolderName(std::string &oldPath);
 	void refreshItems();
 	void doPasteProcess();
+	void doCreateProcess();
 };
 
 #endif // Prog
