@@ -538,8 +538,8 @@ Program::Program() :
 		win = screenInfo.srWindow;
 
 		int delta = static_cast<short> HIWORD(event.Event.MouseEvent.dwButtonState) / 100;
-		win.Top += delta;
-		win.Bottom += delta;
+		win.Top -= delta;
+		win.Bottom -= delta;
 
 		SetConsoleWindowInfo(outputHandle, TRUE, &win);
 	}
