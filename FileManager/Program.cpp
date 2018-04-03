@@ -334,6 +334,7 @@ Program::Program() :
 						chosenButtons.clear();
 					}
 					else if (i == CREATE_FOLDER) {
+						pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
 						activePart = FILES;
 						optionsDrawing = false;
 						itemsDrawing = true;
@@ -347,6 +348,7 @@ Program::Program() :
 						openFolder(path);
 					}
 					else if (i == CREATE_FILE) {
+						pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
 						activePart = FILES;
 						optionsDrawing = false;
 						itemsDrawing = true;
@@ -361,7 +363,7 @@ Program::Program() :
 						openFolder(path);
 					}
 					else if (i == DEL) {
-						//pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
+						pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
 						activePart = FILES;
 						optionsDrawing = false;
 						itemsDrawing = true;
