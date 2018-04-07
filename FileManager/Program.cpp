@@ -76,8 +76,6 @@ Program::Program() :
 			}
 			drawItemsAccordingToStates();
 			doRenameOperations();
-			doPasteProcess();
-			doCreateProcess();
 		}
 	}
 
@@ -151,15 +149,16 @@ Program::Program() :
 
 	void Program::openFolder(int index) {
 		path = getNewPath(index);
-		items.removeMenuFromScreen(outputHandle);
-		items.setMenuItems(getContentOfFolder(path));
-		chosenButtons.clear();
+		openFolder(path);		
 	}
 
 	void Program::openFolder(std::string path) {
+		pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
 		items.removeMenuFromScreen(outputHandle);
 		items.setMenuItems(getContentOfFolder(path));
 		chosenButtons.clear();
+		itemsDrawing = true;
+		activePart = FILES;
 	}
 
 	//std::vector<std::string> Program::getFiles(std::string searchedPath) {
@@ -241,10 +240,9 @@ Program::Program() :
 					if (i == OPEN) {
 						std::string searchedPath = getNewPath(chosenButtons[chosenButtons.size() - 1]);
 						if (fs::is_directory(searchedPath) || searchedPath == "") {
-							pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
+							
 							openFolder(chosenButtons[chosenButtons.size() - 1]);
-							activePart = FILES;
-							itemsDrawing = true;
+							
 						}
 						else {
 							error.setTextAndColor(isNotFolderError);
@@ -327,15 +325,12 @@ Program::Program() :
 								}
 							}
 						}
+						openFolder(path);
 						std::string errorString = error.getTextString();
 						errorString.erase(errorString.end() - 1);
 						error.setTextAndColor(errorString);
-						isPasteProcess = true;
-						chosenButtons.clear();
 					}
 					else if (i == CREATE_FOLDER) {
-						pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
-						activePart = FILES;
 						optionsDrawing = false;
 						itemsDrawing = true;
 						try {
@@ -348,8 +343,6 @@ Program::Program() :
 						openFolder(path);
 					}
 					else if (i == CREATE_FILE) {
-						pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
-						activePart = FILES;
 						optionsDrawing = false;
 						itemsDrawing = true;
 						std::ofstream newFile(path + "/NEW CREATED FILE");
@@ -363,18 +356,18 @@ Program::Program() :
 						openFolder(path);
 					}
 					else if (i == DEL) {
-						pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
-						activePart = FILES;
 						optionsDrawing = false;
 						itemsDrawing = true;
-						try {
-							if (chosenButtons[chosenButtons.size() - 1]) {
-								fs::remove_all(getNewPath(chosenButtons[chosenButtons.size() - 1]));
+						for (int i = 0; i < chosenButtons.size(); i++) {
+							try {
+								if (chosenButtons[i]) {
+									fs::remove_all(getNewPath(chosenButtons[i]));
+								}
 							}
-						}
-						catch (...) {
-							error.setTextAndColor(cantDeleteError);
-							errorDrawing = true;
+							catch (...) {
+								error.setTextAndColor(cantDeleteError);
+								errorDrawing = true;
+							}
 						}
 						openFolder(path);
 					}
@@ -405,7 +398,7 @@ Program::Program() :
 				std::string searchedPath = getNewPath(index);
 				if (fs::is_directory(searchedPath.c_str()) || searchedPath == "") {
 					openFolder(index);
-					itemsDrawing = true;
+					
 				}
 				else {
 					error.setTextAndColor(isNotFolderError);
@@ -566,13 +559,6 @@ Program::Program() :
 		drawItemsAccordingToStates();
 	}
 
-	void Program::doPasteProcess() {
-		if (isPasteProcess) {
-			refreshItems();
-			isPasteProcess = false;
-		}
-	}
-
 	void Program::scroll(INPUT_RECORD &event) {
 		CONSOLE_SCREEN_BUFFER_INFO screenInfo;
 		SMALL_RECT win;
@@ -599,11 +585,3 @@ Program::Program() :
 		input.turnInputStateOn();
 	}
 
-	void Program::doCreateProcess() {
-		if (create) {
-			create = false;
-			items.setMenuItems(getContentOfFolder(path));
-			itemsDrawing = true;
-			drawItemsAccordingToStates();
-		}
-	}

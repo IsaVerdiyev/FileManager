@@ -38,8 +38,6 @@ class Program {
 	bool infoDrawing;
 	bool isRenameProcess = false;
 	bool deleteAfterMovingFile = false;
-	bool create = false;
-	bool isPasteProcess = false;
 	std::vector<std::string> savedPathesInCutAndCopy;
 public:
 	Program();
@@ -64,8 +62,6 @@ public:
 	void savePathes();
 	std::string getFileOrFolderName(std::string &oldPath);
 	void refreshItems();
-	void doPasteProcess();
-	void doCreateProcess();
 };
 
 #endif // Prog
