@@ -4,7 +4,7 @@
 #include "ChoosableButton.h"
 
 class Menu {
-	bool isActive = true;
+	
 	int lengthOfItems;
 	std::vector<std::string> menuItemStrings;
 	std::vector<ChoosableButton> menuItemButtons;

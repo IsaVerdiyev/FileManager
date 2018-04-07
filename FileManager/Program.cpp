@@ -22,7 +22,7 @@ Program::Program() :
 {
 	setDisks();
 	items.setMenuItems(disks);
-	items.setStartPosition({ 5, 5 });
+	items.setStartPosition({ 5, 8 });
 	options.setHoverColor(static_cast<Color>(Green << 4 | White));
 	options.setStandardColor(static_cast<Color>(Red << 4 | White));
 	diskOptions.setHoverColor(static_cast<Color>(Green << 4 | White));
@@ -36,6 +36,8 @@ Program::Program() :
 	info.setPosition({ 90, 15 });
 	info.setColor(defaultColor);
 	pointerToOptionsMenu = &diskOptions;
+	search.setStartPosition({ 5, 5 });
+	search.appearOnConsole(outputHandle);
 }
 
 
@@ -104,6 +106,17 @@ Program::Program() :
 			}
 			if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
 				isRenameProcess = false;
+			}
+		}
+
+		if (search.isGettingInput() && event.Event.KeyEvent.bKeyDown) {
+			if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE) {
+				search.takeInput(event);
+				search.appearOnConsole(outputHandle);
+			}
+			if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
+				search.turnInputStateOff();
+				search.appearOnConsole(outputHandle);
 			}
 		}
 	}
@@ -196,7 +209,17 @@ Program::Program() :
 			input.turnInputStateOff();
 			isRenameProcess = false;
 		}
-		if (!isRenameProcess) {
+		if (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) && !search.isMouseOnSearch(event)) {
+			if (search.turnInputStateOff()) {
+				search.appearOnConsole(outputHandle);
+			}
+		}
+		else if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED && search.isMouseOnSearch(event)) {
+			if (search.turnInputStateOn()) {
+				search.appearOnConsole(outputHandle);
+			}
+		}
+		if (!isRenameProcess && !search.isGettingInput()) {
 			for (int i = 0; i < items.getButtons().size(); i++) {
 				
 				if (items.getButtons()[i].isMouseOnButton(event)) {
@@ -424,6 +447,7 @@ Program::Program() :
 	}
 
 	void Program::drawItemsAccordingToStates() {
+		
 		if (mouseClicked) {
 			info.removeFromConsoleScreen(outputHandle);
 			if (!errorDrawing) {

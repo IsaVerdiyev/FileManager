@@ -9,6 +9,7 @@
 #include "ErrorStrings.h";
 #include "InputForm.h"
 #include <fstream>
+#include "SearchTable.h"
 
 namespace fs = std::experimental::filesystem;
 
@@ -25,6 +26,7 @@ class Program {
 	HANDLE inputHandle;
 	Menu options;
 	Menu items;
+	SearchTable search;
 	Menu diskOptions;
 	std::string path;
 	INPUT_RECORD eventsBuffer[128];
@@ -37,6 +39,7 @@ class Program {
 	bool mouseClicked;
 	bool infoDrawing;
 	bool isRenameProcess = false;
+	bool isSearchProcess = false;
 	bool deleteAfterMovingFile = false;
 	std::vector<std::string> savedPathesInCutAndCopy;
 public:
