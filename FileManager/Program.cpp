@@ -109,13 +109,13 @@ Program::Program() :
 			}
 		}
 
-		if (search.isGettingInput() && event.Event.KeyEvent.bKeyDown) {
+		if (search.getSearchInput().isGettingInput() && event.Event.KeyEvent.bKeyDown) {
 			if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE) {
-				search.takeInput(event);
+				search.getSearchInput().takeInput(event);
 				search.appearOnConsole(outputHandle);
 			}
 			if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
-				search.turnInputStateOff();
+				search.getSearchInput().turnInputStateOff();
 				search.appearOnConsole(outputHandle);
 			}
 		}
@@ -174,30 +174,7 @@ Program::Program() :
 		activePart = FILES;
 	}
 
-	//std::vector<std::string> Program::getFiles(std::string searchedPath) {
-		//	if (searchedPath == "/*") {
-		//		return disks;
-		//	}
-		//	std::vector<std::string> ar;
-		//
-		//	_finddata_t fileinfo;
-		//	intptr_t done;
-		//	done = _findfirst(searchedPath.c_str(), &fileinfo);
-		//	if (done == -1) {
-		//		_findclose(done);
-		//		return ar;
-		//	}
-		//	do {
-		//		if (!(fileinfo.attrib & _A_SYSTEM) && strcmp(".", fileinfo.name) && strcmp(fileinfo.name, "..") ) {
-		//			ar.push_back(std::string(fileinfo.name));
-		//		}
-		//	} while (_findnext(done, &fileinfo) == 0);
-		//	_findclose(done);
-		//	if (searchedPath != "") {
-		//		ar.insert(ar.begin(), "..");
-		//	}
-		//	return ar;
-		//}
+	
 
 	void Program::performFilesPartEvents(INPUT_RECORD &event) {
 		itemsDrawing = false;
@@ -209,17 +186,37 @@ Program::Program() :
 			input.turnInputStateOff();
 			isRenameProcess = false;
 		}
-		if (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) && !search.isMouseOnSearch(event)) {
-			if (search.turnInputStateOff()) {
+		if (search.getSearchHeader().isMouseOnButton(event) && !search.getSearchInput().isGettingInput()) {
+			if (search.getSearchHeader().turnHoverOn()) {
+				search.appearOnConsole(outputHandle);
+			}
+			if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
+				try {
+					search.search(path);
+					activePart = SEARCH;
+				}
+				catch (std::exception ex) {
+					error.setTextAndColor(ex.what());
+					errorDrawing = true;
+				}
+			}
+		}
+		else {
+			if (search.getSearchHeader().turnHoverOff() && !search.getSearchInput().isGettingInput()) {
 				search.appearOnConsole(outputHandle);
 			}
 		}
-		else if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED && search.isMouseOnSearch(event)) {
-			if (search.turnInputStateOn()) {
+		if (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) && !search.getSearchInput().isMouseOnButton(event)) {
+			if (search.getSearchInput().turnInputStateOff()) {
 				search.appearOnConsole(outputHandle);
 			}
 		}
-		if (!isRenameProcess && !search.isGettingInput()) {
+		else if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED && search.getSearchInput().isMouseOnButton(event)) {
+			if (search.getSearchInput().turnInputStateOn()) {
+				search.appearOnConsole(outputHandle);
+			}
+		}
+		if (!isRenameProcess && !search.getSearchInput().isGettingInput()) {
 			for (int i = 0; i < items.getButtons().size(); i++) {
 				
 				if (items.getButtons()[i].isMouseOnButton(event)) {
@@ -447,6 +444,11 @@ Program::Program() :
 	}
 
 	void Program::drawItemsAccordingToStates() {
+		if (activePart == SEARCH) {
+			pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
+			items.removeMenuFromScreen(outputHandle);
+			search.getSearchResults().drawMenu(outputHandle);
+		}
 		
 		if (mouseClicked) {
 			info.removeFromConsoleScreen(outputHandle);
@@ -529,7 +531,6 @@ Program::Program() :
 		ar.push_back("..");
 		for (auto &p : fs::directory_iterator(path)) {
 			std::string itemName = p.path().filename().string();
-			//itemName += p.path().extension().string();
 			ar.push_back(itemName);
 		}
 		return ar;

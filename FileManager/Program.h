@@ -17,7 +17,7 @@ class Program {
 	TextLine error;
 	TextLine info;
 	InputForm input;
-	enum menuPart {FILES, OPTIONS};
+	enum menuPart {FILES, OPTIONS, SEARCH};
 	std::vector<std::string> disks;
 	std::vector<int> chosenButtons;
 	bool CtrlisPressed;

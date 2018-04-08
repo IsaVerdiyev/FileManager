@@ -3,24 +3,29 @@
 #include "Menu.h"
 #include "InputForm.h"
 #include <string>
+#include <experimental\filesystem>
+#include "HelperFunctions.h"
+#include "ErrorStrings.h"
+
+namespace fs = std::experimental::filesystem;
 
 
 class SearchTable {
+	int minLength;
 	COORD startPosition;
-	TextLine searchHeader;
+	ChoosableButton searchHeader;
 	InputForm searchInput;
+	Menu searchResults;
 public:
 	SearchTable();
+	ChoosableButton &getSearchHeader();
+	InputForm &getSearchInput();
 	void setStartPosition(COORD start);
 	void setMinLength();
 	void appearOnConsole(HANDLE &hndl);
-	bool isMouseOnSearch(const INPUT_RECORD &event);
-	void takeInput(const INPUT_RECORD &event);
-	bool isGettingInput();
-	void setActiveColor(Color c);
-	void setDeactiveColor(Color c);
-	bool turnInputStateOn();
-	bool turnInputStateOff();
+	std::vector<std::string> getResultStringsThroughIterating(const std::string &path);
+	void search(const std::string &path);
+	Menu &getSearchResults();
 };
 
 

@@ -18,6 +18,8 @@ extern const std::string cantCreateFolder;
 
 extern const std::string cantCreateFile;
 
+extern const std::string noMaskInSearch;
+
 
 
 

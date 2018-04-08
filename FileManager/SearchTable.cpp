@@ -2,25 +2,29 @@
 
 SearchTable::SearchTable() {
 	
-	searchHeader.setTextAndColor("    Search     ", defaultColor);
+	searchHeader.setTextAndColor("    Search     ");
 	setStartPosition({ 0, 0 });
 	setMinLength();
 }
+
 
 void SearchTable::setStartPosition(COORD start) {
 	startPosition = start;
 	searchHeader.setPosition(start);
 	searchInput.setPosition({ start.X, start.Y + 1 });
+	searchResults.setStartPosition({ static_cast<short>(start.X + 30), static_cast<short>(start.Y + 5) });
 }
 
 void SearchTable::setMinLength() {
 	if (searchHeader.getTextString().size() > searchInput.getTextString().size()) {
-		searchHeader.setMinLength(searchHeader.getTextString().size());
-		searchInput.setMinLength(searchHeader.getTextString().size());
+		minLength = searchHeader.getTextString().size();
+		searchHeader.setMinLength(minLength);
+		searchInput.setMinLength(minLength);
 	}
 	else {
-		searchHeader.setMinLength(searchInput.getTextString().size());
-		searchInput.setMinLength(searchInput.getTextString().size());
+		minLength = searchInput.getTextString().size();
+		searchHeader.setMinLength(minLength);
+		searchInput.setMinLength(minLength);
 	}
 }
 
@@ -29,26 +33,39 @@ void SearchTable::appearOnConsole(HANDLE &hndl) {
 	searchInput.appearOnConsoleScreen(hndl);
 }
 
-bool SearchTable::isMouseOnSearch(const INPUT_RECORD &event) {
-	return searchInput.isMouseOnButton(event);
+
+
+ChoosableButton &SearchTable::getSearchHeader() {
+	return searchHeader;
 }
 
-void SearchTable::takeInput(const INPUT_RECORD &event) {
-	searchInput.takeInput(event);
-	setMinLength();
+InputForm &SearchTable::getSearchInput() {
+	return searchInput;
 }
-bool SearchTable::isGettingInput() {
-	return searchInput.isGettingInput();
+
+std::vector<std::string> SearchTable::getResultStringsThroughIterating(const std::string &path) {
+	if (searchInput.getTextString() == "") {
+		throw std::runtime_error(noMaskInSearch);
+	}
+	else {
+		std::vector<std::string> searchResults;
+		for (auto &p : fs::recursive_directory_iterator(path)) {
+			if (HelperFunctions::checkMask(p.path().string(), searchInput.getTextString())) {
+				searchResults.push_back(p.path().string());
+			}
+		}
+		searchResults.insert(searchResults.begin(), "..");
+		return searchResults;
+	}
 }
-void SearchTable::setActiveColor(Color c) {
-	searchInput.setActiveColor(c);
+
+
+
+void SearchTable::search(const std::string &path) {
+	std::vector<std::string> resultStrings = getResultStringsThroughIterating(path);
+	searchResults.setMenuItems(resultStrings);
 }
-void SearchTable::setDeactiveColor(Color c) {
-	searchInput.setDeactiveColor(c);
-}
-bool SearchTable::turnInputStateOn() {
-	return searchInput.turnInputStateOn();
-}
-bool SearchTable::turnInputStateOff() {
-	return searchInput.turnInputStateOff();
+
+Menu &SearchTable::getSearchResults() {
+	return searchResults;
 }

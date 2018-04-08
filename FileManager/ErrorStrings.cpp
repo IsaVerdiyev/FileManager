@@ -14,3 +14,5 @@ const std::string cantCreateFolder("Cannot create folder");
 
 const std::string cantCreateFile("Cannot create file");
 
+const std::string noMaskInSearch("Enter mask first");
+
