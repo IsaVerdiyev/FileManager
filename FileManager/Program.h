@@ -38,6 +38,7 @@ class Program {
 	bool errorDrawing;
 	bool mouseClicked;
 	bool infoDrawing;
+	bool searchDrawing;
 	bool isRenameProcess = false;
 	bool isSearchProcess = false;
 	bool deleteAfterMovingFile = false;
@@ -55,6 +56,7 @@ public:
 	void openFolder(std::string path);
 	void performFilesPartEvents(INPUT_RECORD &event);
 	void performOptionsEvents(INPUT_RECORD &event);
+	void performSearchTableEvents(INPUT_RECORD &event);
 	void startRenaming();
 	void handleFilesPartEventsWhenLeftMouseButtonPressed(ChoosableButton &button, INPUT_RECORD &event);
 	void handleEventsWhenRightMouseButtonPressedOfFilesPart(ChoosableButton &button, INPUT_RECORD &event);

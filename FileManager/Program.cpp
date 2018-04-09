@@ -91,6 +91,9 @@ Program::Program() :
 		else if (activePart == OPTIONS) {
 			performOptionsEvents(event);
 		}
+		else if (activePart == SEARCH) {
+			performSearchTableEvents(event);
+		}
 	}
 
 	void Program::checkKeyEvent(INPUT_RECORD &event) {
@@ -182,40 +185,7 @@ Program::Program() :
 		errorDrawing = false;
 		mouseClicked = false;
 		infoDrawing = false;
-		if (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) && !input.isMouseOnButton(event)) {
-			input.turnInputStateOff();
-			isRenameProcess = false;
-		}
-		if (searchPart.getSearchHeader().isMouseOnButton(event) && !searchPart.getSearchInput().isGettingInput()) {
-			if (searchPart.getSearchHeader().turnHoverOn()) {
-				searchPart.appearOnConsole(outputHandle);
-			}
-			if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
-				try {
-					searchPart.search(path);
-					activePart = SEARCH;
-				}
-				catch (std::exception ex) {
-					error.setTextAndColor(ex.what());
-					errorDrawing = true;
-				}
-			}
-		}
-		else {
-			if (searchPart.getSearchHeader().turnHoverOff() && !searchPart.getSearchInput().isGettingInput()) {
-				searchPart.appearOnConsole(outputHandle);
-			}
-		}
-		if (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) && !searchPart.getSearchInput().isMouseOnButton(event)) {
-			if (searchPart.getSearchInput().turnInputStateOff()) {
-				searchPart.appearOnConsole(outputHandle);
-			}
-		}
-		else if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED && searchPart.getSearchInput().isMouseOnButton(event)) {
-			if (searchPart.getSearchInput().turnInputStateOn()) {
-				searchPart.appearOnConsole(outputHandle);
-			}
-		}
+		performSearchTableEvents(event);
 		if (!isRenameProcess && !searchPart.getSearchInput().isGettingInput()) {
 			for (int i = 0; i < items.getButtons().size(); i++) {
 				
@@ -240,6 +210,41 @@ Program::Program() :
 		}
 	}
 
+	void Program::performSearchTableEvents(INPUT_RECORD &event) {
+		searchDrawing = false;
+		if (searchPart.getSearchHeader().isMouseOnButton(event) && !searchPart.getSearchInput().isGettingInput()) {
+			if (searchPart.getSearchHeader().turnHoverOn()) {
+				searchPart.appearOnConsole(outputHandle);
+			}
+			if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
+				try {
+					searchPart.getSearchResults().removeMenuFromScreen(outputHandle);
+					searchPart.search(path);
+					activePart = SEARCH;
+					searchDrawing = true;
+				}
+				catch (std::exception ex) {
+					error.setTextAndColor(ex.what());
+					errorDrawing = true;
+				}
+			}
+		}
+		else {
+			if (searchPart.getSearchHeader().turnHoverOff() && !searchPart.getSearchInput().isGettingInput()) {
+				searchPart.appearOnConsole(outputHandle);
+			}
+		}
+		if (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) && !searchPart.getSearchInput().isMouseOnButton(event)) {
+			if (searchPart.getSearchInput().turnInputStateOff()) {
+				searchPart.appearOnConsole(outputHandle);
+			}
+		}
+		else if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED && searchPart.getSearchInput().isMouseOnButton(event)) {
+			if (searchPart.getSearchInput().turnInputStateOn()) {
+				searchPart.appearOnConsole(outputHandle);
+			}
+		}
+	}
 	void Program::performOptionsEvents(INPUT_RECORD &event) {
 		activePart = FILES;
 		optionsDrawing = false;
@@ -444,19 +449,21 @@ Program::Program() :
 	}
 
 	void Program::drawItemsAccordingToStates() {
-		if (activePart == SEARCH) {
-			pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
-			items.removeMenuFromScreen(outputHandle);
-			searchPart.getSearchResults().drawMenu(outputHandle);
-		}
-		
 		if (mouseClicked) {
 			info.removeFromConsoleScreen(outputHandle);
 			if (!errorDrawing) {
 				error.removeFromConsoleScreen(outputHandle);
 			}
 		}
-		if (activePart == FILES) {
+		if (activePart == SEARCH) {
+			if (searchDrawing) {
+				pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
+				items.removeMenuFromScreen(outputHandle);
+				searchPart.getSearchResults().drawMenu(outputHandle);
+			}
+		}
+		
+		else if (activePart == FILES) {
 			pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
 			if (itemsDrawing) {
 				items.drawMenu(outputHandle);
@@ -468,34 +475,11 @@ Program::Program() :
 			else {
 				pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
 			}
-		}
-		if (activePart == OPTIONS) {
-			if (optionsDrawing) {
-				pointerToOptionsMenu->drawMenu(outputHandle);
-			}
-		}
-		if (errorDrawing || error.getIsOnScreenState()) {
-			error.appearOnConsoleScreen(outputHandle);
-		}
-		if (infoDrawing || info.getIsOnScreenState()) {
-			info.appearOnConsoleScreen(outputHandle);
-		}
-
-		/*
-		if (mouseClicked && !errorDrawing) {
-			error.removeFromConsoleScreen(outputHandle);
-		}
-		if (mouseClicked && !infoDrawing) {
-			info.removeFromConsoleScreen(outputHandle);
-		}
-		if (activePart != OPTIONS) {
-			pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
-			items.drawMenu(outputHandle);
-		}
-		else {
-			if (optionsDrawing) {
-				pointerToOptionsMenu->drawMenu(outputHandle);
-			}
+		}	
+		else if (activePart == OPTIONS) {
+				if (optionsDrawing) {
+					pointerToOptionsMenu->drawMenu(outputHandle);
+				}
 		}
 		if (errorDrawing || error.getIsOnScreenState()) {
 			error.appearOnConsoleScreen(outputHandle);
@@ -503,9 +487,6 @@ Program::Program() :
 		if (infoDrawing || info.getIsOnScreenState()) {
 			info.appearOnConsoleScreen(outputHandle);
 		}
-		if (isRenameProcess) {
-			input.appearOnConsoleScreen(outputHandle);
-		}*/
 	}
 
 
@@ -609,4 +590,5 @@ Program::Program() :
 		input.setPosition(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getStartPosition());
 		input.turnInputStateOn();
 	}
+
 
