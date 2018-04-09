@@ -92,7 +92,7 @@ Program::Program() :
 			performOptionsEvents(event);
 		}
 		else if (activePart == SEARCH) {
-			performSearchTableEvents(event);
+			performSearchResultsEvents(event);
 		}
 	}
 
@@ -245,6 +245,33 @@ Program::Program() :
 			}
 		}
 	}
+
+	void Program::performSearchResultsEvents(INPUT_RECORD &event) {
+		performSearchTableEvents(event);
+		for (int i = 0; i < searchPart.getSearchResults().getButtons().size(); i++) {
+			if (searchPart.getSearchResults().getButtons()[i].isMouseOnButton(event)) {
+				if (searchPart.getSearchResults().getButtons()[i].turnHoverOn()) {
+					searchDrawing = true;
+				}
+				if (FROM_LEFT_1ST_BUTTON_PRESSED & event.Event.MouseEvent.dwButtonState) {
+					if (i == 0) {
+						searchPart.getSearchResults().removeMenuFromScreen(outputHandle);
+						itemsDrawing = true;
+						activePart = FILES;
+					}
+					else {
+
+					}
+				}
+			}
+			else {
+				if (searchPart.getSearchResults().getButtons()[i].turnHoverOff()) {
+					searchDrawing = true;
+				}
+			}
+		}
+	}
+
 	void Program::performOptionsEvents(INPUT_RECORD &event) {
 		activePart = FILES;
 		optionsDrawing = false;

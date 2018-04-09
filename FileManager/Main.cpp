@@ -5,6 +5,7 @@
 
 
 int main() {
+	system("Color f1");
 	Program pr;
 	pr.performCycleOfEvents();
 }

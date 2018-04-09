@@ -57,6 +57,7 @@ public:
 	void performFilesPartEvents(INPUT_RECORD &event);
 	void performOptionsEvents(INPUT_RECORD &event);
 	void performSearchTableEvents(INPUT_RECORD &event);
+	void performSearchResultsEvents(INPUT_RECORD &event);
 	void startRenaming();
 	void handleFilesPartEventsWhenLeftMouseButtonPressed(ChoosableButton &button, INPUT_RECORD &event);
 	void handleEventsWhenRightMouseButtonPressedOfFilesPart(ChoosableButton &button, INPUT_RECORD &event);

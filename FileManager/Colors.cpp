@@ -10,5 +10,5 @@ extern const Color defaultChosenButtonColor = static_cast<Color>(Green << 4 | Wh
 extern const Color defaultHoverColor = static_cast<Color>(Brown << 4 | Black);
 extern const Color defaultHoverOnChosenColor = static_cast<Color>(Brown << 4 | Red);
 
-extern const Color defaultActiveColor = static_cast<Color>(Red << 4 | Blue);
+extern const Color defaultActiveColor = static_cast<Color>(Black << 4 | White);
 extern const Color defaultDeactiveColor = static_cast<Color>(DarkGray << 4 | White);
