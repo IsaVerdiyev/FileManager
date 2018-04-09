@@ -43,23 +43,35 @@ InputForm &SearchTable::getSearchInput() {
 	return searchInput;
 }
 
-std::vector<std::string> SearchTable::getResultStringsThroughIterating(const std::string &path) {
+std::vector<std::string> SearchTable::getResultStringsThroughIterating(const std::string &path, const std::vector<std::string> &disks) {
 	if (searchInput.getTextString() == "") {
 		throw std::runtime_error(noMaskInSearch);
 	}
-	std::string searchPath;
-	if (path == "C:" || path == "D:") {
-		searchPath = path + "/";
-	}
-	else {
-		searchPath = path;
-	}
+	std::vector<std::string> searchResults;
 	std::string mask = searchInput.getTextString();
 	mask.erase(mask.end() - 1);
-	std::vector<std::string> searchResults;
+	std::string searchPath = getOptimizedSearchPath(path);
+
+	if (searchPath == "") {
+		for (int i = 0; i < disks.size(); i++) {
+			std::vector<std::string> searchResultsFromOneDisk = getResultStringsThroughIterating(disks[i], disks);
+			for (int i = 0; i < searchResultsFromOneDisk.size(); i++) {
+				searchResults.push_back(searchResultsFromOneDisk[i]);
+			}
+		}
+		return searchResults;
+	}
+	else if (searchPath.find('\\') == std::string::npos) {
+		searchPath = searchPath + "\\";
+	}
 	for (auto &p : fs::recursive_directory_iterator(searchPath)) {
-		if (HelperFunctions::checkMask(p.path().string(), mask)) {
-			searchResults.push_back(p.path().string());
+		try {
+			if (HelperFunctions::checkMask(p.path().string(), mask)) {
+				searchResults.push_back(p.path().string());
+			}
+		}
+		catch (std::exception ex) {
+			continue;
 		}
 	}
 	searchResults.insert(searchResults.begin(), "..");
@@ -69,11 +81,30 @@ std::vector<std::string> SearchTable::getResultStringsThroughIterating(const std
 
 
 
-void SearchTable::search(const std::string &path) {
-	std::vector<std::string> resultStrings = getResultStringsThroughIterating(path);
+void SearchTable::search(const std::string &path, const std::vector<std::string> &disks) {
+	std::vector<std::string> resultStrings = getResultStringsThroughIterating(path, disks);
 	searchResults.setMenuItems(resultStrings);
 }
 
 Menu &SearchTable::getSearchResults() {
 	return searchResults;
+}
+
+std::string SearchTable::getOptimizedSearchPath(const std::string &path) {
+	if (searchInput.getTextString()[0] == '*') {
+		return path;
+	}
+	else {
+		std::vector<std::string> maskParts = HelperFunctions::split(searchInput.getTextString(), '*'); 
+		size_t pos = maskParts[0].find_last_of('\\');
+		if (pos == std::string::npos) {
+			return path;
+		}
+		else {
+			maskParts[0].erase(pos);
+			if (HelperFunctions::checkMask(maskParts[0], path + "*")) {
+				return maskParts[0];
+			}
+		}
+	}
 }

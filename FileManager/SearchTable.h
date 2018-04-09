@@ -23,9 +23,10 @@ public:
 	void setStartPosition(COORD start);
 	void setMinLength();
 	void appearOnConsole(HANDLE &hndl);
-	std::vector<std::string> getResultStringsThroughIterating(const std::string &path);
-	void search(const std::string &path);
+	std::vector<std::string> getResultStringsThroughIterating(const std::string &path, const std::vector<std::string> &disks);
+	void search(const std::string &path, const std::vector<std::string> &disks);
 	Menu &getSearchResults();
+	std::string getOptimizedSearchPath(const std::string &path);
 };
 
 

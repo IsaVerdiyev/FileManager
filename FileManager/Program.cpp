@@ -15,7 +15,7 @@ Program::Program() :
 		"Create file",
 		"Create folder",
 		"Delete"}),
-	diskOptions(std::vector<std::string>{"Open", "Size"}),
+	diskOptions(std::vector<std::string>{"Open"}),
 		path(""),
 		CtrlisPressed{ false },
 		activePart{ FILES }
@@ -52,7 +52,6 @@ Program::Program() :
 			char szDisk[80];
 			lstrcpy(szDisk, pointerToDrivesString);
 			disks.push_back(szDisk);
-			//disks[disks.size() - 1].erase(disks[disks.size() - 1].end() - 1);
 			disks[disks.size() - 1].erase(disks[disks.size() - 1].end() - 1);
 
 			while (*pointerToDrivesString) {
@@ -129,7 +128,7 @@ Program::Program() :
 		std::string searchedPath = path;
 		std::string addedPath = items.getMenuItemStrings()[index];
 		if (addedPath == "..") {
-			size_t pos = searchedPath.find_last_of('/');
+			size_t pos = searchedPath.find_last_of('\\');
 			if (pos == std::string::npos) {
 				searchedPath = "";
 			}
@@ -139,7 +138,7 @@ Program::Program() :
 		}
 		else {
 			if (searchedPath != "") {
-				searchedPath += "/" + addedPath;
+				searchedPath += "\\" + addedPath;
 			}
 			else {
 				searchedPath += addedPath;
@@ -219,7 +218,7 @@ Program::Program() :
 			if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
 				try {
 					searchPart.getSearchResults().removeMenuFromScreen(outputHandle);
-					searchPart.search(path);
+					searchPart.search(path, disks);
 					activePart = SEARCH;
 					searchDrawing = true;
 				}
