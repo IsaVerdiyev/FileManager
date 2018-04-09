@@ -12,7 +12,7 @@ void SearchTable::setStartPosition(COORD start) {
 	startPosition = start;
 	searchHeader.setPosition(start);
 	searchInput.setPosition({ start.X, start.Y + 1 });
-	searchResults.setStartPosition({ static_cast<short>(start.X + 30), static_cast<short>(start.Y + 5) });
+	searchResults.setStartPosition({ 0, static_cast<short>(start.Y + 5) });
 }
 
 void SearchTable::setMinLength() {
@@ -47,16 +47,24 @@ std::vector<std::string> SearchTable::getResultStringsThroughIterating(const std
 	if (searchInput.getTextString() == "") {
 		throw std::runtime_error(noMaskInSearch);
 	}
-	else {
-		std::vector<std::string> searchResults;
-		for (auto &p : fs::recursive_directory_iterator(path)) {
-			if (HelperFunctions::checkMask(p.path().string(), searchInput.getTextString())) {
-				searchResults.push_back(p.path().string());
-			}
-		}
-		searchResults.insert(searchResults.begin(), "..");
-		return searchResults;
+	std::string searchPath;
+	if (path == "C:" || path == "D:") {
+		searchPath = path + "/";
 	}
+	else {
+		searchPath = path;
+	}
+	std::string mask = searchInput.getTextString();
+	mask.erase(mask.end() - 1);
+	std::vector<std::string> searchResults;
+	for (auto &p : fs::recursive_directory_iterator(searchPath)) {
+		if (HelperFunctions::checkMask(p.path().string(), mask)) {
+			searchResults.push_back(p.path().string());
+		}
+	}
+	searchResults.insert(searchResults.begin(), "..");
+	return searchResults;
+	
 }
 
 

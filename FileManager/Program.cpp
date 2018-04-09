@@ -36,8 +36,8 @@ Program::Program() :
 	info.setPosition({ 90, 15 });
 	info.setColor(defaultColor);
 	pointerToOptionsMenu = &diskOptions;
-	search.setStartPosition({ 5, 5 });
-	search.appearOnConsole(outputHandle);
+	searchPart.setStartPosition({ 5, 5 });
+	searchPart.appearOnConsole(outputHandle);
 }
 
 
@@ -109,14 +109,14 @@ Program::Program() :
 			}
 		}
 
-		if (search.getSearchInput().isGettingInput() && event.Event.KeyEvent.bKeyDown) {
+		if (searchPart.getSearchInput().isGettingInput() && event.Event.KeyEvent.bKeyDown) {
 			if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE) {
-				search.getSearchInput().takeInput(event);
-				search.appearOnConsole(outputHandle);
+				searchPart.getSearchInput().takeInput(event);
+				searchPart.appearOnConsole(outputHandle);
 			}
 			if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
-				search.getSearchInput().turnInputStateOff();
-				search.appearOnConsole(outputHandle);
+				searchPart.getSearchInput().turnInputStateOff();
+				searchPart.appearOnConsole(outputHandle);
 			}
 		}
 	}
@@ -186,13 +186,13 @@ Program::Program() :
 			input.turnInputStateOff();
 			isRenameProcess = false;
 		}
-		if (search.getSearchHeader().isMouseOnButton(event) && !search.getSearchInput().isGettingInput()) {
-			if (search.getSearchHeader().turnHoverOn()) {
-				search.appearOnConsole(outputHandle);
+		if (searchPart.getSearchHeader().isMouseOnButton(event) && !searchPart.getSearchInput().isGettingInput()) {
+			if (searchPart.getSearchHeader().turnHoverOn()) {
+				searchPart.appearOnConsole(outputHandle);
 			}
 			if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
 				try {
-					search.search(path);
+					searchPart.search(path);
 					activePart = SEARCH;
 				}
 				catch (std::exception ex) {
@@ -202,21 +202,21 @@ Program::Program() :
 			}
 		}
 		else {
-			if (search.getSearchHeader().turnHoverOff() && !search.getSearchInput().isGettingInput()) {
-				search.appearOnConsole(outputHandle);
+			if (searchPart.getSearchHeader().turnHoverOff() && !searchPart.getSearchInput().isGettingInput()) {
+				searchPart.appearOnConsole(outputHandle);
 			}
 		}
-		if (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) && !search.getSearchInput().isMouseOnButton(event)) {
-			if (search.getSearchInput().turnInputStateOff()) {
-				search.appearOnConsole(outputHandle);
+		if (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) && !searchPart.getSearchInput().isMouseOnButton(event)) {
+			if (searchPart.getSearchInput().turnInputStateOff()) {
+				searchPart.appearOnConsole(outputHandle);
 			}
 		}
-		else if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED && search.getSearchInput().isMouseOnButton(event)) {
-			if (search.getSearchInput().turnInputStateOn()) {
-				search.appearOnConsole(outputHandle);
+		else if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED && searchPart.getSearchInput().isMouseOnButton(event)) {
+			if (searchPart.getSearchInput().turnInputStateOn()) {
+				searchPart.appearOnConsole(outputHandle);
 			}
 		}
-		if (!isRenameProcess && !search.getSearchInput().isGettingInput()) {
+		if (!isRenameProcess && !searchPart.getSearchInput().isGettingInput()) {
 			for (int i = 0; i < items.getButtons().size(); i++) {
 				
 				if (items.getButtons()[i].isMouseOnButton(event)) {
@@ -447,7 +447,7 @@ Program::Program() :
 		if (activePart == SEARCH) {
 			pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
 			items.removeMenuFromScreen(outputHandle);
-			search.getSearchResults().drawMenu(outputHandle);
+			searchPart.getSearchResults().drawMenu(outputHandle);
 		}
 		
 		if (mouseClicked) {

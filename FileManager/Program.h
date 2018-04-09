@@ -26,7 +26,7 @@ class Program {
 	HANDLE inputHandle;
 	Menu options;
 	Menu items;
-	SearchTable search;
+	SearchTable searchPart;
 	Menu diskOptions;
 	std::string path;
 	INPUT_RECORD eventsBuffer[128];
