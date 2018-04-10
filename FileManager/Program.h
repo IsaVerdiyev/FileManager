@@ -52,6 +52,7 @@ public:
 	void checkKeyEvent(INPUT_RECORD &event);
 	std::string getNewPath(int index);
 	std::string getNewPath(const std::string &name);
+	void startFolderOpeningProcess(const std::string &newPath);
 	void openFolder(int index);
 	void openFolder(std::string path);
 	void performFilesPartEvents(INPUT_RECORD &event);

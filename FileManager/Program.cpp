@@ -138,7 +138,7 @@ Program::Program() :
 		}
 		else {
 			if (searchedPath != "") {
-				searchedPath += "\\" + addedPath;
+				searchedPath = searchedPath + "\\" + addedPath;
 			}
 			else {
 				searchedPath += addedPath;
@@ -160,7 +160,17 @@ Program::Program() :
 		return newPath;
 	}
 
+	void Program::startFolderOpeningProcess(const std::string &searchedPath) {
+		if (fs::is_directory(searchedPath) || searchedPath == "") {
+			path = searchedPath;
+			openFolder(path);
 
+		}
+		else {
+			error.setTextAndColor(isNotFolderError);
+			errorDrawing = true;
+		}
+	}
 
 	void Program::openFolder(int index) {
 		path = getNewPath(index);
@@ -210,6 +220,11 @@ Program::Program() :
 	}
 
 	void Program::performSearchTableEvents(INPUT_RECORD &event) {
+		if ((FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) & event.Event.MouseEvent.dwButtonState) {
+			mouseClicked = true;
+			errorDrawing = false;
+			infoDrawing = false;
+		}
 		searchDrawing = false;
 		if (searchPart.getSearchHeader().isMouseOnButton(event) && !searchPart.getSearchInput().isGettingInput()) {
 			if (searchPart.getSearchHeader().turnHoverOn()) {
@@ -247,6 +262,7 @@ Program::Program() :
 
 	void Program::performSearchResultsEvents(INPUT_RECORD &event) {
 		performSearchTableEvents(event);
+		
 		for (int i = 0; i < searchPart.getSearchResults().getButtons().size(); i++) {
 			if (searchPart.getSearchResults().getButtons()[i].isMouseOnButton(event)) {
 				if (searchPart.getSearchResults().getButtons()[i].turnHoverOn()) {
@@ -259,7 +275,10 @@ Program::Program() :
 						activePart = FILES;
 					}
 					else {
-
+						startFolderOpeningProcess(searchPart.getSearchResults().getButtons()[i].getTextString());
+						if (!errorDrawing) {
+							searchPart.getSearchResults().removeMenuFromScreen(outputHandle);
+						}
 					}
 				}
 			}
@@ -290,15 +309,7 @@ Program::Program() :
 					mouseClicked = true;
 					if (i == OPEN) {
 						std::string searchedPath = getNewPath(chosenButtons[chosenButtons.size() - 1]);
-						if (fs::is_directory(searchedPath) || searchedPath == "") {
-							
-							openFolder(chosenButtons[chosenButtons.size() - 1]);
-							
-						}
-						else {
-							error.setTextAndColor(isNotFolderError);
-							errorDrawing = true;
-						}
+						startFolderOpeningProcess(searchedPath);
 					}
 					else if (i == SIZE) {
 						std::string searchedPath = getNewPath(chosenButtons[chosenButtons.size() - 1]);
@@ -447,14 +458,7 @@ Program::Program() :
 			}
 			else {
 				std::string searchedPath = getNewPath(index);
-				if (fs::is_directory(searchedPath.c_str()) || searchedPath == "") {
-					openFolder(index);
-					
-				}
-				else {
-					error.setTextAndColor(isNotFolderError);
-					errorDrawing = true;
-				}
+				startFolderOpeningProcess(searchedPath);
 			}
 		}
 	}
