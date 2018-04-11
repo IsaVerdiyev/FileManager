@@ -16,13 +16,13 @@ void SearchTable::setStartPosition(COORD start) {
 }
 
 void SearchTable::setMinLength() {
-	if (searchHeader.getTextString().size() > searchInput.getTextString().size()) {
-		minLength = searchHeader.getTextString().size();
+	if (searchHeader.getText().size() > searchInput.getText().size()) {
+		minLength = searchHeader.getText().size();
 		searchHeader.setMinLength(minLength);
 		searchInput.setMinLength(minLength);
 	}
 	else {
-		minLength = searchInput.getTextString().size();
+		minLength = searchInput.getText().size();
 		searchHeader.setMinLength(minLength);
 		searchInput.setMinLength(minLength);
 	}
@@ -49,7 +49,6 @@ std::vector<std::string> SearchTable::getResultStringsThroughIterating(const std
 	}
 	std::vector<std::string> searchResults;
 	std::string mask = searchInput.getTextString();
-	mask.erase(mask.end() - 1);
 	std::string searchPath = getOptimizedSearchPath(path);
 
 	if (searchPath == "") {

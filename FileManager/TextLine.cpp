@@ -149,8 +149,8 @@ COORD TextLine::getStartPosition() {
 
 std::string TextLine::getTextString() {
 	std::string sentence;
-	for (CHAR_INFO &c : sentenceSymbols) {
-		sentence.push_back(c.Char.AsciiChar);
+	for (int i = 0; i < sentenceSymbols.size() - 1; i++) {
+		sentence.push_back(sentenceSymbols[i].Char.AsciiChar);
 	}
 	return sentence;
 }
