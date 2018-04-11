@@ -30,6 +30,10 @@ Program::Program() :
 	outputHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	inputHandle = GetStdHandle(STD_INPUT_HANDLE);
 	SetConsoleMode(inputHandle, ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS);
+	CONSOLE_SCREEN_BUFFER_INFO scrInfo;
+	GetConsoleScreenBufferInfo(outputHandle, &scrInfo);
+	scrInfo.dwSize.X = 2500;
+	SetConsoleScreenBufferSize(outputHandle, scrInfo.dwSize);
 	items.drawMenu(outputHandle);
 	error.setColor(static_cast<Color>(Red << 4 | White));
 	error.setPosition({ 90, 28 });
@@ -82,7 +86,10 @@ Program::Program() :
 
 	void Program::checkMouseEvent(INPUT_RECORD &event) {
 		if (event.Event.MouseEvent.dwEventFlags & MOUSE_WHEELED) {
-			scroll(event);
+			scrollVertically(event);
+		}
+		else if (event.Event.MouseEvent.dwEventFlags & MOUSE_HWHEELED) {
+			scrollHorizontally(event);
 		}
 		else if (activePart == FILES) {
 			performFilesPartEvents(event);
@@ -595,7 +602,7 @@ Program::Program() :
 		drawItemsAccordingToStates();
 	}
 
-	void Program::scroll(INPUT_RECORD &event) {
+	void Program::scrollVertically(INPUT_RECORD &event) {
 		CONSOLE_SCREEN_BUFFER_INFO screenInfo;
 		SMALL_RECT win;
 		
@@ -607,6 +614,22 @@ Program::Program() :
 		int delta = static_cast<short> HIWORD(event.Event.MouseEvent.dwButtonState) / 100;
 		win.Top -= delta;
 		win.Bottom -= delta;
+
+		SetConsoleWindowInfo(outputHandle, TRUE, &win);
+	}
+
+	void Program::scrollHorizontally(INPUT_RECORD &event) {
+		CONSOLE_SCREEN_BUFFER_INFO screenInfo;
+		SMALL_RECT win;
+
+		if (!GetConsoleScreenBufferInfo(outputHandle, &screenInfo)) {
+			return;
+		}
+		win = screenInfo.srWindow;
+
+		int delta = static_cast<short> HIWORD(event.Event.MouseEvent.dwButtonState) / 100;
+		win.Left += delta;
+		win.Right += delta;
 
 		SetConsoleWindowInfo(outputHandle, TRUE, &win);
 	}
