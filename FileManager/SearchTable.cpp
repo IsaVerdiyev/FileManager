@@ -104,6 +104,9 @@ std::string SearchTable::getOptimizedSearchPath(const std::string &path) {
 			if (HelperFunctions::checkMask(maskParts[0], path + "*")) {
 				return maskParts[0];
 			}
+			else {
+				return path;
+			}
 		}
 	}
 }
