@@ -74,7 +74,7 @@ bool InputForm::turnInputStateOn(const INPUT_RECORD &event) {
 bool InputForm::turnInputStateOn() {
 	if (!gettingInput) {
 		gettingInput = true;
-		setInputIndex(stringSize);
+		setInputIndex(stringSize - 1);
 		return true;
 	}
 	else {

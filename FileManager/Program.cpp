@@ -80,7 +80,6 @@ Program::Program() :
 				}
 			}
 			drawItemsAccordingToStates();
-			doRenameOperations();
 		}
 	}
 
@@ -103,21 +102,25 @@ Program::Program() :
 	}
 
 	void Program::checkKeyEvent(INPUT_RECORD &event) {
-			if (event.Event.KeyEvent.wVirtualKeyCode == VK_CONTROL && event.Event.KeyEvent.bKeyDown) {
-				CtrlisPressed = true;
-			}
-			else if (!event.Event.KeyEvent.bKeyDown) {
-				CtrlisPressed = false;
-			}
+		if (event.Event.KeyEvent.wVirtualKeyCode == VK_CONTROL && event.Event.KeyEvent.bKeyDown) {
+			CtrlisPressed = true;
+		}
+		else if (!event.Event.KeyEvent.bKeyDown) {
+			CtrlisPressed = false;
+		}
+		if (activePart == FILES) {
 			if (input.isGettingInput() && event.Event.KeyEvent.bKeyDown) {
 				if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE) {
 					input.takeInput(event);
 				}
 				if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
+					input.turnInputStateOff();
 					isRenameProcess = false;
+					doRenameOperations();
 				}
 			}
-		if (activePart == SEARCH) {
+		}
+		else if (activePart == SEARCH) {
 			if (searchPart.getSearchInput().isGettingInput() && event.Event.KeyEvent.bKeyDown) {
 				if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE) {
 					searchPart.getSearchInput().takeInput(event);
@@ -203,6 +206,9 @@ Program::Program() :
 		errorDrawing = false;
 		mouseClicked = false;
 		infoDrawing = false;
+		if (isRenameProcess) {
+			performMouseEventsDuringRenameProcess(event);
+		}
 		performSearchTableEvents(event);
 		if (!isRenameProcess && !searchPart.getSearchInput().isGettingInput()) {
 			for (int i = 0; i < items.getButtons().size(); i++) {
@@ -225,6 +231,17 @@ Program::Program() :
 				}
 			}
 
+		}
+	}
+
+	void Program::performMouseEventsDuringRenameProcess(const INPUT_RECORD &event) {
+		if (FROM_LEFT_1ST_BUTTON_PRESSED & event.Event.MouseEvent.dwButtonState && input.isMouseOnButton(event)) {
+			input.turnInputStateOn(event);
+		}
+		else if ((FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) & event.Event.MouseEvent.dwButtonState && !input.isMouseOnButton(event)) {
+			input.turnInputStateOff();
+			isRenameProcess = false;
+			doRenameOperations();
 		}
 	}
 
@@ -645,6 +662,7 @@ Program::Program() :
 		input.setMinLength(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getMinLength());
 		input.setPosition(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getStartPosition());
 		input.turnInputStateOn();
+		doRenameOperations();
 	}
 
 

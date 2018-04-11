@@ -58,6 +58,7 @@ public:
 	void openFolder(std::string path);
 	void performFilesPartEvents(INPUT_RECORD &event);
 	void performOptionsEvents(INPUT_RECORD &event);
+	void performMouseEventsDuringRenameProcess(const INPUT_RECORD &event);
 	void performSearchTableEvents(INPUT_RECORD &event);
 	void performSearchResultsEvents(INPUT_RECORD &event);
 	void startRenaming();
