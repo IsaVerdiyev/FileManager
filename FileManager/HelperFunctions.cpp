@@ -53,3 +53,23 @@ bool HelperFunctions::checkMask(const std::string path, const std::string mask) 
 	}
 	return true;
 }
+
+std::vector<std::string> HelperFunctions::getTextFromFile(std::ifstream &file) {
+	std::vector<std::string> linesOfText;
+	while (!file.eof()) {
+		std::string newLine;
+		getline(file, newLine);
+		linesOfText.push_back(newLine);
+	}
+	return linesOfText;
+}
+
+
+void HelperFunctions::setTextInNewFile(std::ofstream &file, std::vector<std::string> &Text) {
+	for (int i = 0; i < Text.size(); i++) {
+		file << Text[i];
+		if (i != Text.size() - 1) {
+			file << "\n";
+		}
+	}
+}
