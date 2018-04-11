@@ -62,7 +62,6 @@ void InputForm::setInputIndexColor(Color c) {
 bool InputForm::turnInputStateOn(const INPUT_RECORD &event) {
 	if (!gettingInput) {
 		gettingInput = true;
-		setColor(activeColor);
 		setInputIndex(event);
 		return true;
 	}
@@ -75,7 +74,6 @@ bool InputForm::turnInputStateOn(const INPUT_RECORD &event) {
 bool InputForm::turnInputStateOn() {
 	if (!gettingInput) {
 		gettingInput = true;
-		setColor(activeColor);
 		setInputIndex(stringSize);
 		return true;
 	}
@@ -102,7 +100,7 @@ void InputForm::appearOnConsoleScreen(HANDLE &hndl) {
 		sentenceSymbols[inputIndexInLine].Attributes = inputIndexColor;
 	}
 	else {
-		setColor(deactiveColor);
+		//setColor(deactiveColor);
 	}
 	TextLine::appearOnConsoleScreen(hndl);
 }
