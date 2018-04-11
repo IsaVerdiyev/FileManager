@@ -32,6 +32,7 @@ extern const Color defaultHoverOnChosenColor;
 
 extern const Color defaultActiveColor;
 extern const Color defaultDeactiveColor;
+extern const Color defaultInputIndexColor;
 
 
 #endif // Col

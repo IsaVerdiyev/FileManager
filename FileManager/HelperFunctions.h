@@ -4,7 +4,6 @@
 #include <sys/stat.h>
 #include <string>
 #include <vector>
-#include <iostream>
 #include <fstream>
 
 class HelperFunctions {

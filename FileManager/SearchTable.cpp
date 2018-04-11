@@ -16,13 +16,13 @@ void SearchTable::setStartPosition(COORD start) {
 }
 
 void SearchTable::setMinLength() {
-	if (searchHeader.getText().size() > searchInput.getText().size()) {
-		minLength = searchHeader.getText().size();
+	if (searchHeader.getSentenceSymbols().size() > searchInput.getSentenceSymbols().size()) {
+		minLength = searchHeader.getSentenceSymbols().size();
 		searchHeader.setMinLength(minLength);
 		searchInput.setMinLength(minLength);
 	}
 	else {
-		minLength = searchInput.getText().size();
+		minLength = searchInput.getSentenceSymbols().size();
 		searchHeader.setMinLength(minLength);
 		searchInput.setMinLength(minLength);
 	}

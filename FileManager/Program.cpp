@@ -103,29 +103,31 @@ Program::Program() :
 	}
 
 	void Program::checkKeyEvent(INPUT_RECORD &event) {
-		if (event.Event.KeyEvent.wVirtualKeyCode == VK_CONTROL && event.Event.KeyEvent.bKeyDown) {
-			CtrlisPressed = true;
-		}
-		else if (!event.Event.KeyEvent.bKeyDown) {
-			CtrlisPressed = false;
-		}
-		if (input.isGettingInput() && event.Event.KeyEvent.bKeyDown) {
-			if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE) {
-				input.takeInput(event);
+			if (event.Event.KeyEvent.wVirtualKeyCode == VK_CONTROL && event.Event.KeyEvent.bKeyDown) {
+				CtrlisPressed = true;
 			}
-			if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
-				isRenameProcess = false;
+			else if (!event.Event.KeyEvent.bKeyDown) {
+				CtrlisPressed = false;
 			}
-		}
-
-		if (searchPart.getSearchInput().isGettingInput() && event.Event.KeyEvent.bKeyDown) {
-			if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE) {
-				searchPart.getSearchInput().takeInput(event);
-				searchPart.appearOnConsole(outputHandle);
+			if (input.isGettingInput() && event.Event.KeyEvent.bKeyDown) {
+				if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE) {
+					input.takeInput(event);
+				}
+				if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
+					isRenameProcess = false;
+				}
 			}
-			if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
-				searchPart.getSearchInput().turnInputStateOff();
-				searchPart.appearOnConsole(outputHandle);
+		if (activePart == SEARCH) {
+			if (searchPart.getSearchInput().isGettingInput() && event.Event.KeyEvent.bKeyDown) {
+				if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE) {
+					searchPart.getSearchInput().takeInput(event);
+					searchPart.appearOnConsole(outputHandle);
+				}
+				if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
+					searchPart.getSearchInput().turnInputStateOff();
+					searchPart.appearOnConsole(outputHandle);
+					activePart = FILES;
+				}
 			}
 		}
 	}
@@ -258,12 +260,13 @@ Program::Program() :
 		if (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) && !searchPart.getSearchInput().isMouseOnButton(event)) {
 			if (searchPart.getSearchInput().turnInputStateOff()) {
 				searchPart.appearOnConsole(outputHandle);
+				activePart = FILES;
 			}
 		}
 		else if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED && searchPart.getSearchInput().isMouseOnButton(event)) {
-			if (searchPart.getSearchInput().turnInputStateOn()) {
-				searchPart.appearOnConsole(outputHandle);
-			}
+			searchPart.getSearchInput().turnInputStateOn(event);
+			searchPart.appearOnConsole(outputHandle);
+			activePart = SEARCH;
 		}
 	}
 
