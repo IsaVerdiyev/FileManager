@@ -96,7 +96,10 @@ Program::Program() :
 		else if (activePart == OPTIONS) {
 			performOptionsEvents(event);
 		}
-		else if (activePart == SEARCH) {
+		/*else if (activePart == SEARCH) {
+			performSearchTableEvents(event);
+		}*/
+		else if (activePart == SEARCH_RESULTS) {
 			performSearchResultsEvents(event);
 		}
 	}
@@ -120,18 +123,17 @@ Program::Program() :
 				doRenameOperations();
 			}
 		}
-		else if (activePart == SEARCH) {
-			if (searchPart.getSearchInput().isGettingInput() && event.Event.KeyEvent.bKeyDown) {
-				if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE) {
-					searchPart.getSearchInput().takeInput(event);
-					searchPart.appearOnConsole(outputHandle);
-				}
-				if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
-					searchPart.getSearchInput().turnInputStateOff();
-					searchPart.appearOnConsole(outputHandle);
-					activePart = FILES;
-				}
+		if (searchPart.getSearchInput().isGettingInput() && event.Event.KeyEvent.bKeyDown) {
+		
+			if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE) {
+				searchPart.getSearchInput().takeInput(event);
+				searchPart.appearOnConsole(outputHandle);
 			}
+			if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
+				searchPart.getSearchInput().turnInputStateOff();
+				searchPart.appearOnConsole(outputHandle);
+			}
+			
 		}
 	}
 
@@ -251,7 +253,7 @@ Program::Program() :
 			errorDrawing = false;
 			infoDrawing = false;
 		}
-		searchDrawing = false;
+		searchResultsDrawing = false;
 		if (searchPart.getSearchHeader().isMouseOnButton(event) && !searchPart.getSearchInput().isGettingInput()) {
 			if (searchPart.getSearchHeader().turnHoverOn()) {
 				searchPart.appearOnConsole(outputHandle);
@@ -260,8 +262,8 @@ Program::Program() :
 				try {
 					searchPart.getSearchResults().removeMenuFromScreen(outputHandle);
 					searchPart.search(path, disks);
-					activePart = SEARCH;
-					searchDrawing = true;
+					activePart = SEARCH_RESULTS;
+					searchResultsDrawing = true;
 				}
 				catch (std::exception ex) {
 					error.setTextAndColor(ex.what());
@@ -283,35 +285,36 @@ Program::Program() :
 		else if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED && searchPart.getSearchInput().isMouseOnButton(event)) {
 			searchPart.getSearchInput().turnInputStateOn(event);
 			searchPart.appearOnConsole(outputHandle);
-			activePart = SEARCH;
+			//activePart = SEARCH;
 		}
 	}
 
 	void Program::performSearchResultsEvents(INPUT_RECORD &event) {
 		performSearchTableEvents(event);
-		
-		for (int i = 0; i < searchPart.getSearchResults().getButtons().size(); i++) {
-			if (searchPart.getSearchResults().getButtons()[i].isMouseOnButton(event)) {
-				if (searchPart.getSearchResults().getButtons()[i].turnHoverOn()) {
-					searchDrawing = true;
-				}
-				if (FROM_LEFT_1ST_BUTTON_PRESSED & event.Event.MouseEvent.dwButtonState) {
-					if (i == 0) {
-						searchPart.getSearchResults().removeMenuFromScreen(outputHandle);
-						itemsDrawing = true;
-						activePart = FILES;
+		if (activePart == SEARCH_RESULTS) {
+			for (int i = 0; i < searchPart.getSearchResults().getButtons().size(); i++) {
+				if (searchPart.getSearchResults().getButtons()[i].isMouseOnButton(event)) {
+					if (searchPart.getSearchResults().getButtons()[i].turnHoverOn()) {
+						searchResultsDrawing = true;
 					}
-					else {
-						startFolderOpeningProcess(searchPart.getSearchResults().getButtons()[i].getTextString());
-						if (!errorDrawing) {
+					if (FROM_LEFT_1ST_BUTTON_PRESSED & event.Event.MouseEvent.dwButtonState) {
+						if (i == 0) {
 							searchPart.getSearchResults().removeMenuFromScreen(outputHandle);
+							itemsDrawing = true;
+							activePart = FILES;
+						}
+						else {
+							startFolderOpeningProcess(searchPart.getSearchResults().getButtons()[i].getTextString());
+							if (!errorDrawing) {
+								searchPart.getSearchResults().removeMenuFromScreen(outputHandle);
+							}
 						}
 					}
 				}
-			}
-			else {
-				if (searchPart.getSearchResults().getButtons()[i].turnHoverOff()) {
-					searchDrawing = true;
+				else {
+					if (searchPart.getSearchResults().getButtons()[i].turnHoverOff()) {
+						searchResultsDrawing = true;
+					}
 				}
 			}
 		}
@@ -512,8 +515,8 @@ Program::Program() :
 				error.removeFromConsoleScreen(outputHandle);
 			}
 		}
-		if (activePart == SEARCH) {
-			if (searchDrawing) {
+		if (activePart == SEARCH_RESULTS) {
+			if (searchResultsDrawing) {
 				pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
 				items.removeMenuFromScreen(outputHandle);
 				searchPart.getSearchResults().drawMenu(outputHandle);

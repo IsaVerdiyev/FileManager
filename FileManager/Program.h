@@ -17,7 +17,7 @@ class Program {
 	TextLine error;
 	TextLine info;
 	InputForm input;
-	enum menuPart {FILES, OPTIONS, SEARCH};
+	enum menuPart {FILES, OPTIONS, SEARCH_RESULTS};
 	std::vector<std::string> disks;
 	std::vector<int> chosenButtons;
 	bool CtrlisPressed;
@@ -38,7 +38,7 @@ class Program {
 	bool errorDrawing;
 	bool mouseClicked;
 	bool infoDrawing;
-	bool searchDrawing;
+	bool searchResultsDrawing;
 	bool isRenameProcess = false;
 	bool isSearchProcess = false;
 	bool deleteAfterMovingFile = false;
