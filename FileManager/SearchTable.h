@@ -16,7 +16,7 @@ class SearchTable {
 	COORD startPosition;
 	ChoosableButton searchHeader;
 	InputForm searchInput;
-	Menu<ChoosableButton> searchResults;
+	TemplateMenu<ChoosableButton> searchResults;
 public:
 	SearchTable();
 	ChoosableButton &getSearchHeader();
@@ -26,7 +26,7 @@ public:
 	void appearOnConsole(HANDLE &hndl);
 	std::vector<std::string> getResultStringsThroughIterating(const std::string &path, const std::vector<std::string> &disks);
 	void search(const std::string &path, const std::vector<std::string> &disks);
-	Menu<ChoosableButton> &getSearchResults();
+	TemplateMenu<ChoosableButton> &getSearchResults();
 	std::string getOptimizedSearchPath(const std::string &path);
 };
 

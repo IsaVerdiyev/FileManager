@@ -24,13 +24,13 @@ class Program {
 	menuPart activePart;
 	HANDLE outputHandle;
 	HANDLE inputHandle;
-	Menu<ChoosableButton> options;
-	Menu<ChoosableButton> items;
+	TemplateMenu<ChoosableButton> options;
+	TemplateMenu<ChoosableButton> items;
 	SearchTable searchPart;
-	Menu<ChoosableButton> diskOptions;
+	TemplateMenu<ChoosableButton> diskOptions;
 	std::string path;
 	INPUT_RECORD eventsBuffer[128];
-	Menu<ChoosableButton> *pointerToOptionsMenu;
+	TemplateMenu<ChoosableButton> *pointerToOptionsMenu;
 	enum optionsEnum { OPEN, RENAME, CUT, COPY, PASTE, SIZE, CREATE_FILE, CREATE_FOLDER, DEL };
 	enum diskOptionsEnum { OPEN_DISK, SIZE_DISK };
 	bool itemsDrawing;

@@ -120,6 +120,7 @@
     <ClInclude Include="ErrorStrings.h" />
     <ClInclude Include="HelperFunctions.h" />
     <ClInclude Include="InputForm.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="TemplateMenu.h" />
     <ClInclude Include="Program.h" />
     <ClInclude Include="SearchTable.h" />

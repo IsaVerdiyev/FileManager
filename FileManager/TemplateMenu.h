@@ -7,7 +7,7 @@
 #include "Colors.h"
 
 template<class T>
-class Menu {
+class TemplateMenu {
 	
 	int lengthOfItems;
 	std::vector<std::string> menuItemStrings;
@@ -38,9 +38,9 @@ class Menu {
 	}
 
 public:
-	Menu() {};
+	TemplateMenu() {};
 
-	Menu(std::vector<std::string> itemsVector) {
+	TemplateMenu(std::vector<std::string> itemsVector) {
 		setMenuItems(itemsVector);
 	}
 
