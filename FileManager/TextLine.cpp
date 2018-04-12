@@ -68,6 +68,11 @@ void TextLine::setMinLength(int length) {
 }
 
 void TextLine::resizeAccordingToMinLength() {
+	if (minLength > stringSize && minLength < sentenceSymbols.size()) {
+		while (minLength < sentenceSymbols.size()) {
+			sentenceSymbols.erase(sentenceSymbols.end() - 1);
+		}
+	}
 	while(minLength > sentenceSymbols.size()) {
 		CHAR_INFO c;
 		c.Char.AsciiChar = ' ';

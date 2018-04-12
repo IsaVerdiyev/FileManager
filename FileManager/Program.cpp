@@ -116,8 +116,8 @@ Program::Program() :
 				if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
 					input.turnInputStateOff();
 					isRenameProcess = false;
-					doRenameOperations();
 				}
+				doRenameOperations();
 			}
 		}
 		else if (activePart == SEARCH) {
@@ -241,8 +241,8 @@ Program::Program() :
 		else if ((FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) & event.Event.MouseEvent.dwButtonState && !input.isMouseOnButton(event)) {
 			input.turnInputStateOff();
 			isRenameProcess = false;
-			doRenameOperations();
 		}
+		doRenameOperations();
 	}
 
 	void Program::performSearchTableEvents(INPUT_RECORD &event) {
@@ -658,6 +658,7 @@ Program::Program() :
 		activePart = FILES;
 		optionsDrawing = false;
 		isRenameProcess = true;
+		pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
 		input.setTextAndColor(items.getMenuItemStrings()[chosenButtons[chosenButtons.size() - 1]]);
 		input.setMinLength(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getMinLength());
 		input.setPosition(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getStartPosition());

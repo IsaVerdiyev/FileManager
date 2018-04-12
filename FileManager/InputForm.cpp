@@ -36,7 +36,8 @@ void InputForm::takeInput(const INPUT_RECORD &event) {
 	else {
 		if (inputIndexInLine != sentenceSymbols.size() - 1
 			&& sentenceSymbols[sentenceSymbols.size() - 1].Char.AsciiChar == ' '
-			&& sentenceSymbols.size() == minLength) {
+			&& sentenceSymbols.size() == minLength) 
+		{
 			sentenceSymbols.erase(sentenceSymbols.end() - 1);
 		}
 		CHAR_INFO c;
