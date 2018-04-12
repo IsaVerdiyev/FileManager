@@ -1,6 +1,6 @@
 #include "InputForm.h"
 #include "ChoosableButton.h"
-#include "Menu.h"
+#include "TemplateMenu.h"
 #include "Program.h"
 
 
