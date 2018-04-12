@@ -113,7 +113,7 @@ Program::Program() :
 		}
 		if (activePart == FILES) {
 			if (input.isGettingInput() && event.Event.KeyEvent.bKeyDown) {
-				if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE) {
+				if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE || event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT || event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT) {
 					input.takeInput(event);
 				}
 				if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
@@ -125,7 +125,7 @@ Program::Program() :
 		}
 		if (searchPart.getSearchInput().isGettingInput() && event.Event.KeyEvent.bKeyDown) {
 		
-			if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE) {
+			if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE || event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT || event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT) {
 				searchPart.getSearchInput().takeInput(event);
 				searchPart.appearOnConsole(outputHandle);
 			}
