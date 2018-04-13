@@ -320,7 +320,7 @@ Program::Program() :
 							activePart = FILES;
 						}
 						else {
-							startOpeningProcess(searchPart.getSearchResults().getButtons()[i].getTextString());
+							startOpeningProcess(searchPart.getSearchResults().getButtons()[i].getTextInLine());
 							if (!errorDrawing) {
 								searchPart.getSearchResults().removeMenuFromScreen(outputHandle);
 							}
@@ -415,7 +415,7 @@ Program::Program() :
 									fs::rename(oldPath, getNewPath(getFileOrFolderName(oldPath)));
 								}
 								catch (...) {
-									error.setTextAndColor(error.getTextString() + " \"" + getFileOrFolderName(oldPath) + "\",");
+									error.setTextAndColor(error.getTextInLine() + " \"" + getFileOrFolderName(oldPath) + "\",");
 									errorDrawing = true;
 								}
 							}
@@ -428,13 +428,13 @@ Program::Program() :
 									fs::copy(oldPath, getNewPath(getFileOrFolderName(oldPath)), fs::copy_options::recursive | fs::copy_options::overwrite_existing);
 								}
 								catch (...) {
-									error.setTextAndColor(error.getTextString() + " \"" + getFileOrFolderName(oldPath) + "\",");
+									error.setTextAndColor(error.getTextInLine() + " \"" + getFileOrFolderName(oldPath) + "\",");
 									errorDrawing = true;
 								}
 							}
 						}
 						openFolder(path);
-						std::string errorString = error.getTextString();
+						std::string errorString = error.getTextInLine();
 						errorString.erase(errorString.end() - 1);
 						error.setTextAndColor(errorString);
 					}
@@ -611,7 +611,7 @@ Program::Program() :
 				try {
 					if (items.getMenuItemStrings()[chosenButtons[chosenButtons.size() - 1]] != "..") {
 						std::string searchedPath = getNewPath(chosenButtons[chosenButtons.size() - 1]);
-						fs::rename(searchedPath, path + "/" + input.getTextString());
+						fs::rename(searchedPath, path + "/" + input.getTextInLine());
 						refreshItems();
 					}
 					else {

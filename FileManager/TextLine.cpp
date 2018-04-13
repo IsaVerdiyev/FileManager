@@ -1,5 +1,4 @@
 #include "TextLine.h"
-#include <iostream>
 
 const int TextLine::slashT_SpaceCounts = 4;
 
@@ -10,24 +9,12 @@ TextLine::TextLine(const std::string &s, Color c) :
 	positionChanged {true}
 	{
 	setTextAndColor(s, c);
-	//setMinLengthArray();
 }
 
 
 void TextLine::setSymbols() {
 	slashT_positions.clear();
-	std::string s;
-	for (int i = 0; i < textInLine.size(); i++) {
-		if (textInLine[i] == '\t') {
-			slashT_positions.push_back(i);
-			for (int i = 0; i < slashT_SpaceCounts; i++) {
-				s.push_back(' ');
-			}
-		}
-		else {
-			s.push_back(textInLine[i]);
-		}
-	}
+	std::string s = HelperFunctions::getStringWithReplacedSlashT_ToSpaces(textInLine, slashT_SpaceCounts, &slashT_positions);
 	while (true) {
 		try {
 			sentenceSymbols.resize(s.size() > minLength ? s.size() : minLength);
@@ -159,7 +146,7 @@ COORD TextLine::getStartPosition() {
 	return startPosition;
 }
 
-std::string TextLine::getTextString() {
+std::string TextLine::getTextInLine() {
 	/*std::string sentence;
 	for (int i = 0; i < stringSize; i++) {
 		sentence.push_back(sentenceSymbols[i].Char.AsciiChar);

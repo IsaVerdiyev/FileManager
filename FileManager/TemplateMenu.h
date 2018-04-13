@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include <string>
 #include "Colors.h"
+#include "HelperFunctions.h"
 
 template<class T>
 class TemplateMenu {
@@ -30,9 +31,10 @@ protected:
 
 	void setLengthOfItems() {
 		lengthOfItems = 0;
-		for (std::string str : menuItemStrings) {
-			if (lengthOfItems < str.size() + 1) {
-				lengthOfItems = str.size() + 1;
+		for (std::string &str : menuItemStrings) {
+			std::string visibleStr = HelperFunctions::getStringWithReplacedSlashT_ToSpaces(str, TextLine::slashT_SpaceCounts);
+			if (lengthOfItems < visibleStr.size() + 1) {
+				lengthOfItems = visibleStr.size() + 1;
 			}
 		}
 	}

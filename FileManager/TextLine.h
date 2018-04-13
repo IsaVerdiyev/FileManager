@@ -6,6 +6,7 @@
 #include <Windows.h>
 #include <memory>
 #include "Colors.h"
+#include "HelperFunctions.h"
 
 class TextLine {
 protected:
@@ -41,7 +42,7 @@ public:
 	bool getIsOnScreenState();
 	int getMinLength();
 	COORD getStartPosition();
-	std::string getTextString();
+	std::string getTextInLine();
 };
 
 

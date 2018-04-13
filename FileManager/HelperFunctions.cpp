@@ -73,3 +73,21 @@ void HelperFunctions::setTextInNewFile(std::ofstream &file, std::vector<std::str
 		}
 	}
 }
+
+std::string HelperFunctions::getStringWithReplacedSlashT_ToSpaces(const std::string &str, int slashT_SpaceCounts, std::vector<int> *slashT_positions) {
+	std::string s;
+	for (int i = 0; i < str.size(); i++) {
+		if (str[i] == '\t') {
+			if (slashT_positions) {
+				slashT_positions->push_back(i);
+			}
+			for (int i = 0; i < slashT_SpaceCounts; i++) {
+				s.push_back(' ');
+			}
+		}
+		else {
+			s.push_back(str[i]);
+		}
+	}
+	return s;
+}

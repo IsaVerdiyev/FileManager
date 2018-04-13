@@ -44,11 +44,11 @@ InputForm &SearchTable::getSearchInput() {
 }
 
 std::vector<std::string> SearchTable::getResultStringsThroughIterating(const std::string &path, const std::vector<std::string> &disks) {
-	if (searchInput.getTextString() == "") {
+	if (searchInput.getTextInLine() == "") {
 		throw std::runtime_error(noMaskInSearch);
 	}
 	std::vector<std::string> searchResults;
-	std::string mask = searchInput.getTextString();
+	std::string mask = searchInput.getTextInLine();
 	std::string searchPath = getOptimizedSearchPath(path);
 
 	if (searchPath == "") {
@@ -90,11 +90,11 @@ Menu &SearchTable::getSearchResults() {
 }
 
 std::string SearchTable::getOptimizedSearchPath(const std::string &path) {
-	if (searchInput.getTextString()[0] == '*') {
+	if (searchInput.getTextInLine()[0] == '*') {
 		return path;
 	}
 	else {
-		std::vector<std::string> maskParts = HelperFunctions::split(searchInput.getTextString(), '*'); 
+		std::vector<std::string> maskParts = HelperFunctions::split(searchInput.getTextInLine(), '*'); 
 		size_t pos = maskParts[0].find_last_of('\\');
 		if (pos == std::string::npos) {
 			return path;
