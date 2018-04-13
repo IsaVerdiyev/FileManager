@@ -26,16 +26,16 @@ bool InputForm::isGettingInput() {
 void InputForm::takeInput(const INPUT_RECORD &event) {
 	lengthChanged = true;
 	if(event.Event.KeyEvent.wVirtualKeyCode == VK_BACK) {
-		if(inputIndexInLine != 0) {
+		if(cursorPositionIndex != 0) {
 			try {
-				if (!isOnIndentation(inputIndexInLine - 1)) {
-					sentenceSymbols.erase(sentenceSymbols.begin() + inputIndexInLine - 1);
-					setInputIndex(inputIndexInLine - 1);
+				if (!isOnIndentation(cursorPositionIndex - 1)) {
+					sentenceSymbols.erase(sentenceSymbols.begin() + cursorPositionIndex - 1);
+					setCursorPositionIndex(cursorPositionIndex - 1);
 				}
 			}
 			catch (int index) {
 				removeIndentation(index);
-				setInputIndex(inputIndexInLine - 4);
+				setCursorPositionIndex(cursorPositionIndex - 4);
 			}
 			
 		}
@@ -44,27 +44,27 @@ void InputForm::takeInput(const INPUT_RECORD &event) {
 		turnInputStateOff();
 	}
 	else if (event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT) {
-		if (inputIndexInLine != 0) {
+		if (cursorPositionIndex != 0) {
 			try {
-				if (!isOnIndentation(inputIndexInLine - 1)) {
-					setInputIndex(inputIndexInLine - 1);
+				if (!isOnIndentation(cursorPositionIndex - 1)) {
+					setCursorPositionIndex(cursorPositionIndex - 1);
 				}
 			}
 			catch (int) {};
 		}
 	}
 	else if (event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT) {
-		if (inputIndexInLine != sentenceSymbols.size() - 1) {
+		if (cursorPositionIndex != sentenceSymbols.size() - 1) {
 			try {
-				if (!isOnIndentation(inputIndexInLine + 1)) {
-					setInputIndex(inputIndexInLine + 1);
+				if (!isOnIndentation(cursorPositionIndex + 1)) {
+					setCursorPositionIndex(cursorPositionIndex + 1);
 				}
 			}
 			catch (int) {};
 		}
 	}
 	else {
-		if (inputIndexInLine != sentenceSymbols.size() - 1
+		if (cursorPositionIndex != sentenceSymbols.size() - 1
 			&& sentenceSymbols[sentenceSymbols.size() - 1].Char.AsciiChar == ' '
  			&& sentenceSymbols.size() == minLength) 
 		{
@@ -73,15 +73,15 @@ void InputForm::takeInput(const INPUT_RECORD &event) {
 		CHAR_INFO c;
 		c.Char.AsciiChar = event.Event.KeyEvent.uChar.AsciiChar;
 		c.Attributes = activeColor;
-		getSentenceSymbols().insert(getSentenceSymbols().begin() + inputIndexInLine, c);
+		getSentenceSymbols().insert(getSentenceSymbols().begin() + cursorPositionIndex, c);
 
-		setInputIndex(inputIndexInLine + 1);
+		setCursorPositionIndex(cursorPositionIndex + 1);
 		//setVisibleStringSize();
 	}
 	setVisibleStringSize();
 	resizeAccordingToMinLength();
-	if (inputIndexInLine >= sentenceSymbols.size()) {
-		inputIndexInLine = sentenceSymbols.size() - 1;
+	if (cursorPositionIndex >= sentenceSymbols.size()) {
+		cursorPositionIndex = sentenceSymbols.size() - 1;
 	}
 	setStringAfterFinishingInput();
 }
@@ -93,18 +93,18 @@ void InputForm::setDeactiveColor(Color c) {
 	deactiveColor = c;
 }
 
-void InputForm::setInputIndexColor(Color c) {
+void InputForm::setCursorColor(Color c) {
 	cursorColor = c;
 }
 
 bool InputForm::turnInputStateOn(const INPUT_RECORD &event) {
 	if (!gettingInput) {
 		gettingInput = true;
-		setInputIndex(event);
+		setCursorPositionIndex(event);
 		return true;
 	}
 	else {
-		setInputIndex(event);
+		setCursorPositionIndex(event);
 		return false;
 	}
 }
@@ -112,7 +112,7 @@ bool InputForm::turnInputStateOn(const INPUT_RECORD &event) {
 bool InputForm::turnInputStateOn() {
 	if (!gettingInput) {
 		gettingInput = true;
-		setInputIndex(stringSize);
+		setCursorPositionIndex(stringSize);
 		return true;
 	}
 	else {
@@ -136,7 +136,7 @@ bool InputForm::turnInputStateOff() {
 void InputForm::appearOnConsoleScreen(HANDLE &hndl) {
 	if (isGettingInput()) {
 		setColor(activeColor);
-		sentenceSymbols[inputIndexInLine].Attributes = cursorColor;
+		sentenceSymbols[cursorPositionIndex].Attributes = cursorColor;
 	}
 	else {
 		//setColor(deactiveColor);
@@ -144,12 +144,12 @@ void InputForm::appearOnConsoleScreen(HANDLE &hndl) {
 	TextLine::appearOnConsoleScreen(hndl);
 }
 
-void InputForm::setInputIndex(const INPUT_RECORD &event) {
+void InputForm::setCursorPositionIndex(const INPUT_RECORD &event) {
 	for (int i = 0; i < sentenceSymbols.size(); i++) {
 		if (startPosition.X + i == event.Event.MouseEvent.dwMousePosition.X) {
 			try {
 				if (!isOnIndentation(i)) {
-					setInputIndex(i);
+					setCursorPositionIndex(i);
 				}
 			}
 			catch (int) {}
@@ -157,11 +157,11 @@ void InputForm::setInputIndex(const INPUT_RECORD &event) {
 	}
 }
 
-void InputForm::setInputIndex(int index) {
+void InputForm::setCursorPositionIndex(int index) {
 	if (index < 0 || index >= sentenceSymbols.size()) {
 		throw std::runtime_error("Out of rang in sentenceSymbols array");
 	}
-	inputIndexInLine = index;
+	cursorPositionIndex = index;
 }
 
 void InputForm::setVisibleStringSize() {
@@ -193,14 +193,14 @@ std::string InputForm::getStringWithSlashT() {
 	return stringWithSlashT;
 }
 
-bool InputForm::checkIfSpacesOfTab(int index) {
-	for (int i = 0; i < TextLine::slashT_SpaceCounts; i++) {
-		if (sentenceSymbols[index + i].Char.AsciiChar != ' ') {
-			return false;
-		}
-	}
-	return true;
-}
+//bool InputForm::checkIfSpacesOfTab(int index) {
+//	for (int i = 0; i < TextLine::slashT_SpaceCounts; i++) {
+//		if (sentenceSymbols[index + i].Char.AsciiChar != ' ') {
+//			return false;
+//		}
+//	}
+//	return true;
+//}
 
 
 bool InputForm::isOnIndentation(int index) {
@@ -221,5 +221,12 @@ void InputForm::removeIndentation(int slashTIndex) {
 }
 
 
+int InputForm::getCursorIndexPosition() {
+	return cursorPositionIndex;
+}
+
+int InputForm::getVisibleStringSize() {
+	return stringSize;
+}
 
 

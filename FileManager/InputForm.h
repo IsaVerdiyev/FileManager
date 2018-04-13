@@ -6,7 +6,7 @@
 
 class InputForm : public TextLine {
 	bool gettingInput;
-	int inputIndexInLine;
+	int cursorPositionIndex;
 	Color activeColor;
 	Color deactiveColor;
 	Color cursorColor;
@@ -17,19 +17,21 @@ public:
 	bool isGettingInput();
 	void setActiveColor(Color c);
 	void setDeactiveColor(Color c);
-	void setInputIndexColor(Color c);
+	void setCursorColor(Color c);
 	void appearOnConsoleScreen(HANDLE &hndl) override;
 	bool turnInputStateOn(const INPUT_RECORD &event);
 	bool turnInputStateOn();
 	bool turnInputStateOff();
-	void setInputIndex(const INPUT_RECORD &event);
-	void setInputIndex(int index);
+	void setCursorPositionIndex(const INPUT_RECORD &event);
+	void setCursorPositionIndex(int index);
 	void setVisibleStringSize();
 	void setStringAfterFinishingInput();
 	std::string getStringWithSlashT();
-	bool checkIfSpacesOfTab(int index);
+	//bool checkIfSpacesOfTab(int index);
 	bool isOnIndentation(int index);
 	void removeIndentation(int slashTIndex);
+	int getCursorIndexPosition();
+	int getVisibleStringSize();
 };
 
 

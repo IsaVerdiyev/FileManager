@@ -161,7 +161,11 @@ Program::Program() :
 						textEditDrawing = true;
 					}
 				}
-				else if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE || event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT || event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT) {
+				else if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
+					fileEditor.addNewLine();
+					textEditDrawing = true;
+				}
+				else if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK ||  event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE ) {
 					fileEditor.getButtons()[fileEditor.getInputLineIndex()].takeInput(event);
 					textEditDrawing = true;
 				}

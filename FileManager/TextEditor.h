@@ -20,6 +20,7 @@ public:
 	void setDeactiveColor(Color c);
 	void setCursorColor(Color c);
 	void setColors();
+	void addNewLine();
 };
 
 
