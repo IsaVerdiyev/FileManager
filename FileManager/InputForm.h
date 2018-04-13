@@ -9,7 +9,7 @@ class InputForm : public TextLine {
 	int inputIndexInLine;
 	Color activeColor;
 	Color deactiveColor;
-	Color inputIndexColor;
+	Color cursorColor;
 public:
 	InputForm();
 	InputForm(const std::string &s);

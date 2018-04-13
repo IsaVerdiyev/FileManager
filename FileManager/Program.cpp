@@ -24,10 +24,13 @@ Program::Program() :
 	items.setMenuItems(disks);
 	items.setStartPosition({ 5, 8 });
 	options.setHoverColor(static_cast<Color>(Green << 4 | White));
-	options.setStandardColor(static_cast<Color>(Red << 4 | White));
+	options.setButtonColor(static_cast<Color>(Red << 4 | White));
 	diskOptions.setHoverColor(static_cast<Color>(Green << 4 | White));
-	diskOptions.setStandardColor(static_cast<Color>(Red << 4 | White));
+	diskOptions.setButtonColor(static_cast<Color>(Red << 4 | White));
 	fileEditor.setStartPosition({ 5, 8 });
+	fileEditor.setActiveColor(defaultDeactiveColor);
+	fileEditor.setDeactiveColor(defaultDeactiveColor);
+	fileEditor.setCursorColor(defaultCursorColor);
 	outputHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	inputHandle = GetStdHandle(STD_INPUT_HANDLE);
 	SetConsoleMode(inputHandle, ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS);
@@ -141,8 +144,24 @@ Program::Program() :
 		}
 		if (activePart == EDIT_FILE) {
 			textEditDrawing = false;
-			if (fileEditor.getButtons()[fileEditor.getInputLineIndex()].isGettingInput()) {
-				if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE || event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT || event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT) {
+			if (fileEditor.getButtons()[fileEditor.getInputLineIndex()].isGettingInput() && event.Event.KeyEvent.bKeyDown) {
+				if (event.Event.KeyEvent.wVirtualKeyCode == VK_UP) {
+					if (fileEditor.getInputLineIndex()) {
+						fileEditor.getButtons()[fileEditor.getInputLineIndex()].turnInputStateOff();
+						fileEditor.setInputLineIndex(fileEditor.getInputLineIndex() - 1);
+						fileEditor.getButtons()[fileEditor.getInputLineIndex()].turnInputStateOn();
+						textEditDrawing = true;
+					}
+				}
+				else if (event.Event.KeyEvent.wVirtualKeyCode == VK_DOWN) {
+					if (fileEditor.getInputLineIndex() != fileEditor.getButtons().size() - 1) {
+						fileEditor.getButtons()[fileEditor.getInputLineIndex()].turnInputStateOff();
+						fileEditor.setInputLineIndex(fileEditor.getInputLineIndex() + 1);
+						fileEditor.getButtons()[fileEditor.getInputLineIndex()].turnInputStateOn();
+						textEditDrawing = true;
+					}
+				}
+				else if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE || event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT || event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT) {
 					fileEditor.getButtons()[fileEditor.getInputLineIndex()].takeInput(event);
 					textEditDrawing = true;
 				}
@@ -212,7 +231,7 @@ Program::Program() :
 					return;
 				}
 			}
-			error.setTextAndColor(isNotFolderError);
+			error.setTextAndColor(cantOpen);
 			errorDrawing = true;
 			
 		}

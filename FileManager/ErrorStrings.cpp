@@ -1,6 +1,6 @@
 #include "ErrorStrings.h"
 
-const std::string isNotFolderError("Is Not A Folder");
+const std::string cantOpen("Can't open");
 
 const std::string cantRenameError("Cannot rename");
 

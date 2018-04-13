@@ -42,7 +42,7 @@ protected:
 public:
 	TemplateMenu() {};
 
-	TemplateMenu(std::vector<std::string> itemsVector) {
+	TemplateMenu(const std::vector<std::string> &itemsVector) {
 		setMenuItems(itemsVector);
 	}
 
@@ -56,6 +56,7 @@ public:
 	void setMenuItems(const std::vector<std::string> &items) {
 		setMenuItemStrings(items);
 		setMenuItemButtons();
+		
 	}
 
 	void removeMenuFromScreen(HANDLE &hndl) {

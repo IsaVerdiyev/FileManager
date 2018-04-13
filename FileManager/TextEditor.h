@@ -7,11 +7,19 @@
 
 class TextEditor : public TemplateMenu<InputForm> {
 	int inputLineIndex;
+	Color activeColor;
+	Color deactiveColor;
+	Color cursorColor;
 public:
 	TextEditor();
-	TextEditor(std::vector<std::string> itemsVector);
+	TextEditor(const std::vector<std::string> &itemsVector);
+	void setMenuItems(const std::vector<std::string> &itemsVector);
 	void setInputLineIndex(int index);
 	int getInputLineIndex();
+	void setActiveColor(Color c);
+	void setDeactiveColor(Color c);
+	void setCursorColor(Color c);
+	void setColors();
 };
 
 

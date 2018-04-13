@@ -5,7 +5,7 @@
 InputForm::InputForm() : TextLine(), 
 	activeColor{defaultActiveColor},
 	deactiveColor {defaultDeactiveColor},
-	inputIndexColor {defaultInputIndexColor},
+	cursorColor {defaultCursorColor},
 	gettingInput{ false }
 {
 	setColor(deactiveColor);
@@ -94,7 +94,7 @@ void InputForm::setDeactiveColor(Color c) {
 }
 
 void InputForm::setInputIndexColor(Color c) {
-	inputIndexColor = c;
+	cursorColor = c;
 }
 
 bool InputForm::turnInputStateOn(const INPUT_RECORD &event) {
@@ -112,7 +112,7 @@ bool InputForm::turnInputStateOn(const INPUT_RECORD &event) {
 bool InputForm::turnInputStateOn() {
 	if (!gettingInput) {
 		gettingInput = true;
-		setInputIndex(stringSize - 1);
+		setInputIndex(stringSize);
 		return true;
 	}
 	else {
@@ -136,7 +136,7 @@ bool InputForm::turnInputStateOff() {
 void InputForm::appearOnConsoleScreen(HANDLE &hndl) {
 	if (isGettingInput()) {
 		setColor(activeColor);
-		sentenceSymbols[inputIndexInLine].Attributes = inputIndexColor;
+		sentenceSymbols[inputIndexInLine].Attributes = cursorColor;
 	}
 	else {
 		//setColor(deactiveColor);

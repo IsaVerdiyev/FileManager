@@ -12,4 +12,4 @@ extern const Color defaultHoverOnChosenColor = static_cast<Color>(DarkGray << 4 
 
 extern const Color defaultActiveColor = static_cast<Color>(Black << 4 | White);
 extern const Color defaultDeactiveColor = static_cast<Color>(DarkGray << 4 | White);
-extern const Color defaultInputIndexColor = static_cast<Color>(Brown << 4 | Red);
+extern const Color defaultCursorColor = static_cast<Color>(Brown << 4 | Red);
