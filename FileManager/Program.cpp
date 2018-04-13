@@ -27,6 +27,7 @@ Program::Program() :
 	options.setStandardColor(static_cast<Color>(Red << 4 | White));
 	diskOptions.setHoverColor(static_cast<Color>(Green << 4 | White));
 	diskOptions.setStandardColor(static_cast<Color>(Red << 4 | White));
+	fileEditor.setStartPosition({ 5, 8 });
 	outputHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	inputHandle = GetStdHandle(STD_INPUT_HANDLE);
 	SetConsoleMode(inputHandle, ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS);
@@ -174,15 +175,30 @@ Program::Program() :
 		return newPath;
 	}
 
-	void Program::startFolderOpeningProcess(const std::string &searchedPath) {
+	void Program::startOpeningProcess(const std::string &searchedPath) {
 		if (fs::is_directory(searchedPath) || searchedPath == "") {
 			path = searchedPath;
 			openFolder(path);
 
 		}
 		else {
+			std::string txt(".txt");
+			std::string cpp(".cpp");
+			std::string h(".h");
+			if (!searchedPath.compare(searchedPath.size() - txt.size(), txt.size(), txt) ||
+				!searchedPath.compare(searchedPath.size() - cpp.size(), cpp.size(), cpp) ||
+				!searchedPath.compare(searchedPath.size() - h.size(), h.size(), h))  {
+				std::ifstream file(searchedPath);
+				if (file) {
+					fileEditor.setMenuItems(HelperFunctions::getTextFromFile(file));
+					activePart = EDIT_FILE;
+					textEditDrawing = true;
+					return;
+				}
+			}
 			error.setTextAndColor(isNotFolderError);
 			errorDrawing = true;
+			
 		}
 	}
 
@@ -304,7 +320,7 @@ Program::Program() :
 							activePart = FILES;
 						}
 						else {
-							startFolderOpeningProcess(searchPart.getSearchResults().getButtons()[i].getTextString());
+							startOpeningProcess(searchPart.getSearchResults().getButtons()[i].getTextString());
 							if (!errorDrawing) {
 								searchPart.getSearchResults().removeMenuFromScreen(outputHandle);
 							}
@@ -339,7 +355,7 @@ Program::Program() :
 					mouseClicked = true;
 					if (i == OPEN) {
 						std::string searchedPath = getNewPath(chosenButtons[chosenButtons.size() - 1]);
-						startFolderOpeningProcess(searchedPath);
+						startOpeningProcess(searchedPath);
 					}
 					else if (i == SIZE) {
 						std::string searchedPath = getNewPath(chosenButtons[chosenButtons.size() - 1]);
@@ -488,7 +504,7 @@ Program::Program() :
 			}
 			else {
 				std::string searchedPath = getNewPath(index);
-				startFolderOpeningProcess(searchedPath);
+				startOpeningProcess(searchedPath);
 			}
 		}
 	}
@@ -520,6 +536,14 @@ Program::Program() :
 				pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
 				items.removeMenuFromScreen(outputHandle);
 				searchPart.getSearchResults().drawMenu(outputHandle);
+			}
+		}
+
+		else if (activePart == EDIT_FILE) {
+			if (textEditDrawing) {
+				pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
+				items.removeMenuFromScreen(outputHandle);
+				fileEditor.drawMenu(outputHandle);
 			}
 		}
 		

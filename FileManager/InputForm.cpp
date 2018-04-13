@@ -5,14 +5,16 @@
 InputForm::InputForm() : TextLine(), 
 	activeColor{defaultActiveColor},
 	deactiveColor {defaultDeactiveColor},
-	inputIndexColor {defaultInputIndexColor}
+	inputIndexColor {defaultInputIndexColor},
+	gettingInput{ false }
 {
 	setColor(deactiveColor);
 }
 
 InputForm::InputForm(const std::string &s) : TextLine(s),
 	activeColor{ defaultActiveColor },
-	deactiveColor{ defaultDeactiveColor }
+	deactiveColor{ defaultDeactiveColor },
+	gettingInput{ false }
 {
 	setColor(deactiveColor);
 }

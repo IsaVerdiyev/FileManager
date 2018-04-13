@@ -2,6 +2,7 @@
 #define Prog
 
 #include "Menu.h"
+#include "TextEditor.h"
 #include <io.h>;
 #include "HelperFunctions.h"
 #include <algorithm>
@@ -17,7 +18,7 @@ class Program {
 	TextLine error;
 	TextLine info;
 	InputForm input;
-	enum menuPart {FILES, OPTIONS, SEARCH_RESULTS};
+	enum menuPart {FILES, OPTIONS, SEARCH_RESULTS, EDIT_FILE};
 	std::vector<std::string> disks;
 	std::vector<int> chosenButtons;
 	bool CtrlisPressed;
@@ -28,6 +29,7 @@ class Program {
 	Menu items;
 	SearchTable searchPart;
 	Menu diskOptions;
+	TextEditor fileEditor;
 	std::string path;
 	INPUT_RECORD eventsBuffer[128];
 	Menu *pointerToOptionsMenu;
@@ -42,6 +44,7 @@ class Program {
 	bool isRenameProcess = false;
 	bool isSearchProcess = false;
 	bool deleteAfterMovingFile = false;
+	bool textEditDrawing = false;
 	std::vector<std::string> savedPathesInCutAndCopy;
 public:
 	Program();
@@ -53,7 +56,7 @@ public:
 	void checkKeyEvent(INPUT_RECORD &event);
 	std::string getNewPath(int index);
 	std::string getNewPath(const std::string &name);
-	void startFolderOpeningProcess(const std::string &newPath);
+	void startOpeningProcess(const std::string &newPath);
 	void openFolder(int index);
 	void openFolder(std::string path);
 	void performFilesPartEvents(INPUT_RECORD &event);

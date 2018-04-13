@@ -124,6 +124,7 @@
     <ClInclude Include="TemplateMenu.h" />
     <ClInclude Include="Program.h" />
     <ClInclude Include="SearchTable.h" />
+    <ClInclude Include="TextEditor.h" />
     <ClInclude Include="TextLine.h" />
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +137,7 @@
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="SearchTable.cpp" />
+    <ClCompile Include="TextEditor.cpp" />
     <ClCompile Include="TextLine.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
