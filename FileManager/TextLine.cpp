@@ -84,8 +84,8 @@ void TextLine::resizeAccordingToMinLength() {
 
 void TextLine::createEraseArray(HANDLE &hndl) {
 	eraseArray.clear();
-	eraseArray.resize(getEndPosition().X - startPosition.X);
-	SMALL_RECT readArea{ startPosition.X, startPosition.Y, getEndPosition().X - 1, getEndPosition().Y };
+	eraseArray.resize(getEndPosition().X - startPosition.X + 1);
+	SMALL_RECT readArea{ startPosition.X, startPosition.Y, getEndPosition().X, getEndPosition().Y };
 	ReadConsoleOutput(hndl, &eraseArray[0], { static_cast<short>(sentenceSymbols.size()) , 1 }, { 0, 0 }, &readArea);
 }
 
@@ -117,7 +117,7 @@ void TextLine::appearOnConsoleScreen(HANDLE &hndl, COORD beginningPosition) {
 
 
 COORD TextLine::getEndPosition() {
-	return COORD{ static_cast<short>(startPosition.X + sentenceSymbols.size()), static_cast<short>(startPosition.Y) };
+	return COORD{ static_cast<short>(startPosition.X + sentenceSymbols.size() - 1), static_cast<short>(startPosition.Y) };
 }
 
 bool TextLine::isMouseOnButton(const INPUT_RECORD &event) {
@@ -153,6 +153,14 @@ std::string TextLine::getTextInLine() {
 	}
 	return sentence;*/
 	return textInLine;
+}
+
+std::string TextLine::getVisibleString() {
+	std::string sentence;
+	for (int i = 0; i < stringSize; i++) {
+	sentence.push_back(sentenceSymbols[i].Char.AsciiChar);
+	}
+	return sentence;
 }
 
 

@@ -43,6 +43,7 @@ public:
 	int getMinLength();
 	COORD getStartPosition();
 	std::string getTextInLine();
+	std::string getVisibleString();
 };
 
 

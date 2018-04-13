@@ -24,8 +24,9 @@ public:
 	bool turnInputStateOff();
 	void setInputIndex(const INPUT_RECORD &event);
 	void setInputIndex(int index);
-	void setStringSizeAfterFinishingInput();
-
+	void setVisibleStringSize();
+	std::string getVisibleString();
+	void setStringAfterFinishingInput();
 };
 
 

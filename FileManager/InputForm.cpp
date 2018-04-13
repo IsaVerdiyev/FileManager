@@ -29,6 +29,7 @@ void InputForm::takeInput(const INPUT_RECORD &event) {
 		if(inputIndexInLine != 0) {
 			sentenceSymbols.erase(sentenceSymbols.begin() + inputIndexInLine - 1);
 			setInputIndex(inputIndexInLine - 1);
+			setVisibleStringSize();
 			resizeAccordingToMinLength();
 		}
 	}
@@ -99,7 +100,8 @@ bool InputForm::turnInputStateOff() {
 	if (gettingInput) {
 		gettingInput = false;
 		setColor(deactiveColor);
-		setStringSizeAfterFinishingInput();
+		setVisibleStringSize();
+		setStringAfterFinishingInput();
 		return true;
 	}
 	else {
@@ -133,12 +135,36 @@ void InputForm::setInputIndex(int index) {
 	inputIndexInLine = index;
 }
 
-void InputForm::setStringSizeAfterFinishingInput() {
+void InputForm::setVisibleStringSize() {
 	int counter = sentenceSymbols.size() - 1;
 	while (sentenceSymbols[counter].Char.AsciiChar == ' ' && counter != 0) {
 		counter--;
 	}
 	stringSize = counter + 1;
+}
+
+void InputForm::setStringAfterFinishingInput() {
+	textInLine = getVisibleString();
+	for (int i = 0; i < slashT_positions.size(); i++) {
+		textInLine.erase(textInLine.begin() + slashT_positions[i], textInLine.begin() + slashT_positions[i] + TextLine::slashT_SpaceCounts);
+	}
+	/*for (int i = 0; i < slashT_positions.size(); i++) {
+		sentenceSymbolsWithSlashT.erase(sentenceSymbolsWithSlashT.begin()  + slashT_positions[i], sentenceSymbolsWithSlashT.begin() + slashT_positions[i] + TextLine::slashT_SpaceCounts);
+		CHAR_INFO c;
+		c.Char.AsciiChar = '\t';
+		sentenceSymbolsWithSlashT.insert(sentenceSymbolsWithSlashT.begin() + slashT_positions[i], c);
+	}
+	for (int i = 0; i < sentenceSymbolsWithSlashT.size(); i++) {
+		textInLine.push_back(sentenceSymbolsWithSlashT[i].Char.AsciiChar);
+	}*/
+}
+
+std::string InputForm::getVisibleString() {
+	std::string visibleString;
+	for (int i = 0; i < stringSize; i++) {
+		visibleString.push_back(sentenceSymbols[i].Char.AsciiChar);
+	}
+	return visibleString;
 }
 
 
