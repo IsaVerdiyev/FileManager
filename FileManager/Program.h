@@ -1,7 +1,7 @@
 #ifndef Prog
 #define Prog
 
-#include "TemplateMenu.h"
+#include "Menu.h"
 #include <io.h>;
 #include "HelperFunctions.h"
 #include <algorithm>
@@ -24,13 +24,13 @@ class Program {
 	menuPart activePart;
 	HANDLE outputHandle;
 	HANDLE inputHandle;
-	TemplateMenu<ChoosableButton> options;
-	TemplateMenu<ChoosableButton> items;
+	Menu options;
+	Menu items;
 	SearchTable searchPart;
-	TemplateMenu<ChoosableButton> diskOptions;
+	Menu diskOptions;
 	std::string path;
 	INPUT_RECORD eventsBuffer[128];
-	TemplateMenu<ChoosableButton> *pointerToOptionsMenu;
+	Menu *pointerToOptionsMenu;
 	enum optionsEnum { OPEN, RENAME, CUT, COPY, PASTE, SIZE, CREATE_FILE, CREATE_FOLDER, DEL };
 	enum diskOptionsEnum { OPEN_DISK, SIZE_DISK };
 	bool itemsDrawing;

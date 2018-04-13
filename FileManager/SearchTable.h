@@ -1,6 +1,6 @@
 #ifndef SeaTab
 
-#include "TemplateMenu.h"
+#include "Menu.h"
 #include "InputForm.h"
 #include <string>
 #include <experimental\filesystem>
@@ -16,7 +16,7 @@ class SearchTable {
 	COORD startPosition;
 	ChoosableButton searchHeader;
 	InputForm searchInput;
-	TemplateMenu<ChoosableButton> searchResults;
+	Menu searchResults;
 public:
 	SearchTable();
 	ChoosableButton &getSearchHeader();
@@ -26,7 +26,7 @@ public:
 	void appearOnConsole(HANDLE &hndl);
 	std::vector<std::string> getResultStringsThroughIterating(const std::string &path, const std::vector<std::string> &disks);
 	void search(const std::string &path, const std::vector<std::string> &disks);
-	TemplateMenu<ChoosableButton> &getSearchResults();
+	Menu &getSearchResults();
 	std::string getOptimizedSearchPath(const std::string &path);
 };
 

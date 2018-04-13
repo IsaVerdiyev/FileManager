@@ -8,7 +8,7 @@
 
 template<class T>
 class TemplateMenu {
-	
+protected:
 	int lengthOfItems;
 	std::vector<std::string> menuItemStrings;
 	std::vector<T> menuItemButtons;
@@ -23,7 +23,7 @@ class TemplateMenu {
 		menuItemButtons.clear();
 		for (int i = 0; i < menuItemStrings.size(); i++) {
 			menuItemButtons.push_back(T(menuItemStrings[i]));
-			menuItemButtons[i].setPosition({ startPositionOfDisplay.X, (short)(startPositionOfDisplay.Y + i) });
+			menuItemButtons[i].setPosition({ startPositionOfDisplay.X, static_cast<short>(startPositionOfDisplay.Y + i) });
 			menuItemButtons[i].setMinLength(lengthOfItems);
 		}
 	}
@@ -47,7 +47,7 @@ public:
 	void setStartPosition(COORD pos) {
 		startPositionOfDisplay = pos;
 		for (int i = 0; i < menuItemButtons.size(); i++) {
-			menuItemButtons[i].setPosition({ pos.X, (short)(pos.Y + i) });
+			menuItemButtons[i].setPosition({ pos.X, static_cast<short>(pos.Y + i) });
 		}
 	}
 
@@ -76,17 +76,6 @@ public:
 		return menuItemStrings;
 	}
 
-	void setHoverColor(Color c) {
-		for (T &button : menuItemButtons) {
-			button.setHovercolor(c);
-		}
-	}
-
-	void setStandardColor(Color c) {
-		for (T &button : menuItemButtons) {
-			button.setButtonColor(c);
-		}
-	}
 };
 
 

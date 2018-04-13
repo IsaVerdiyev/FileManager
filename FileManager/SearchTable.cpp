@@ -85,7 +85,7 @@ void SearchTable::search(const std::string &path, const std::vector<std::string>
 	searchResults.setMenuItems(resultStrings);
 }
 
-TemplateMenu<ChoosableButton> &SearchTable::getSearchResults() {
+Menu &SearchTable::getSearchResults() {
 	return searchResults;
 }
 
