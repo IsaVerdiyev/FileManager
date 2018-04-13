@@ -15,16 +15,16 @@ protected:
 	COORD startPosition;
 	std::vector<CHAR_INFO> sentenceSymbols;
 	std::vector<CHAR_INFO> eraseArray;
-	//std::vector<CHAR_INFO> minLengthArray;
+	std::string textInLine;
+	std::vector<int> slashT_positions;
 	COORD oldStartPosition;
-	void setSymbols(const std::string &s);
+	void setSymbols();
 	int minLength = 1;
 	int stringSize = 0;
-	//void setMinLengthArray();
-	//void setColorOfMinArray(Color c = SameColor);
 	void createEraseArray(HANDLE &hndl);
 	void resizeAccordingToMinLength();
 public:
+	static const int slashT_SpaceCounts;
 	TextLine();
 	TextLine(const std::string &s, Color c = SameColor);
 	void setColor(Color c = SameColor);

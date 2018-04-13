@@ -1,6 +1,7 @@
 #include "TextLine.h"
 #include <iostream>
 
+const int TextLine::slashT_SpaceCounts = 4;
 
 TextLine::TextLine() : TextLine("")  {}
 
@@ -13,10 +14,23 @@ TextLine::TextLine(const std::string &s, Color c) :
 }
 
 
-void TextLine::setSymbols(const std::string &s) {
+void TextLine::setSymbols() {
+	slashT_positions.clear();
+	std::string s;
+	for (int i = 0; i < textInLine.size(); i++) {
+		if (textInLine[i] == '\t') {
+			slashT_positions.push_back(i);
+			for (int i = 0; i < slashT_SpaceCounts; i++) {
+				s.push_back(' ');
+			}
+		}
+		else {
+			s.push_back(textInLine[i]);
+		}
+	}
 	while (true) {
 		try {
-			sentenceSymbols.resize(s.size() > minLength ? s.size() : minLength + 1);
+			sentenceSymbols.resize(s.size() > minLength ? s.size() : minLength);
 			break;
 		}
 		catch (std::exception ex) {
@@ -45,12 +59,12 @@ void TextLine::setColor(Color c) {
 	for (CHAR_INFO &symbol : sentenceSymbols) {
 		symbol.Attributes = c;
 	}
-	//setColorOfMinArray(c);
 }
 
 void TextLine::setTextAndColor(const std::string &s, Color c) {
+	textInLine = s;
 	lengthChanged = true;
-	setSymbols(s);
+	setSymbols();
 	setColor(c);
 }
 
@@ -62,7 +76,6 @@ std::vector<CHAR_INFO> &TextLine::getSentenceSymbols() {
 void TextLine::setMinLength(int length) {
 	lengthChanged = true;
 	minLength = length;
-	//setMinLengthArray();
 	resizeAccordingToMinLength();
 	
 }
@@ -80,25 +93,6 @@ void TextLine::resizeAccordingToMinLength() {
 		sentenceSymbols.push_back(c);
 	}
 }
-
-//void TextLine::setMinLengthArray() {
-//	minLengthArray.clear();
-//	CHAR_INFO c;
-//	c.Char.AsciiChar = ' ';
-//	for (int i = 0; i < minLength; i++) {
-//		minLengthArray.push_back(c);
-//	}
-//	setColorOfMinArray();
-//}
-
-//void TextLine::setColorOfMinArray(Color c) {
-//	if (c == SameColor) {
-//		c = static_cast<Color>(sentenceSymbols[0].Attributes);
-//	}
-//	for (CHAR_INFO &symbol : minLengthArray) {
-//		symbol.Attributes = c;
-//	}
-//}
 
 
 void TextLine::createEraseArray(HANDLE &hndl) {
@@ -124,9 +118,6 @@ void TextLine::appearOnConsoleScreen(HANDLE &hndl) {
 		positionChanged = false;
 		lengthChanged = false;
 	}
-	/*if (minLengthArray.size() > sentenceSymbols.size()) {
-		putCharInfoArrayInConsoleBuffer(hndl, minLengthArray, startPosition);
-	}*/
 	putCharInfoArrayInConsoleBuffer(hndl, sentenceSymbols, startPosition);
 	isOnScreen = true;
 }
@@ -169,11 +160,12 @@ COORD TextLine::getStartPosition() {
 }
 
 std::string TextLine::getTextString() {
-	std::string sentence;
+	/*std::string sentence;
 	for (int i = 0; i < stringSize; i++) {
 		sentence.push_back(sentenceSymbols[i].Char.AsciiChar);
 	}
-	return sentence;
+	return sentence;*/
+	return textInLine;
 }
 
 
