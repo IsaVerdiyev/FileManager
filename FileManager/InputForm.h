@@ -25,8 +25,11 @@ public:
 	void setInputIndex(const INPUT_RECORD &event);
 	void setInputIndex(int index);
 	void setVisibleStringSize();
-	std::string getVisibleString();
 	void setStringAfterFinishingInput();
+	std::string getStringWithSlashT();
+	bool checkIfSpacesOfTab(int index);
+	bool isOnIndentation(int index);
+	void removeIndentation(int slashTIndex);
 };
 
 

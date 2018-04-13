@@ -27,10 +27,17 @@ void InputForm::takeInput(const INPUT_RECORD &event) {
 	lengthChanged = true;
 	if(event.Event.KeyEvent.wVirtualKeyCode == VK_BACK) {
 		if(inputIndexInLine != 0) {
-			sentenceSymbols.erase(sentenceSymbols.begin() + inputIndexInLine - 1);
-			setInputIndex(inputIndexInLine - 1);
-			setVisibleStringSize();
-			resizeAccordingToMinLength();
+			try {
+				if (!isOnIndentation(inputIndexInLine - 1)) {
+					sentenceSymbols.erase(sentenceSymbols.begin() + inputIndexInLine - 1);
+					setInputIndex(inputIndexInLine - 1);
+				}
+			}
+			catch (int index) {
+				removeIndentation(index);
+				setInputIndex(inputIndexInLine - 4);
+			}
+			
 		}
 	}
 	else if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
@@ -38,18 +45,28 @@ void InputForm::takeInput(const INPUT_RECORD &event) {
 	}
 	else if (event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT) {
 		if (inputIndexInLine != 0) {
-			setInputIndex(inputIndexInLine - 1);
+			try {
+				if (!isOnIndentation(inputIndexInLine - 1)) {
+					setInputIndex(inputIndexInLine - 1);
+				}
+			}
+			catch (int) {};
 		}
 	}
 	else if (event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT) {
 		if (inputIndexInLine != sentenceSymbols.size() - 1) {
-			setInputIndex(inputIndexInLine + 1);
+			try {
+				if (!isOnIndentation(inputIndexInLine + 1)) {
+					setInputIndex(inputIndexInLine + 1);
+				}
+			}
+			catch (int) {};
 		}
 	}
 	else {
 		if (inputIndexInLine != sentenceSymbols.size() - 1
 			&& sentenceSymbols[sentenceSymbols.size() - 1].Char.AsciiChar == ' '
-			&& sentenceSymbols.size() == minLength) 
+ 			&& sentenceSymbols.size() == minLength) 
 		{
 			sentenceSymbols.erase(sentenceSymbols.end() - 1);
 		}
@@ -59,7 +76,14 @@ void InputForm::takeInput(const INPUT_RECORD &event) {
 		getSentenceSymbols().insert(getSentenceSymbols().begin() + inputIndexInLine, c);
 
 		setInputIndex(inputIndexInLine + 1);
+		//setVisibleStringSize();
 	}
+	setVisibleStringSize();
+	resizeAccordingToMinLength();
+	if (inputIndexInLine >= sentenceSymbols.size()) {
+		inputIndexInLine = sentenceSymbols.size() - 1;
+	}
+	setStringAfterFinishingInput();
 }
 
 void InputForm::setActiveColor(Color c) {
@@ -100,8 +124,8 @@ bool InputForm::turnInputStateOff() {
 	if (gettingInput) {
 		gettingInput = false;
 		setColor(deactiveColor);
-		setVisibleStringSize();
-		setStringAfterFinishingInput();
+		//setVisibleStringSize();
+		//setStringAfterFinishingInput();
 		return true;
 	}
 	else {
@@ -123,7 +147,12 @@ void InputForm::appearOnConsoleScreen(HANDLE &hndl) {
 void InputForm::setInputIndex(const INPUT_RECORD &event) {
 	for (int i = 0; i < sentenceSymbols.size(); i++) {
 		if (startPosition.X + i == event.Event.MouseEvent.dwMousePosition.X) {
-			setInputIndex(i);
+			try {
+				if (!isOnIndentation(i)) {
+					setInputIndex(i);
+				}
+			}
+			catch (int) {}
 		}
 	}
 }
@@ -144,10 +173,7 @@ void InputForm::setVisibleStringSize() {
 }
 
 void InputForm::setStringAfterFinishingInput() {
-	textInLine = getVisibleString();
-	for (int i = 0; i < slashT_positions.size(); i++) {
-		textInLine.erase(textInLine.begin() + slashT_positions[i], textInLine.begin() + slashT_positions[i] + TextLine::slashT_SpaceCounts);
-	}
+	textInLine = getStringWithSlashT();
 	/*for (int i = 0; i < slashT_positions.size(); i++) {
 		sentenceSymbolsWithSlashT.erase(sentenceSymbolsWithSlashT.begin()  + slashT_positions[i], sentenceSymbolsWithSlashT.begin() + slashT_positions[i] + TextLine::slashT_SpaceCounts);
 		CHAR_INFO c;
@@ -159,12 +185,41 @@ void InputForm::setStringAfterFinishingInput() {
 	}*/
 }
 
-std::string InputForm::getVisibleString() {
-	std::string visibleString;
-	for (int i = 0; i < stringSize; i++) {
-		visibleString.push_back(sentenceSymbols[i].Char.AsciiChar);
+std::string InputForm::getStringWithSlashT() {
+	std::string stringWithSlashT = getVisibleString();
+	for (int i = 0; i < slashT_positions.size(); i++) {
+		textInLine.erase(textInLine.begin() + slashT_positions[i], textInLine.begin() + slashT_positions[i] + TextLine::slashT_SpaceCounts);
 	}
-	return visibleString;
+	return stringWithSlashT;
 }
+
+bool InputForm::checkIfSpacesOfTab(int index) {
+	for (int i = 0; i < TextLine::slashT_SpaceCounts; i++) {
+		if (sentenceSymbols[index + i].Char.AsciiChar != ' ') {
+			return false;
+		}
+	}
+	return true;
+}
+
+
+bool InputForm::isOnIndentation(int index) {
+	std::string stringWithoutSlashIndentation = HelperFunctions::getStringWithReplacedSlashT_ToSpaces(textInLine, TextLine::slashT_SpaceCounts);
+	for (int i = 0; i < slashT_positions.size(); i++) {
+		for (int j = 0; j < TextLine::slashT_SpaceCounts; j++) {
+			if (slashT_positions[i] + j == index) {
+				throw i;
+			}
+		}
+	}
+	return false;
+}
+
+void InputForm::removeIndentation(int slashTIndex) {
+	sentenceSymbols.erase(sentenceSymbols.begin() + slashT_positions[slashTIndex], sentenceSymbols.begin() + slashT_positions[slashTIndex] + TextLine::slashT_SpaceCounts);
+	slashT_positions.erase(slashT_positions.begin() + slashTIndex);
+}
+
+
 
 

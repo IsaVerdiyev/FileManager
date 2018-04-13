@@ -84,7 +84,7 @@ Program::Program() :
 		}
 	}
 
-	void Program::checkMouseEvent(INPUT_RECORD &event) {
+	void Program::checkMouseEvent(const INPUT_RECORD &event) {
 		if (event.Event.MouseEvent.dwEventFlags & MOUSE_WHEELED) {
 			scrollVertically(event);
 		}
@@ -103,9 +103,12 @@ Program::Program() :
 		else if (activePart == SEARCH_RESULTS) {
 			performSearchResultsEvents(event);
 		}
+		else if (activePart == EDIT_FILE) {
+			performTextEditingEvents(event);
+		}
 	}
 
-	void Program::checkKeyEvent(INPUT_RECORD &event) {
+	void Program::checkKeyEvent(const INPUT_RECORD &event) {
 		if (event.Event.KeyEvent.wVirtualKeyCode == VK_CONTROL && event.Event.KeyEvent.bKeyDown) {
 			CtrlisPressed = true;
 		}
@@ -135,6 +138,19 @@ Program::Program() :
 				searchPart.appearOnConsole(outputHandle);
 			}
 			
+		}
+		if (activePart == EDIT_FILE) {
+			textEditDrawing = false;
+			if (fileEditor.getButtons()[fileEditor.getInputLineIndex()].isGettingInput()) {
+				if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE || event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT || event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT) {
+					fileEditor.getButtons()[fileEditor.getInputLineIndex()].takeInput(event);
+					textEditDrawing = true;
+				}
+				/*if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
+					searchPart.getSearchInput().turnInputStateOff();
+					searchPart.appearOnConsole(outputHandle);
+				}*/
+			}
 		}
 	}
 
@@ -218,7 +234,7 @@ Program::Program() :
 
 	
 
-	void Program::performFilesPartEvents(INPUT_RECORD &event) {
+	void Program::performFilesPartEvents(const INPUT_RECORD &event) {
 		itemsDrawing = false;
 		optionsDrawing = false;
 		errorDrawing = false;
@@ -263,7 +279,7 @@ Program::Program() :
 		doRenameOperations();
 	}
 
-	void Program::performSearchTableEvents(INPUT_RECORD &event) {
+	void Program::performSearchTableEvents(const INPUT_RECORD &event) {
 		if ((FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) & event.Event.MouseEvent.dwButtonState) {
 			mouseClicked = true;
 			errorDrawing = false;
@@ -305,7 +321,7 @@ Program::Program() :
 		}
 	}
 
-	void Program::performSearchResultsEvents(INPUT_RECORD &event) {
+	void Program::performSearchResultsEvents(const INPUT_RECORD &event) {
 		performSearchTableEvents(event);
 		if (activePart == SEARCH_RESULTS) {
 			for (int i = 0; i < searchPart.getSearchResults().getButtons().size(); i++) {
@@ -336,7 +352,7 @@ Program::Program() :
 		}
 	}
 
-	void Program::performOptionsEvents(INPUT_RECORD &event) {
+	void Program::performOptionsEvents(const INPUT_RECORD &event) {
 		activePart = FILES;
 		optionsDrawing = false;
 		errorDrawing = false;
@@ -490,7 +506,7 @@ Program::Program() :
 		}
 	}
 
-	void Program::handleFilesPartEventsWhenLeftMouseButtonPressed(ChoosableButton &button, INPUT_RECORD &event) {
+	void Program::handleFilesPartEventsWhenLeftMouseButtonPressed(ChoosableButton &button, const INPUT_RECORD &event) {
 		int index = &button - &items.getButtons()[0];
 		if (button.turnChosenStateOn()) {
 			chosenButtons.push_back(index);
@@ -509,7 +525,7 @@ Program::Program() :
 		}
 	}
 
-	void Program::handleEventsWhenRightMouseButtonPressedOfFilesPart(ChoosableButton &button, INPUT_RECORD &event) {
+	void Program::handleEventsWhenRightMouseButtonPressedOfFilesPart(ChoosableButton &button, const INPUT_RECORD &event) {
 		int index = &button - &items.getButtons()[0];
 		if (button.turnChosenStateOn()) {
 			chosenButtons.push_back(index);
@@ -574,7 +590,7 @@ Program::Program() :
 	}
 
 
-	void Program::handleEventsWhenMouseIsNotOnItems(ChoosableButton &button, INPUT_RECORD &event) {
+	void Program::handleEventsWhenMouseIsNotOnItems(ChoosableButton &button, const INPUT_RECORD &event) {
 		int index = &button - &items.getButtons()[0];
 		if (button.turnHoverOff()) {
 			itemsDrawing = true;
@@ -649,7 +665,7 @@ Program::Program() :
 		drawItemsAccordingToStates();
 	}
 
-	void Program::scrollVertically(INPUT_RECORD &event) {
+	void Program::scrollVertically(const INPUT_RECORD &event) {
 		CONSOLE_SCREEN_BUFFER_INFO screenInfo;
 		SMALL_RECT win;
 		
@@ -665,7 +681,7 @@ Program::Program() :
 		SetConsoleWindowInfo(outputHandle, TRUE, &win);
 	}
 
-	void Program::scrollHorizontally(INPUT_RECORD &event) {
+	void Program::scrollHorizontally(const INPUT_RECORD &event) {
 		CONSOLE_SCREEN_BUFFER_INFO screenInfo;
 		SMALL_RECT win;
 
@@ -691,6 +707,24 @@ Program::Program() :
 		input.setPosition(items.getButtons()[chosenButtons[chosenButtons.size() - 1]].getStartPosition());
 		input.turnInputStateOn();
 		doRenameOperations();
+	}
+
+	void Program::performTextEditingEvents(const INPUT_RECORD &event) {
+		textEditDrawing = false;
+		if (FROM_LEFT_1ST_BUTTON_PRESSED & event.Event.MouseEvent.dwButtonState) {
+			for (int i = 0; i < fileEditor.getButtons().size(); i++) {
+				if (fileEditor.getButtons()[i].isMouseOnButton(event)) {
+					fileEditor.getButtons()[i].turnInputStateOn(event);
+					textEditDrawing = true;
+					fileEditor.setInputLineIndex(i);
+				}
+				else {
+					if (fileEditor.getButtons()[i].turnInputStateOff()) {
+						textEditDrawing = true;
+					}
+				}
+			}
+		}
 	}
 
 

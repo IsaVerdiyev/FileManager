@@ -156,11 +156,11 @@ std::string TextLine::getTextInLine() {
 }
 
 std::string TextLine::getVisibleString() {
-	std::string sentence;
+	std::string visibleString;
 	for (int i = 0; i < stringSize; i++) {
-	sentence.push_back(sentenceSymbols[i].Char.AsciiChar);
+		visibleString.push_back(sentenceSymbols[i].Char.AsciiChar);
 	}
-	return sentence;
+	return visibleString;
 }
 
 
