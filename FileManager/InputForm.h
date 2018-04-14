@@ -3,6 +3,8 @@
 
 #include "TextLine.h"
 #include <iostream>
+#include "isNextAfterIndentation.h"
+#include "isOnIndentationException.h"
 
 class InputForm : public TextLine {
 	bool gettingInput;
@@ -29,6 +31,7 @@ public:
 	std::string getStringWithSlashT();
 	//bool checkIfSpacesOfTab(int index);
 	bool isOnIndentation(int index);
+	bool isNextAfterIndentation(int index);
 	void removeIndentation(int slashTIndex);
 	int getCursorIndexPosition();
 	int getVisibleStringSize();

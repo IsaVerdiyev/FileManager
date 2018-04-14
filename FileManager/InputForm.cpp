@@ -28,14 +28,17 @@ void InputForm::takeInput(const INPUT_RECORD &event) {
 	if(event.Event.KeyEvent.wVirtualKeyCode == VK_BACK) {
 		if(cursorPositionIndex != 0) {
 			try {
-				if (!isOnIndentation(cursorPositionIndex - 1)) {
+				if (!isOnIndentation(cursorPositionIndex) && !isNextAfterIndentation(cursorPositionIndex)) {
 					sentenceSymbols.erase(sentenceSymbols.begin() + cursorPositionIndex - 1);
 					setCursorPositionIndex(cursorPositionIndex - 1);
 				}
 			}
-			catch (int index) {
-				removeIndentation(index);
+			catch (isNextAfterIndentationException exc) {
+				removeIndentation(exc.getIndex());
 				setCursorPositionIndex(cursorPositionIndex - 4);
+			}
+			catch (isOnIndentationException exc) {
+				// need to add functionality===================
 			}
 			
 		}
@@ -208,8 +211,18 @@ bool InputForm::isOnIndentation(int index) {
 	for (int i = 0; i < slashT_positions.size(); i++) {
 		for (int j = 0; j < TextLine::slashT_SpaceCounts; j++) {
 			if (slashT_positions[i] + j == index) {
-				throw i;
+				throw isOnIndentation(i);
 			}
+		}
+	}
+	return false;
+}
+
+bool InputForm::isNextAfterIndentation(int index) {
+	std::string stringWithoutSlashIndentation = HelperFunctions::getStringWithReplacedSlashT_ToSpaces(textInLine, TextLine::slashT_SpaceCounts);
+	for (int i = 0; i < slashT_positions.size(); i++) {
+		if (i + TextLine::slashT_SpaceCounts == index) {
+			throw isNextAfterIndentation(i);
 		}
 	}
 	return false;

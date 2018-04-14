@@ -48,6 +48,12 @@
     <ClInclude Include="TextEditor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="isOnIndentationException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="isNextAfterIndentation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ChoosableButton.cpp">
@@ -81,6 +87,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TextEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="isOnIndentationException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="isNextAfterIndentation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

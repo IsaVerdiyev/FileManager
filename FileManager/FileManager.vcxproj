@@ -118,6 +118,8 @@
     <ClInclude Include="ChoosableButton.h" />
     <ClInclude Include="Colors.h" />
     <ClInclude Include="ErrorStrings.h" />
+    <ClInclude Include="isNextAfterIndentation.h" />
+    <ClInclude Include="isOnIndentationException.h" />
     <ClInclude Include="HelperFunctions.h" />
     <ClInclude Include="InputForm.h" />
     <ClInclude Include="Menu.h" />
@@ -133,6 +135,8 @@
     <ClCompile Include="ErrorStrings.cpp" />
     <ClCompile Include="HelperFunctions.cpp" />
     <ClCompile Include="InputForm.cpp" />
+    <ClCompile Include="isNextAfterIndentation.cpp" />
+    <ClCompile Include="isOnIndentationException.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Program.cpp" />
