@@ -21,6 +21,7 @@ public:
 	void setCursorColor(Color c);
 	void setColors();
 	void addNewLine();
+	void removeLine();
 };
 
 

@@ -79,3 +79,11 @@ void TextEditor::addNewLine() {
 	menuItemButtons[inputLineIndex].setCursorColor(cursorColor);
 	menuItemButtons[inputLineIndex].turnInputStateOn();*/
 }
+
+void TextEditor::removeLine() {
+	menuItemStrings[inputLineIndex - 1] += menuItemStrings[inputLineIndex];
+	menuItemStrings.erase(menuItemStrings.begin() + inputLineIndex);
+	setMenuItems(getMenuItemStrings());
+	inputLineIndex--;
+	menuItemButtons[inputLineIndex].turnInputStateOn();
+}
