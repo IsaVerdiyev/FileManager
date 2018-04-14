@@ -54,7 +54,11 @@ void TextEditor::addNewLine() {
 	for (int i = menuItemButtons[inputLineIndex].getCursorIndexPosition(); i < menuItemButtons[inputLineIndex].getVisibleStringSize(); i++) {
 		removedPart.push_back(menuItemButtons[inputLineIndex].getSentenceSymbols()[i].Char.AsciiChar);
 	}
-	INPUT_RECORD event;
+	getMenuItemStrings().insert(getMenuItemStrings().begin() + inputLineIndex + 1, removedPart);
+	setMenuItems(getMenuItemStrings());
+	inputLineIndex++;
+	getButtons()[inputLineIndex].turnInputStateOn();
+	/*INPUT_RECORD event;
 	event.Event.KeyEvent.wVirtualKeyCode = VK_BACK;
 	while (menuItemButtons[inputLineIndex].getCursorIndexPosition() < menuItemButtons[inputLineIndex].getVisibleStringSize()) {
 		menuItemButtons[inputLineIndex].setCursorPositionIndex(menuItemButtons[inputLineIndex].getCursorIndexPosition() + 1);
@@ -66,7 +70,7 @@ void TextEditor::addNewLine() {
 	menuItemStrings.insert(menuItemStrings.begin() + inputLineIndex, removedPart);
 	setMenuItems(getMenuItemStrings());
 	menuItemButtons[inputLineIndex].turnInputStateOn();
-	
+	*/
 	//==============
 	/*menuItemButtons[inputLineIndex].turnInputStateOff();
 	menuItemButtons.insert(menuItemButtons.begin() + inputLineIndex + 1, InputForm(removedPart));

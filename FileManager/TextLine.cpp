@@ -17,7 +17,7 @@ void TextLine::setSymbols() {
 	std::string s = HelperFunctions::getStringWithReplacedSlashT_ToSpaces(textInLine, slashT_SpaceCounts, &slashT_positions);
 	while (true) {
 		try {
-			sentenceSymbols.resize(s.size() > minLength ? s.size() : minLength);
+			sentenceSymbols.resize(s.size() + 1 > minLength ? s.size() + 1 : minLength);
 			break;
 		}
 		catch (std::exception ex) {
@@ -61,6 +61,9 @@ std::vector<CHAR_INFO> &TextLine::getSentenceSymbols() {
 }
 
 void TextLine::setMinLength(int length) {
+	if (length <= 0) {
+		return;
+	}
 	lengthChanged = true;
 	minLength = length;
 	resizeAccordingToMinLength();

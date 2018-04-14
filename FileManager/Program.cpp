@@ -167,6 +167,7 @@ Program::Program() :
 				}
 				else if (event.Event.KeyEvent.wVirtualKeyCode == VK_BACK &&  fileEditor.getInputLineIndex() && !fileEditor.getButtons()[fileEditor.getInputLineIndex()].getCursorIndexPosition()) {
 					fileEditor.removeLine();
+					textEditDrawing = true;
 				}
 				else if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK ||  event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE  || event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT || event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT) {
 					fileEditor.getButtons()[fileEditor.getInputLineIndex()].takeInput(event);
