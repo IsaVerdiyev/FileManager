@@ -61,6 +61,14 @@ void TextEditor::addNewLine() {
 		menuItemButtons[inputLineIndex].takeInput(event);
 	}
 	menuItemButtons[inputLineIndex].turnInputStateOff();
+	menuItemStrings[inputLineIndex] = menuItemButtons[inputLineIndex].getTextInLine();
+	inputLineIndex++;
+	menuItemStrings.insert(menuItemStrings.begin() + inputLineIndex, removedPart);
+	setMenuItems(getMenuItemStrings());
+	menuItemButtons[inputLineIndex].turnInputStateOn();
+	
+	//==============
+	/*menuItemButtons[inputLineIndex].turnInputStateOff();
 	menuItemButtons.insert(menuItemButtons.begin() + inputLineIndex + 1, InputForm(removedPart));
 
 	menuItemStrings.insert(menuItemStrings.begin() + inputLineIndex + 1, removedPart);
@@ -69,5 +77,5 @@ void TextEditor::addNewLine() {
 	menuItemButtons[inputLineIndex].setDeactiveColor(deactiveColor);
 	menuItemButtons[inputLineIndex].setActiveColor(activeColor);
 	menuItemButtons[inputLineIndex].setCursorColor(cursorColor);
-	menuItemButtons[inputLineIndex].turnInputStateOn();
+	menuItemButtons[inputLineIndex].turnInputStateOn();*/
 }
