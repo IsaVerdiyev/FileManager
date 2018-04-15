@@ -20,8 +20,8 @@ public:
 	void setDeactiveColor(Color c);
 	void setCursorColor(Color c);
 	void setColors();
-	void addNewLine();
-	void removeLine();
+	void addNewLine(HANDLE hndl);
+	void removeLine(HANDLE hndl);
 };
 
 

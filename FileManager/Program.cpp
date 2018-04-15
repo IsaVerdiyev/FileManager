@@ -150,6 +150,7 @@ Program::Program() :
 						fileEditor.getButtons()[fileEditor.getInputLineIndex()].turnInputStateOff();
 						fileEditor.setInputLineIndex(fileEditor.getInputLineIndex() - 1);
 						fileEditor.getButtons()[fileEditor.getInputLineIndex()].turnInputStateOn();
+						fileEditor.getButtons()[fileEditor.getInputLineIndex()].setCursorPositionIndex(fileEditor.getButtons()[fileEditor.getInputLineIndex() + 1].getCursorIndexPosition());
 						textEditDrawing = true;
 					}
 				}
@@ -158,20 +159,32 @@ Program::Program() :
 						fileEditor.getButtons()[fileEditor.getInputLineIndex()].turnInputStateOff();
 						fileEditor.setInputLineIndex(fileEditor.getInputLineIndex() + 1);
 						fileEditor.getButtons()[fileEditor.getInputLineIndex()].turnInputStateOn();
+						fileEditor.getButtons()[fileEditor.getInputLineIndex()].setCursorPositionIndex(fileEditor.getButtons()[fileEditor.getInputLineIndex() - 1].getCursorIndexPosition());
+
 						textEditDrawing = true;
 					}
 				}
 				else if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
-					fileEditor.addNewLine();
+					//fileEditor.removeMenuFromScreen(outputHandle);
+					fileEditor.addNewLine(outputHandle);
 					textEditDrawing = true;
 				}
 				else if (event.Event.KeyEvent.wVirtualKeyCode == VK_BACK &&  fileEditor.getInputLineIndex() && !fileEditor.getButtons()[fileEditor.getInputLineIndex()].getCursorIndexPosition()) {
-					fileEditor.removeLine();
+					//fileEditor.removeMenuFromScreen(outputHandle);
+					fileEditor.removeLine(outputHandle);
 					textEditDrawing = true;
 				}
 				else if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK ||  event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE  || event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT || event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT) {
+					//fileEditor.removeMenuFromScreen(outputHandle);
 					fileEditor.getButtons()[fileEditor.getInputLineIndex()].takeInput(event);
 					fileEditor.getMenuItemStrings()[fileEditor.getInputLineIndex()] = fileEditor.getButtons()[fileEditor.getInputLineIndex()].getTextInLine();
+					int cursorPosition = fileEditor.getButtons()[fileEditor.getInputLineIndex()].getCursorIndexPosition();
+					if (fileEditor.isLengthChanged()) {
+						//fileEditor.removeMenuFromScreen(outputHandle);
+						fileEditor.setMenuItems(fileEditor.getMenuItemStrings());
+						fileEditor.getButtons()[fileEditor.getInputLineIndex()].turnInputStateOn();
+					}
+					fileEditor.getButtons()[fileEditor.getInputLineIndex()].setCursorPositionIndex(cursorPosition);
 					textEditDrawing = true;
 				}
 				/*if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {

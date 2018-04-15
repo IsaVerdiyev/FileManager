@@ -22,7 +22,6 @@ protected:
 	void setSymbols();
 	int minLength = 1;
 	int stringSize = 0;
-	void createEraseArray(HANDLE &hndl);
 	void resizeAccordingToMinLength();
 public:
 	static const int slashT_SpaceCounts;
@@ -44,6 +43,7 @@ public:
 	COORD getStartPosition();
 	std::string getTextInLine();
 	std::string getVisibleString();
+	void createEraseArray(HANDLE &hndl);
 };
 
 

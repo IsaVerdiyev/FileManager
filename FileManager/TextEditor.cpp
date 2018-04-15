@@ -49,12 +49,15 @@ void TextEditor::setMenuItems(const std::vector<std::string> &itemsVector) {
 	setColors();
 }
 
-void TextEditor::addNewLine() {
+void TextEditor::addNewLine(HANDLE hndl) {
 	std::string removedPart;
 	for (int i = menuItemButtons[inputLineIndex].getCursorIndexPosition(); i < menuItemButtons[inputLineIndex].getVisibleStringSize(); i++) {
 		removedPart.push_back(menuItemButtons[inputLineIndex].getSentenceSymbols()[i].Char.AsciiChar);
 	}
 	getMenuItemStrings().insert(getMenuItemStrings().begin() + inputLineIndex + 1, removedPart);
+	/*if (isLengthChanged()) {
+		TemplateMenu::removeMenuFromScreen(hndl);
+	}*/
 	setMenuItems(getMenuItemStrings());
 	inputLineIndex++;
 	getButtons()[inputLineIndex].turnInputStateOn();
@@ -84,10 +87,14 @@ void TextEditor::addNewLine() {
 	menuItemButtons[inputLineIndex].turnInputStateOn();*/
 }
 
-void TextEditor::removeLine() {
+void TextEditor::removeLine(HANDLE hndl) {
 	menuItemStrings[inputLineIndex - 1] += menuItemStrings[inputLineIndex];
 	menuItemStrings.erase(menuItemStrings.begin() + inputLineIndex);
+	/*if (isLengthChanged()) {
+		TemplateMenu::removeMenuFromScreen(hndl);
+	}*/
 	setMenuItems(getMenuItemStrings());
 	inputLineIndex--;
 	menuItemButtons[inputLineIndex].turnInputStateOn();
 }
+

@@ -81,7 +81,7 @@ std::string HelperFunctions::getStringWithReplacedSlashT_ToSpaces(const std::str
 			if (slashT_positions) {
 				slashT_positions->push_back(i);
 			}
-			for (int i = 0; i < slashT_SpaceCounts; i++) {
+			for (int j = 0; j < slashT_SpaceCounts; j++) {
 				s.push_back(' ');
 			}
 		}
