@@ -120,7 +120,7 @@ Program::Program() :
 		}
 		if (activePart == FILES) {
 			if (input.isGettingInput() && event.Event.KeyEvent.bKeyDown) {
-				if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE || event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT || event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT) {
+				if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE || event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT || event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT || event.Event.KeyEvent.wVirtualKeyCode == VK_TAB) {
 					input.takeInput(event);
 				}
 				if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
@@ -132,7 +132,7 @@ Program::Program() :
 		}
 		if (searchPart.getSearchInput().isGettingInput() && event.Event.KeyEvent.bKeyDown) {
 		
-			if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE || event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT || event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT) {
+			if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE || event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT || event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT || VK_TAB) {
 				searchPart.getSearchInput().takeInput(event);
 				searchPart.appearOnConsole(outputHandle);
 			}
@@ -174,7 +174,7 @@ Program::Program() :
 					fileEditor.removeLine(outputHandle);
 					textEditDrawing = true;
 				}
-				else if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK ||  event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE  || event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT || event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT) {
+				else if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK ||  event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE  || event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT || event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT || event.Event.KeyEvent.wVirtualKeyCode == VK_TAB) {
 					//fileEditor.removeMenuFromScreen(outputHandle);
 					fileEditor.getButtons()[fileEditor.getInputLineIndex()].takeInput(event);
 					fileEditor.getMenuItemStrings()[fileEditor.getInputLineIndex()] = fileEditor.getButtons()[fileEditor.getInputLineIndex()].getTextInLine();

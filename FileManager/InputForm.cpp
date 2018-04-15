@@ -76,9 +76,24 @@ void InputForm::takeInput(const INPUT_RECORD &event) {
 		CHAR_INFO c;
 		c.Char.AsciiChar = event.Event.KeyEvent.uChar.AsciiChar;
 		c.Attributes = activeColor;
-		temp.getSentenceSymbols().insert(temp.getSentenceSymbols().begin() + temp.cursorPositionIndex, c);
+		if (c.Char.AsciiChar == '\t') {
+			int index = temp.findIndexInTextLine(cursorPositionIndex);
+			temp.textInLine.insert(temp.textInLine.begin() + index, '\t');
+			temp.slashT_positions.push_back(index);
+			std::sort(temp.slashT_positions.begin(), temp.slashT_positions.end() - 1);
+			CHAR_INFO c;
+			c = temp.getSentenceSymbols()[0];
+			c.Char.AsciiChar = ' ';
+			for (int i = 0; i < TextLine::slashT_SpaceCounts; i++) {
+				temp.getSentenceSymbols().insert(temp.getSentenceSymbols().begin() + temp.getCursorIndexPosition(), c);
+			}
+			temp.setCursorPositionIndex(temp.getCursorIndexPosition() + 4);
+		}
+		else {
+			temp.getSentenceSymbols().insert(temp.getSentenceSymbols().begin() + temp.getCursorIndexPosition(), c);
 
-		temp.setCursorPositionIndex(temp.cursorPositionIndex + 1);
+			temp.setCursorPositionIndex(temp.cursorPositionIndex + 1);
+		}
 		//setVisibleStringSize();
 	}
 	temp.setVisibleStringSize();
@@ -253,6 +268,20 @@ int InputForm::getCursorIndexPosition() {
 
 int InputForm::getVisibleStringSize() {
 	return stringSize;
+}
+
+int InputForm::findIndexInTextLine(int visibleIndex) {
+	std::string str = textInLine;
+	int i = 0;
+	for (int j = 0; i < str.size(); i++, j++) {
+		if (visibleIndex == j) {
+			break;
+		}
+		if (str[i] == '\t') {
+			j += TextLine::slashT_SpaceCounts - 1;
+		}
+	}
+	return i;
 }
 
 

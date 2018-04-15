@@ -5,6 +5,7 @@
 #include <iostream>
 #include "isNextAfterIndentation.h"
 #include "isOnIndentationException.h"
+#include <algorithm>
 
 class InputForm : public TextLine {
 	bool gettingInput;
@@ -35,6 +36,7 @@ public:
 	void removeIndentation(int slashTIndex);
 	int getCursorIndexPosition();
 	int getVisibleStringSize();
+	int findIndexInTextLine(int i);
 };
 
 
