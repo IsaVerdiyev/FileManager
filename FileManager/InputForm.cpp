@@ -203,7 +203,8 @@ void InputForm::setStringAfterFinishingInput() {
 std::string InputForm::getStringWithSlashT() {
 	std::string stringWithSlashT = getVisibleString();
 	for (int i = 0; i < slashT_positions.size(); i++) {
-		textInLine.erase(textInLine.begin() + slashT_positions[i], textInLine.begin() + slashT_positions[i] + TextLine::slashT_SpaceCounts);
+		stringWithSlashT.erase(stringWithSlashT.begin() + slashT_positions[i], stringWithSlashT.begin() + slashT_positions[i] + TextLine::slashT_SpaceCounts);
+		stringWithSlashT.insert(stringWithSlashT.begin() + slashT_positions[i], '\t');
 	}
 	return stringWithSlashT;
 }

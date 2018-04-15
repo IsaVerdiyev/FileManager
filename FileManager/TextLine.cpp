@@ -163,6 +163,22 @@ std::string TextLine::getVisibleString() {
 	for (int i = 0; i < stringSize; i++) {
 		visibleString.push_back(sentenceSymbols[i].Char.AsciiChar);
 	}
+	if (slashT_positions.size()) {
+		for (int i = slashT_positions.size() - 1; i >= 0; i--) {
+			bool flag = false;
+			if (slashT_positions[i] == visibleString.size()) {
+				flag = true;
+				for (int j = i; j < slashT_positions.size(); j++) {
+					for (int counter = 0; counter < TextLine::slashT_SpaceCounts; counter++) {
+						visibleString.push_back(' ');
+					}
+				}
+			}
+			if (flag) {
+				break;
+			}
+		}
+	}
 	return visibleString;
 }
 

@@ -61,6 +61,7 @@ void TextEditor::addNewLine(HANDLE hndl) {
 	setMenuItems(getMenuItemStrings());
 	inputLineIndex++;
 	getButtons()[inputLineIndex].turnInputStateOn();
+	getButtons()[inputLineIndex].setCursorPositionIndex(0);
 	/*INPUT_RECORD event;
 	event.Event.KeyEvent.wVirtualKeyCode = VK_BACK;
 	while (menuItemButtons[inputLineIndex].getCursorIndexPosition() < menuItemButtons[inputLineIndex].getVisibleStringSize()) {
