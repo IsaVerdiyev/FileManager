@@ -13,8 +13,8 @@ TextLine::TextLine(const std::string &s, Color c) :
 
 
 void TextLine::setSymbols() {
-	slashT_positions.clear();
-	std::string s = HelperFunctions::getStringWithReplacedSlashT_ToSpaces(textInLine, slashT_SpaceCounts, &slashT_positions);
+	//slashT_positions.clear();
+	std::string s = HelperFunctions::getStringWithReplacedSlashT_ToSpaces(textInLine, slashT_SpaceCounts);
 	while (true) {
 		try {
 			sentenceSymbols.resize(s.size() + 1 > minLength ? s.size() + 1 : minLength);
@@ -108,7 +108,14 @@ void TextLine::appearOnConsoleScreen(HANDLE &hndl) {
 		positionChanged = false;
 		lengthChanged = false;
 	}
-	putCharInfoArrayInConsoleBuffer(hndl, sentenceSymbols, startPosition);
+	std::vector<CHAR_INFO> temp;
+	for (int i = 0; i < sentenceSymbols.size(); i++) {
+		temp.push_back(sentenceSymbols[i]);
+		if (sentenceSymbols[i].Char.AsciiChar == '\t') {
+			temp[i].Char.AsciiChar = ' ';
+		}
+	}
+	putCharInfoArrayInConsoleBuffer(hndl, temp, startPosition);
 	isOnScreen = true;
 }
 
@@ -159,27 +166,41 @@ std::string TextLine::getTextInLine() {
 }
 
 std::string TextLine::getVisibleString() {
+	setVisibleStringSize();
 	std::string visibleString;
 	for (int i = 0; i < stringSize; i++) {
 		visibleString.push_back(sentenceSymbols[i].Char.AsciiChar);
 	}
-	if (slashT_positions.size()) {
-		for (int i = slashT_positions.size() - 1; i >= 0; i--) {
-			bool flag = false;
-			if (slashT_positions[i] == visibleString.size()) {
-				flag = true;
-				for (int j = i; j < slashT_positions.size(); j++) {
-					for (int counter = 0; counter < TextLine::slashT_SpaceCounts; counter++) {
-						visibleString.push_back(' ');
-					}
-				}
-			}
-			if (flag) {
-				break;
-			}
+	//if (slashT_positions.size()) {
+	//	for (int i = slashT_positions.size() - 1; i >= 0; i--) {
+	//		bool flag = false;
+	//		if (slashT_positions[i] == visibleString.size()) {
+	//			flag = true;
+	//			for (int j = i; j < slashT_positions.size(); j++) {
+	//				for (int counter = 0; counter < TextLine::slashT_SpaceCounts; counter++) {
+	//					visibleString.push_back(' ');
+	//				}
+	//			}
+	//		}
+	//		if (flag) {
+	//			break;
+	//		}
+	//	}
+	//}
+	return visibleString;
+}
+
+void TextLine::setVisibleStringSize() {
+	int counter = sentenceSymbols.size() - 1;
+	while (counter >= 0) {
+		if (sentenceSymbols[counter].Char.AsciiChar == ' ') {
+			counter--;
+		}
+		else {
+			break;
 		}
 	}
-	return visibleString;
+	stringSize = counter + 1;
 }
 
 

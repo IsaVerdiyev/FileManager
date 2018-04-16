@@ -25,11 +25,25 @@ bool InputForm::isGettingInput() {
 
 void InputForm::takeInput(const INPUT_RECORD &event) {
 	lengthChanged = true;
-	InputForm temp = *this;
 	if(event.Event.KeyEvent.wVirtualKeyCode == VK_BACK) {
-		if(temp.getCursorIndexPosition() != 0) {
-			try {
-				if ( !temp.isNextAfterIndentation(temp.getCursorIndexPosition())) {
+		if (getCursorIndexPosition() != 0) {
+			if (getVisibleStringSize() >= getCursorIndexPosition()) {
+				int indexInLine = findIndexInTextLine(cursorPositionIndex - 1);
+				if (textInLine[indexInLine] == '\t') {
+					cursorPositionIndex -= 4;
+				}
+				else {
+					cursorPositionIndex--;
+				}
+				textInLine.erase(textInLine.begin() + indexInLine);
+				setTextAndColor(textInLine);
+			}
+			else {
+				cursorPositionIndex--;
+			}
+			//try {
+
+				/*if ( !temp.isNextAfterIndentation(temp.getCursorIndexPosition())) {
 					temp.getSentenceSymbols().erase(temp.getSentenceSymbols().begin() + temp.getCursorIndexPosition() - 1);
 					temp.setCursorPositionIndex(temp.getCursorIndexPosition() - 1);
 				}
@@ -37,74 +51,96 @@ void InputForm::takeInput(const INPUT_RECORD &event) {
 			catch (isNextAfterIndentationException exc) {
 				temp.removeIndentation(exc.getIndex());
 				temp.setCursorPositionIndex(temp.getCursorIndexPosition() - 4);
-			}
+			}*/
 			//catch (isOnIndentationException exc) {
 			//	// need to add functionality===================
 
 			//}
-			
+
+		//}
 		}
 	}
 	else if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
-		temp.turnInputStateOff();
+		turnInputStateOff();
 	}
 	else if (event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT) {
-		if (temp.getCursorIndexPosition() != 0) {
-			temp.setCursorPositionIndex(temp.getCursorIndexPosition() - 1);
+		if (cursorPositionIndex != 0) {
+			setCursorPositionIndex(cursorPositionIndex - 1);
 		}
 	}
 	else if (event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT) {
-		if (temp.getCursorIndexPosition() != temp.getSentenceSymbols().size() - 1) {
+		if (getCursorIndexPosition() != getSentenceSymbols().size() - 1) {
 			try {
-				if (!temp.isOnIndentation(temp.getCursorIndexPosition() + 1)) {
-					temp.setCursorPositionIndex(temp.getCursorIndexPosition() + 1);
+				if (!isOnIndentation(getCursorIndexPosition() + 1)) {
+					setCursorPositionIndex(getCursorIndexPosition() + 1);
 				}
 			}
 			catch (isOnIndentationException exc) {
-				int resultCursorPositionIndex = exc.getIndex() * 3 + temp.slashT_positions[exc.getIndex()] + TextLine::slashT_SpaceCounts;
-				temp.setCursorPositionIndex(resultCursorPositionIndex);
+				int resultCursorPositionIndex = exc.getIndex() + TextLine::slashT_SpaceCounts;
+				setCursorPositionIndex(resultCursorPositionIndex);
 			}
 		}
 	}
 	else {
-		if (temp.cursorPositionIndex != temp.sentenceSymbols.size() - 1
-			&& temp.sentenceSymbols[temp.sentenceSymbols.size() - 1].Char.AsciiChar == ' '
- 			&& temp.sentenceSymbols.size() == temp.minLength) 
+		/*if (cursorPositionIndex > getVisibleStringSize()) {
+			if (event.Event.KeyEvent.uChar.AsciiChar != ' ') {
+				for (int i = getVisibleStringSize(); i < cursorPositionIndex; i++) {
+					textInLine.push_back(sentenceSymbols[i].Char.AsciiChar);
+				}
+				textInLine.insert(textInLine.begin() + cursorPositionIndex, event.Event.KeyEvent.uChar.AsciiChar);
+				int tempCursorPosition = cursorPositionIndex;
+				setTextAndColor(textInLine);
+				cursorPositionIndex = tempCursorPosition + 1;
+			}
+		}
+		else {
+			textInLine.insert(textInLine.begin() + cursorPositionIndex, event.Event.KeyEvent.uChar.AsciiChar);
+			setTextAndColor(textInLine);
+			cursorPositionIndex++;
+		}*/
+		if (cursorPositionIndex != sentenceSymbols.size() - 1
+			&& sentenceSymbols[sentenceSymbols.size() - 1].Char.AsciiChar == ' '
+ 			&& sentenceSymbols.size() == minLength) 
 		{
-			temp.sentenceSymbols.erase(temp.sentenceSymbols.end() - 1);
+			sentenceSymbols.erase(sentenceSymbols.end() - 1);
 		}
 		CHAR_INFO c;
 		c.Char.AsciiChar = event.Event.KeyEvent.uChar.AsciiChar;
 		c.Attributes = activeColor;
+		/*if (c.Char.AsciiChar == '\t') {
+			int index = findIndexInTextLine(cursorPositionIndex);
+			textInLine.insert(textInLine.begin() + index, '\t');
+			int tempCursorPositionIndex = temp.getCursorIndexPosition();
+			temp.setTextAndColor(temp.textInLine);
+			temp.setCursorPositionIndex(tempCursorPositionIndex + 4);
+		}
+		else {*/
+		getSentenceSymbols().insert(getSentenceSymbols().begin() + getCursorIndexPosition(), c);
 		if (c.Char.AsciiChar == '\t') {
-			int index = temp.findIndexInTextLine(cursorPositionIndex);
-			temp.textInLine.insert(temp.textInLine.begin() + index, '\t');
-			temp.slashT_positions.push_back(index);
-			std::sort(temp.slashT_positions.begin(), temp.slashT_positions.end() - 1);
-			CHAR_INFO c;
-			c = temp.getSentenceSymbols()[0];
-			c.Char.AsciiChar = ' ';
-			for (int i = 0; i < TextLine::slashT_SpaceCounts; i++) {
-				temp.getSentenceSymbols().insert(temp.getSentenceSymbols().begin() + temp.getCursorIndexPosition(), c);
+			CHAR_INFO space;
+			space.Char.AsciiChar = ' ';
+			for (int i = 0; i < TextLine::slashT_SpaceCounts - 1; i++) {
+				getSentenceSymbols().insert(getSentenceSymbols().begin() + getCursorIndexPosition() + 1, space);
 			}
-			temp.setCursorPositionIndex(temp.getCursorIndexPosition() + 4);
+			cursorPositionIndex += 4;
 		}
 		else {
-			temp.getSentenceSymbols().insert(temp.getSentenceSymbols().begin() + temp.getCursorIndexPosition(), c);
-
-			temp.setCursorPositionIndex(temp.cursorPositionIndex + 1);
+			cursorPositionIndex++;
 		}
+		std::string newString = getStringWithSlashT();
+		setTextAndColor(newString);
+		/*}*/
 		//setVisibleStringSize();
 	}
-	temp.setVisibleStringSize();
-	temp.resizeAccordingToMinLength();
-	/*if (cursorPositionIndex >= sentenceSymbols.size()) {
-		cursorPositionIndex = sentenceSymbols.size() - 1;
-	}*/
-	temp.setStringAfterFinishingInput();
-	std::string resultString = temp.getTextInLine();
-	*this = temp;
-	this->setTextAndColor(resultString);
+	//temp.setVisibleStringSize();
+	//temp.resizeAccordingToMinLength();
+	///*if (cursorPositionIndex >= sentenceSymbols.size()) {
+	//	cursorPositionIndex = sentenceSymbols.size() - 1;
+	//}*/
+	//temp.setStringAfterFinishingInput();
+	//std::string resultString = temp.getTextInLine();
+	//*this = temp;
+	//this->setTextAndColor(resultString);
 }
 
 void InputForm::setActiveColor(Color c) {
@@ -184,23 +220,11 @@ void InputForm::setCursorPositionIndex(int index) {
 		}
 	}
 	catch (isOnIndentationException exc) {
-		int resultIndexOfCursor = exc.getIndex() * (slashT_SpaceCounts - 1) + slashT_positions[exc.getIndex()];
-		setCursorPositionIndex(resultIndexOfCursor);
+		setCursorPositionIndex(exc.getIndex());
 	}
 }
 
-void InputForm::setVisibleStringSize() {
-	int counter = sentenceSymbols.size() - 1;
-	while (counter >= 0) {
-		if (sentenceSymbols[counter].Char.AsciiChar == ' ') {
-			counter--;
-		}
-		else {
-			break;
-		}
-	}
-	stringSize = counter + 1;
-}
+
 
 void InputForm::setStringAfterFinishingInput() {
 	textInLine = getStringWithSlashT();
@@ -217,10 +241,15 @@ void InputForm::setStringAfterFinishingInput() {
 
 std::string InputForm::getStringWithSlashT() {
 	std::string stringWithSlashT = getVisibleString();
-	for (int i = 0; i < slashT_positions.size(); i++) {
+	for (int i = 0; i < stringWithSlashT.size(); i++) {
+		if (stringWithSlashT[i] == '\t' && i != stringWithSlashT.size() - 1) {
+			stringWithSlashT.erase(stringWithSlashT.begin() + i + 1, stringWithSlashT.begin() + i + TextLine::slashT_SpaceCounts);
+		}
+	}
+	/*for (int i = 0; i < slashT_positions.size(); i++) {
 		stringWithSlashT.erase(stringWithSlashT.begin() + slashT_positions[i], stringWithSlashT.begin() + slashT_positions[i] + TextLine::slashT_SpaceCounts);
 		stringWithSlashT.insert(stringWithSlashT.begin() + slashT_positions[i], '\t');
-	}
+	}*/
 	return stringWithSlashT;
 }
 
@@ -236,10 +265,11 @@ std::string InputForm::getStringWithSlashT() {
 
 bool InputForm::isOnIndentation(int index) {
 	std::string stringWithoutSlashIndentation = HelperFunctions::getStringWithReplacedSlashT_ToSpaces(textInLine, TextLine::slashT_SpaceCounts);
-	for (int i = 0; i < slashT_positions.size(); i++) {
-		for (int j = 1; j < TextLine::slashT_SpaceCounts; j++) {
-			if (i * 3 + slashT_positions[i] + j == index) {
-				throw isOnIndentationException(i);
+	for (int i = 0; i < TextLine::slashT_SpaceCounts; i++) {
+		int j = index - i;
+		if (j > 0) {
+			if (sentenceSymbols[j].Char.AsciiChar == '\t') {
+				throw isOnIndentationException(j);
 			}
 		}
 	}
@@ -248,17 +278,38 @@ bool InputForm::isOnIndentation(int index) {
 
 bool InputForm::isNextAfterIndentation(int index) {
 	std::string stringWithoutSlashIndentation = HelperFunctions::getStringWithReplacedSlashT_ToSpaces(textInLine, TextLine::slashT_SpaceCounts);
-	for (int i = 0; i < slashT_positions.size(); i++) {
-		if (i * 3 + slashT_positions[i] + TextLine::slashT_SpaceCounts == index) {
-			throw isNextAfterIndentationException(i);
+	int j = index - TextLine::slashT_SpaceCounts;
+	if (j > 0) {
+		if (sentenceSymbols[j].Char.AsciiChar == '\t') {
+			throw j;
 		}
 	}
 	return false;
 }
 
 void InputForm::removeIndentation(int slashTIndex) {
-	sentenceSymbols.erase(sentenceSymbols.begin() + slashT_positions[slashTIndex], sentenceSymbols.begin() + slashT_positions[slashTIndex] + TextLine::slashT_SpaceCounts);
-	slashT_positions.erase(slashT_positions.begin() + slashTIndex);
+	/*int visibleIndex = findVisibleIndex(slashT_positions[slashTIndex]);
+	sentenceSymbols.erase(sentenceSymbols.begin() + visibleIndex, sentenceSymbols.begin() + visibleIndex + TextLine::slashT_SpaceCounts);
+	slashT_positions.erase(slashT_positions.begin() + slashTIndex);*/
+	//textInLine.erase(textInLine.begin() + slashT_positions[slashTIndex]);
+	textInLine.erase(textInLine.begin() + slashTIndex);
+	setTextAndColor(textInLine);
+}
+
+int InputForm::findVisibleIndex(int index) {
+	int j = 0;
+	for (int i = 0; i < textInLine.size(); i++) {
+		if (i == index) {
+			break;
+		}
+		if(textInLine[i] == '\t') {
+			j += 4;
+		}
+		else {
+			j++;
+		}
+	}
+	return j;
 }
 
 
@@ -278,7 +329,17 @@ int InputForm::findIndexInTextLine(int visibleIndex) {
 			break;
 		}
 		if (str[i] == '\t') {
-			j += TextLine::slashT_SpaceCounts - 1;
+			bool found = false;
+			for (int z = 0; z < TextLine::slashT_SpaceCounts - 1; z++) {
+				j++;
+				if (j == visibleIndex) {
+					found = true;
+					break;
+				}
+			}
+			if (found) {
+				break;
+			}
 		}
 	}
 	return i;

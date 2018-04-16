@@ -51,17 +51,29 @@ void TextEditor::setMenuItems(const std::vector<std::string> &itemsVector) {
 
 void TextEditor::addNewLine(HANDLE hndl) {
 	std::string removedPart;
-	for (int i = menuItemButtons[inputLineIndex].getCursorIndexPosition(); i < menuItemButtons[inputLineIndex].getVisibleStringSize(); i++) {
-		removedPart.push_back(menuItemButtons[inputLineIndex].getSentenceSymbols()[i].Char.AsciiChar);
+	int index = menuItemButtons[inputLineIndex].findIndexInTextLine(menuItemButtons[inputLineIndex].getCursorIndexPosition());
+	for (int i = index; i < menuItemStrings[inputLineIndex].size(); i++) {
+		removedPart.push_back(menuItemStrings[inputLineIndex][i]);
 	}
-	getMenuItemStrings().insert(getMenuItemStrings().begin() + inputLineIndex + 1, removedPart);
-	/*if (isLengthChanged()) {
-		TemplateMenu::removeMenuFromScreen(hndl);
-	}*/
-	setMenuItems(getMenuItemStrings());
-	inputLineIndex++;
-	getButtons()[inputLineIndex].turnInputStateOn();
-	getButtons()[inputLineIndex].setCursorPositionIndex(0);
+	menuItemStrings[inputLineIndex].erase(menuItemStrings[inputLineIndex].begin() + index, menuItemStrings[inputLineIndex].end());
+	menuItemStrings.insert(menuItemStrings.begin() + ++inputLineIndex, removedPart);
+	setMenuItems(menuItemStrings);
+	menuItemButtons[inputLineIndex].turnInputStateOn();
+	menuItemButtons[inputLineIndex].setCursorPositionIndex(0);
+
+	//for (int i = menuItemButtons[inputLineIndex].getCursorIndexPosition(); i < menuItemButtons[inputLineIndex].getVisibleStringSize(); i++) {
+	//	
+	//	//removedPart.push_back(menuItemButtons[inputLineIndex].getSentenceSymbols()[i].Char.AsciiChar);
+	//}
+	
+	//getMenuItemStrings().insert(getMenuItemStrings().begin() + inputLineIndex + 1, removedPart);
+	///*if (isLengthChanged()) {
+	//	TemplateMenu::removeMenuFromScreen(hndl);
+	//}*/
+	//setMenuItems(getMenuItemStrings());
+	//inputLineIndex++;
+	//getButtons()[inputLineIndex].turnInputStateOn();
+	//getButtons()[inputLineIndex].setCursorPositionIndex(0);
 	/*INPUT_RECORD event;
 	event.Event.KeyEvent.wVirtualKeyCode = VK_BACK;
 	while (menuItemButtons[inputLineIndex].getCursorIndexPosition() < menuItemButtons[inputLineIndex].getVisibleStringSize()) {
@@ -89,6 +101,7 @@ void TextEditor::addNewLine(HANDLE hndl) {
 }
 
 void TextEditor::removeLine(HANDLE hndl) {
+	int futureCursorPosition = menuItemButtons[inputLineIndex - 1].getVisibleStringSize();
 	menuItemStrings[inputLineIndex - 1] += menuItemStrings[inputLineIndex];
 	menuItemStrings.erase(menuItemStrings.begin() + inputLineIndex);
 	/*if (isLengthChanged()) {
@@ -97,5 +110,6 @@ void TextEditor::removeLine(HANDLE hndl) {
 	setMenuItems(getMenuItemStrings());
 	inputLineIndex--;
 	menuItemButtons[inputLineIndex].turnInputStateOn();
+	menuItemButtons[inputLineIndex].setCursorPositionIndex(futureCursorPosition);
 }
 

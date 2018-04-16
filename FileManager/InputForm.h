@@ -27,7 +27,7 @@ public:
 	bool turnInputStateOff();
 	void setCursorPositionIndex(const INPUT_RECORD &event);
 	void setCursorPositionIndex(int index);
-	void setVisibleStringSize();
+	
 	void setStringAfterFinishingInput();
 	std::string getStringWithSlashT();
 	//bool checkIfSpacesOfTab(int index);
@@ -37,6 +37,7 @@ public:
 	int getCursorIndexPosition();
 	int getVisibleStringSize();
 	int findIndexInTextLine(int i);
+	int findVisibleIndex(int i);
 };
 
 
