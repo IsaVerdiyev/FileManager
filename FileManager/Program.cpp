@@ -16,6 +16,8 @@ Program::Program() :
 		"Create folder",
 		"Delete"}),
 	diskOptions(std::vector<std::string>{"Open"}),
+		back{"Back"},
+		save{"Save"},
 		path(""),
 		CtrlisPressed{ false },
 		activePart{ FILES }
@@ -27,7 +29,7 @@ Program::Program() :
 	options.setButtonColor(static_cast<Color>(Red << 4 | White));
 	diskOptions.setHoverColor(static_cast<Color>(Green << 4 | White));
 	diskOptions.setButtonColor(static_cast<Color>(Red << 4 | White));
-	fileEditor.setStartPosition({ 5, 8 });
+	fileEditor.setStartPosition({ 5, 10 });
 	fileEditor.setActiveColor(defaultDeactiveColor);
 	fileEditor.setDeactiveColor(defaultDeactiveColor);
 	fileEditor.setCursorColor(defaultCursorColor);
@@ -46,6 +48,8 @@ Program::Program() :
 	pointerToOptionsMenu = &diskOptions;
 	searchPart.setStartPosition({ 5, 5 });
 	searchPart.appearOnConsole(outputHandle);
+	back.setPosition({ 5, 5 });
+	save.setPosition({ 30, 5 });
 }
 
 
@@ -247,9 +251,14 @@ Program::Program() :
 				!searchedPath.compare(searchedPath.size() - h.size(), h.size(), h))  {
 				std::ifstream file(searchedPath);
 				if (file) {
+					fileEditor.setPathToFile(searchedPath);
 					fileEditor.setMenuItems(HelperFunctions::getTextFromFile(file));
 					activePart = EDIT_FILE;
 					textEditDrawing = true;
+					searchPart.getSearchHeader().removeFromConsoleScreen(outputHandle);
+					searchPart.getSearchInput().removeFromConsoleScreen(outputHandle);
+					back.appearOnConsoleScreen(outputHandle);
+					save.appearOnConsoleScreen(outputHandle);
 					return;
 				}
 			}
@@ -606,6 +615,7 @@ Program::Program() :
 		
 		else if (activePart == FILES) {
 			pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
+			fileEditor.removeMenuFromScreen(outputHandle);
 			if (itemsDrawing) {
 				items.drawMenu(outputHandle);
 			}
@@ -752,6 +762,7 @@ Program::Program() :
 
 	void Program::performTextEditingEvents(const INPUT_RECORD &event) {
 		textEditDrawing = false;
+		errorDrawing = false;
 		if (FROM_LEFT_1ST_BUTTON_PRESSED & event.Event.MouseEvent.dwButtonState) {
 			for (int i = 0; i < fileEditor.getButtons().size(); i++) {
 				if (fileEditor.getButtons()[i].isMouseOnButton(event)) {
@@ -764,6 +775,48 @@ Program::Program() :
 						textEditDrawing = true;
 					}
 				}
+			}
+		}
+		if (back.isMouseOnButton(event)) {
+			if (back.turnHoverOn()) {
+				back.appearOnConsoleScreen(outputHandle);
+			}
+			if (FROM_LEFT_1ST_BUTTON_PRESSED & event.Event.MouseEvent.dwButtonState) {
+				back.removeFromConsoleScreen(outputHandle);
+				save.removeFromConsoleScreen(outputHandle);
+				searchPart.getSearchHeader().appearOnConsoleScreen(outputHandle);
+				searchPart.getSearchInput().appearOnConsoleScreen(outputHandle);
+				startOpeningProcess(path);
+			}
+		}
+		else {
+			if (back.turnHoverOff()) {
+				back.appearOnConsoleScreen(outputHandle);
+			}
+		}
+		if (save.isMouseOnButton(event)) {
+			if (save.turnHoverOn()) {
+				save.appearOnConsoleScreen(outputHandle);
+			}
+			if (FROM_LEFT_1ST_BUTTON_PRESSED & event.Event.MouseEvent.dwButtonState) {
+				try {
+					fileEditor.saveFile();
+				}
+				catch (std::exception ex) {
+					error.setTextAndColor(ex.what());
+					errorDrawing = true;
+				}
+				back.removeFromConsoleScreen(outputHandle);
+				save.removeFromConsoleScreen(outputHandle);
+				searchPart.getSearchHeader().appearOnConsoleScreen(outputHandle);
+				searchPart.getSearchInput().appearOnConsoleScreen(outputHandle);
+				startOpeningProcess(path);
+
+			}
+		}
+		else {
+			if (save.turnHoverOff()) {
+				save.appearOnConsoleScreen(outputHandle);
 			}
 		}
 	}

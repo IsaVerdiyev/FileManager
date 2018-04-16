@@ -10,6 +10,7 @@ class TextEditor : public TemplateMenu<InputForm> {
 	Color activeColor;
 	Color deactiveColor;
 	Color cursorColor;
+	std::string pathToFile;
 public:
 	TextEditor();
 	TextEditor(const std::vector<std::string> &itemsVector);
@@ -22,6 +23,8 @@ public:
 	void setColors();
 	void addNewLine(HANDLE hndl);
 	void removeLine(HANDLE hndl);
+	void setPathToFile(const std::string &path);
+	void saveFile();
 };
 
 

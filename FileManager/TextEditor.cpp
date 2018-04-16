@@ -113,3 +113,14 @@ void TextEditor::removeLine(HANDLE hndl) {
 	menuItemButtons[inputLineIndex].setCursorPositionIndex(futureCursorPosition);
 }
 
+void TextEditor::setPathToFile(const std::string &path) {
+	pathToFile = path;
+}
+
+void TextEditor::saveFile() {
+	std::ofstream file(pathToFile);
+	if (!file) {
+		throw std::runtime_error("Coudn't save file");
+	}
+	HelperFunctions::setTextInNewFile(file, menuItemStrings);
+}
