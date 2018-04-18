@@ -101,3 +101,7 @@ void TextEditor::saveFile() {
 	}
 	HelperFunctions::setTextInNewFile(file, menuItemStrings);
 }
+
+int TextEditor::getLengthOfLineInTextEditor() {
+	return lengthOfLineInTextEditor;
+}

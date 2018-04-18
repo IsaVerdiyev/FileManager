@@ -54,6 +54,8 @@ public:
 	
 	
 	void setLengthOfLineInTextEditor(int l); // sets value in variable lengthOfLineInTextEditor
+
+	int getLengthOfLineInTextEditor();  // returns value in varialbe lengthOfLineInTextEditor
 };
 
 

@@ -69,3 +69,58 @@ void TextEditorInputForm::takeInput(const INPUT_RECORD &event) {
 		setTextAndColor(newTextInLine);
 	}
 }
+
+void TextEditorInputForm::setCursorPositionIndex(const INPUT_RECORD &event) {
+	for (int i = 0; i < sentenceSymbols.size(); i++) {
+		if (startPosition.X + i == event.Event.MouseEvent.dwMousePosition.X) {
+			setCursorPositionIndex(i);
+		}
+	}
+}
+
+
+void TextEditorInputForm::setCursorPositionIndex(int index) {
+	try {
+		if (!isOnIndentation(index)) {
+			if (index < 0 || index > getVisibleStringSize()) {
+				if (getVisibleStringSize()) {
+					setCursorPositionIndex(getVisibleStringSize());
+				}
+				else {
+					cursorPositionIndex = 0;
+				}
+			}
+			else {
+				cursorPositionIndex = index;
+			}
+		}
+	}
+	catch (isOnIndentationException exc) {
+		setCursorPositionIndex(exc.getIndex());
+	}
+}
+
+bool TextEditorInputForm::turnInputStateOn(const INPUT_RECORD &event) {
+	if (!gettingInput) {
+		gettingInput = true;
+		setCursorPositionIndex(event);
+		return true;
+	}
+	else {
+		setCursorPositionIndex(event);
+		return false;
+	}
+}
+
+bool TextEditorInputForm::turnInputStateOn() {
+	if (!gettingInput) {
+		gettingInput = true;
+		setCursorPositionIndex(stringSize);
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+
