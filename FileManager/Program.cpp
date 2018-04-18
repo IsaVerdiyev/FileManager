@@ -20,7 +20,7 @@ Program::Program() :
 		save{"Save"},
 		path(""),
 		CtrlisPressed{ false },
-		activePart{ FILES }
+		activePart{ BROWSING }
 {
 	setDisks();
 	items.setMenuItems(disks);
@@ -99,15 +99,12 @@ Program::Program() :
 		else if (event.Event.MouseEvent.dwEventFlags & MOUSE_HWHEELED) {
 			scrollHorizontally(event);
 		}
-		else if (activePart == FILES) {
+		else if (activePart == BROWSING) {
 			performFilesPartEvents(event);
 		}
 		else if (activePart == OPTIONS) {
 			performOptionsEvents(event);
 		}
-		/*else if (activePart == SEARCH) {
-			performSearchTableEvents(event);
-		}*/
 		else if (activePart == SEARCH_RESULTS) {
 			performSearchResultsEvents(event);
 		}
@@ -123,7 +120,7 @@ Program::Program() :
 		else if (!event.Event.KeyEvent.bKeyDown) {
 			CtrlisPressed = false;
 		}
-		if (activePart == FILES) {
+		if (activePart == BROWSING) {
 			if (input.isGettingInput() && event.Event.KeyEvent.bKeyDown) {
 				if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK || event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN || event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE || event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT || event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT || event.Event.KeyEvent.wVirtualKeyCode == VK_TAB) {
 					input.takeInput(event);
@@ -170,35 +167,23 @@ Program::Program() :
 					}
 				}
 				else if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
-					//fileEditor.removeMenuFromScreen(outputHandle);
 					fileEditor.addNewLine(outputHandle);
 					textEditDrawing = true;
 				}
 				else if (event.Event.KeyEvent.wVirtualKeyCode == VK_BACK &&  fileEditor.getInputLineIndex() && !fileEditor.getButtons()[fileEditor.getInputLineIndex()].getCursorIndexPosition()) {
-					//fileEditor.removeMenuFromScreen(outputHandle);
 					fileEditor.removeLine(outputHandle);
 					textEditDrawing = true;
 				}
 				else if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK ||  event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE  || event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT || event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT || event.Event.KeyEvent.wVirtualKeyCode == VK_TAB) {
-					//fileEditor.removeMenuFromScreen(outputHandle);
 					if (fileEditor.getButtons()[fileEditor.getInputLineIndex()].getCursorIndexPosition() == fileEditor.getButtons()[0].getSentenceSymbols().size() - 1) {
 						fileEditor.addNewLine(outputHandle);
 					}
 					fileEditor.getButtons()[fileEditor.getInputLineIndex()].takeInput(event);
 					fileEditor.getMenuItemStrings()[fileEditor.getInputLineIndex()] = fileEditor.getButtons()[fileEditor.getInputLineIndex()].getTextInLine();
 					int cursorPosition = fileEditor.getButtons()[fileEditor.getInputLineIndex()].getCursorIndexPosition();
-					//if (fileEditor.isLengthChanged()) {
-					//	//fileEditor.removeMenuFromScreen(outputHandle);
-					//	fileEditor.setMenuItems(fileEditor.getMenuItemStrings());
-					//	fileEditor.getButtons()[fileEditor.getInputLineIndex()].turnInputStateOn();
-					//}
 					fileEditor.getButtons()[fileEditor.getInputLineIndex()].setCursorPositionIndex(cursorPosition);
 					textEditDrawing = true;
 				}
-				/*if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
-					searchPart.getSearchInput().turnInputStateOff();
-					searchPart.appearOnConsole(outputHandle);
-				}*/
 			}
 		}
 	}
@@ -283,7 +268,7 @@ Program::Program() :
 		items.setMenuItems(getContentOfFolder(path));
 		chosenButtons.clear();
 		itemsDrawing = true;
-		activePart = FILES;
+		activePart = BROWSING;
 	}
 
 	
@@ -365,7 +350,7 @@ Program::Program() :
 		if (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) && !searchPart.getSearchInput().isMouseOnButton(event)) {
 			if (searchPart.getSearchInput().turnInputStateOff()) {
 				searchPart.appearOnConsole(outputHandle);
-				activePart = FILES;
+				activePart = BROWSING;
 			}
 		}
 		else if (event.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED && searchPart.getSearchInput().isMouseOnButton(event)) {
@@ -387,7 +372,7 @@ Program::Program() :
 						if (i == 0) {
 							searchPart.getSearchResults().removeMenuFromScreen(outputHandle);
 							itemsDrawing = true;
-							activePart = FILES;
+							activePart = BROWSING;
 						}
 						else {
 							startOpeningProcess(searchPart.getSearchResults().getButtons()[i].getTextInLine());
@@ -407,14 +392,11 @@ Program::Program() :
 	}
 
 	void Program::performOptionsEvents(const INPUT_RECORD &event) {
-		activePart = FILES;
+		activePart = BROWSING;
 		optionsDrawing = false;
 		errorDrawing = false;
 		mouseClicked = false;
 		infoDrawing = false;
-		//if (event.Event.MouseEvent.dwButtonState & (FROM_LEFT_1ST_BUTTON_PRESSED | RIGHTMOST_BUTTON_PRESSED) && !input.isMouseOnButton(event)) {
-		//	isRenameProcess = false;
-		//}
 		for (int i = 0; i < pointerToOptionsMenu->getButtons().size(); i++) {
 			if (pointerToOptionsMenu->getButtons()[i].isMouseOnButton(event)) {
 				activePart = OPTIONS;
@@ -442,7 +424,7 @@ Program::Program() :
 								}
 							}
 							optionsDrawing = false;
-							activePart = FILES;
+							activePart = BROWSING;
 							std::string dimensionName = " kilobytes";
 							if (size > 1024) {
 								size /= 1024;
@@ -464,19 +446,19 @@ Program::Program() :
 						startRenaming();
 					}
 					else if (i == CUT) {
-						activePart = FILES;
+						activePart = BROWSING;
 						optionsDrawing = false;
 						savePathes();
 						deleteAfterMovingFile = true;
 					}
 					else if (i == COPY) {
-						activePart = FILES;
+						activePart = BROWSING;
 						optionsDrawing = false;
 						deleteAfterMovingFile = false;
 						savePathes();
 					}
 					else if (i == PASTE) {
-						activePart = FILES;
+						activePart = BROWSING;
 						optionsDrawing = false;
 						if (deleteAfterMovingFile) {
 							error.setTextAndColor(cantRemoveError);
@@ -617,7 +599,7 @@ Program::Program() :
 			}
 		}
 		
-		else if (activePart == FILES) {
+		else if (activePart == BROWSING) {
 			pointerToOptionsMenu->removeMenuFromScreen(outputHandle);
 			fileEditor.removeMenuFromScreen(outputHandle);
 			if (itemsDrawing) {
@@ -753,7 +735,7 @@ Program::Program() :
 	}
 
 	void Program::startRenaming() {
-		activePart = FILES;
+		activePart = BROWSING;
 		optionsDrawing = false;
 		isRenameProcess = true;
 		pointerToOptionsMenu->removeMenuFromScreen(outputHandle);

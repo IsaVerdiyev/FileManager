@@ -17,7 +17,6 @@ protected:
 	std::vector<CHAR_INFO> sentenceSymbols;
 	std::vector<CHAR_INFO> eraseArray;
 	std::string textInLine;
-	//std::vector<int> slashT_positions;
 	COORD oldStartPosition;
 	void setSymbols();
 	int minLength = 1;

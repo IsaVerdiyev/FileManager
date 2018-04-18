@@ -24,23 +24,6 @@ void TextEditorInputForm::takeInput(const INPUT_RECORD &event) {
 			else {
 				cursorPositionIndex--;
 			}
-			//try {
-
-			/*if ( !temp.isNextAfterIndentation(temp.getCursorIndexPosition())) {
-			temp.getSentenceSymbols().erase(temp.getSentenceSymbols().begin() + temp.getCursorIndexPosition() - 1);
-			temp.setCursorPositionIndex(temp.getCursorIndexPosition() - 1);
-			}
-			}
-			catch (isNextAfterIndentationException exc) {
-			temp.removeIndentation(exc.getIndex());
-			temp.setCursorPositionIndex(temp.getCursorIndexPosition() - 4);
-			}*/
-			//catch (isOnIndentationException exc) {
-			//	// need to add functionality===================
-
-			//}
-
-			//}
 		}
 	}
 	else if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {

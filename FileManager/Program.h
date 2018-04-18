@@ -20,7 +20,7 @@ class Program {
 	InputForm input;
 	ChoosableButton back;
 	ChoosableButton save;
-	enum menuPart {FILES, OPTIONS, SEARCH_RESULTS, EDIT_FILE};
+	enum menuPart {BROWSING, OPTIONS, SEARCH_RESULTS, EDIT_FILE};
 	std::vector<std::string> disks;
 	std::vector<int> chosenButtons;
 	bool CtrlisPressed;

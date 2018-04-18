@@ -77,53 +77,12 @@ void TextEditor::addNewLine(HANDLE hndl) {
 	setMenuItems(menuItemStrings);
 	menuItemButtons[inputLineIndex].turnInputStateOn();
 	menuItemButtons[inputLineIndex].setCursorPositionIndex(0);
-
-	//for (int i = menuItemButtons[inputLineIndex].getCursorIndexPosition(); i < menuItemButtons[inputLineIndex].getVisibleStringSize(); i++) {
-	//	
-	//	//removedPart.push_back(menuItemButtons[inputLineIndex].getSentenceSymbols()[i].Char.AsciiChar);
-	//}
-	
-	//getMenuItemStrings().insert(getMenuItemStrings().begin() + inputLineIndex + 1, removedPart);
-	///*if (isLengthChanged()) {
-	//	TemplateMenu::removeMenuFromScreen(hndl);
-	//}*/
-	//setMenuItems(getMenuItemStrings());
-	//inputLineIndex++;
-	//getButtons()[inputLineIndex].turnInputStateOn();
-	//getButtons()[inputLineIndex].setCursorPositionIndex(0);
-	/*INPUT_RECORD event;
-	event.Event.KeyEvent.wVirtualKeyCode = VK_BACK;
-	while (menuItemButtons[inputLineIndex].getCursorIndexPosition() < menuItemButtons[inputLineIndex].getVisibleStringSize()) {
-		menuItemButtons[inputLineIndex].setCursorPositionIndex(menuItemButtons[inputLineIndex].getCursorIndexPosition() + 1);
-		menuItemButtons[inputLineIndex].takeInput(event);
-	}
-	menuItemButtons[inputLineIndex].turnInputStateOff();
-	menuItemStrings[inputLineIndex] = menuItemButtons[inputLineIndex].getTextInLine();
-	inputLineIndex++;
-	menuItemStrings.insert(menuItemStrings.begin() + inputLineIndex, removedPart);
-	setMenuItems(getMenuItemStrings());
-	menuItemButtons[inputLineIndex].turnInputStateOn();
-	*/
-	//==============
-	/*menuItemButtons[inputLineIndex].turnInputStateOff();
-	menuItemButtons.insert(menuItemButtons.begin() + inputLineIndex + 1, InputForm(removedPart));
-
-	menuItemStrings.insert(menuItemStrings.begin() + inputLineIndex + 1, removedPart);
-	inputLineIndex++;
-	menuItemButtons[inputLineIndex].setMinLength(menuItemButtons[0].getSentenceSymbols().size());
-	menuItemButtons[inputLineIndex].setDeactiveColor(deactiveColor);
-	menuItemButtons[inputLineIndex].setActiveColor(activeColor);
-	menuItemButtons[inputLineIndex].setCursorColor(cursorColor);
-	menuItemButtons[inputLineIndex].turnInputStateOn();*/
 }
 
 void TextEditor::removeLine(HANDLE hndl) {
 	int futureCursorPosition = menuItemButtons[inputLineIndex - 1].getVisibleStringSize();
 	menuItemStrings[inputLineIndex - 1] += menuItemStrings[inputLineIndex];
 	menuItemStrings.erase(menuItemStrings.begin() + inputLineIndex);
-	/*if (isLengthChanged()) {
-		TemplateMenu::removeMenuFromScreen(hndl);
-	}*/
 	setMenuItems(getMenuItemStrings());
 	inputLineIndex--;
 	menuItemButtons[inputLineIndex].turnInputStateOn();
