@@ -170,10 +170,6 @@ void InputForm::setCursorPositionIndex(int index) {
 
 
 
-void InputForm::setStringAfterFinishingInput() {
-	textInLine = getStringWithSlashT();
-}
-
 std::string InputForm::getStringWithSlashT() {
 	std::string stringWithSlashT = getVisibleString();
 	for (int i = 0; i < stringWithSlashT.size(); i++) {
@@ -199,38 +195,38 @@ bool InputForm::isOnIndentation(int index) {
 	return false;
 }
 
-bool InputForm::isNextAfterIndentation(int index) {
-	std::string stringWithoutSlashIndentation = HelperFunctions::getStringWithReplacedSlashT_ToSpaces(textInLine, TextLine::slashT_SpaceCounts);
-	int j = index - TextLine::slashT_SpaceCounts;
-	if (j > 0) {
-		if (sentenceSymbols[j].Char.AsciiChar == '\t') {
-			throw j;
-		}
-	}
-	return false;
-}
+//bool InputForm::isNextAfterIndentation(int index) {
+//	std::string stringWithoutSlashIndentation = HelperFunctions::getStringWithReplacedSlashT_ToSpaces(textInLine, TextLine::slashT_SpaceCounts);
+//	int j = index - TextLine::slashT_SpaceCounts;
+//	if (j > 0) {
+//		if (sentenceSymbols[j].Char.AsciiChar == '\t') {
+//			throw j;
+//		}
+//	}
+//	return false;
+//}
 
 void InputForm::removeIndentation(int slashTIndex) {
 	textInLine.erase(textInLine.begin() + slashTIndex);
 	setTextAndColor(textInLine);
 }
 
-int InputForm::findVisibleIndex(int index) {
-	int j = 0;
-	for (int i = 0; i < textInLine.size(); i++) {
-		if (i == index) {
-			break;
-		}
-		if(textInLine[i] == '\t') {
-			j += 4;
-		}
-		else {
-			j++;
-		}
-	}
-	return j;
-}
-
+//int InputForm::findVisibleIndex(int index) {
+//	int j = 0;
+//	for (int i = 0; i < textInLine.size(); i++) {
+//		if (i == index) {
+//			break;
+//		}
+//		if(textInLine[i] == '\t') {
+//			j += 4;
+//		}
+//		else {
+//			j++;
+//		}
+//	}
+//	return j;
+//}
+//
 
 int InputForm::getCursorIndexPosition() {
 	return cursorPositionIndex;

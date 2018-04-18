@@ -1,6 +1,8 @@
 #ifndef Col
 #define Col
 
+// colors used in program
+
 enum Color {
 	Black,
 	Blue,

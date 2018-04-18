@@ -1,6 +1,8 @@
 #ifndef ErStr
 #define ErStr
 
+// just strings of errors that should appear during errors
+
 #include <string>
 
 

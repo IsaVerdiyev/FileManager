@@ -1,9 +1,10 @@
 #include "TextEditor.h"
 
-TextEditor::TextEditor() : TemplateMenu() {}
+TextEditor::TextEditor() : TemplateMenu() {
+}
 
-TextEditor::TextEditor(const std::vector<std::string> &itemsVector) :
-	TemplateMenu(itemsVector) {
+TextEditor::TextEditor(const std::vector<std::string> &itemsVector) : TextEditor() {
+	setMenuItems(itemsVector);
 	setColors();
 }
 

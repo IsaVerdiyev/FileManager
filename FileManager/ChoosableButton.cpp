@@ -79,13 +79,7 @@ void ChoosableButton::appearOnConsoleScreen(HANDLE &hndl) {
 	TextLine::appearOnConsoleScreen(hndl);
 }
 
-bool ChoosableButton::getChosenState() {
-	return chosenState;
-}
 
-bool ChoosableButton::getHoverState() {
-	return hoverState;
-}
 
 bool ChoosableButton::turnHoverOn() {
 	if (!hoverState) {
