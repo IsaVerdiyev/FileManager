@@ -33,6 +33,7 @@ Program::Program() :
 	fileEditor.setActiveColor(defaultDeactiveColor);
 	fileEditor.setDeactiveColor(defaultDeactiveColor);
 	fileEditor.setCursorColor(defaultCursorColor);
+	fileEditor.setLengthOfLineInTextEditor(200);
 	outputHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	inputHandle = GetStdHandle(STD_INPUT_HANDLE);
 	SetConsoleMode(inputHandle, ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS);
@@ -180,14 +181,17 @@ Program::Program() :
 				}
 				else if ((event.Event.KeyEvent.wVirtualKeyCode >= 0x30 && event.Event.KeyEvent.wVirtualKeyCode <= 0xdf) || event.Event.KeyEvent.wVirtualKeyCode == VK_BACK ||  event.Event.KeyEvent.wVirtualKeyCode == VK_SPACE  || event.Event.KeyEvent.wVirtualKeyCode == VK_LEFT || event.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT || event.Event.KeyEvent.wVirtualKeyCode == VK_TAB) {
 					//fileEditor.removeMenuFromScreen(outputHandle);
+					if (fileEditor.getButtons()[fileEditor.getInputLineIndex()].getCursorIndexPosition() == fileEditor.getButtons()[0].getSentenceSymbols().size() - 1) {
+						fileEditor.addNewLine(outputHandle);
+					}
 					fileEditor.getButtons()[fileEditor.getInputLineIndex()].takeInput(event);
 					fileEditor.getMenuItemStrings()[fileEditor.getInputLineIndex()] = fileEditor.getButtons()[fileEditor.getInputLineIndex()].getTextInLine();
 					int cursorPosition = fileEditor.getButtons()[fileEditor.getInputLineIndex()].getCursorIndexPosition();
-					if (fileEditor.isLengthChanged()) {
-						//fileEditor.removeMenuFromScreen(outputHandle);
-						fileEditor.setMenuItems(fileEditor.getMenuItemStrings());
-						fileEditor.getButtons()[fileEditor.getInputLineIndex()].turnInputStateOn();
-					}
+					//if (fileEditor.isLengthChanged()) {
+					//	//fileEditor.removeMenuFromScreen(outputHandle);
+					//	fileEditor.setMenuItems(fileEditor.getMenuItemStrings());
+					//	fileEditor.getButtons()[fileEditor.getInputLineIndex()].turnInputStateOn();
+					//}
 					fileEditor.getButtons()[fileEditor.getInputLineIndex()].setCursorPositionIndex(cursorPosition);
 					textEditDrawing = true;
 				}

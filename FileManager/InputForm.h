@@ -8,6 +8,7 @@
 #include <algorithm>
 
 class InputForm : public TextLine {
+protected:
 	bool gettingInput;
 	int cursorPositionIndex;
 	Color activeColor;

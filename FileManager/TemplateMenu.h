@@ -14,7 +14,7 @@ protected:
 	bool lengthChanged = false;
 	bool positionChanged = false;
 	bool amountOfLinesChanged = false;
-	int lengthOfItems = 0;
+	int maxLengthOfString = 0;
 	std::vector<std::string> menuItemStrings;
 	std::vector<T> menuItemButtons;
 	std::vector<T> eraseItemButtons;
@@ -30,14 +30,14 @@ protected:
 		for (int i = 0; i < menuItemStrings.size(); i++) {
 			menuItemButtons.push_back(T(menuItemStrings[i]));
 			menuItemButtons[i].setPosition({ startPositionOfDisplay.X, static_cast<short>(startPositionOfDisplay.Y + i) });
-			menuItemButtons[i].setMinLength(lengthOfItems);
+			menuItemButtons[i].setMinLength(maxLengthOfString);
 		}
 	}
 
 	void setLengthOfItems() {
-		if (lengthOfItems != searchLengthOfItems()) {
+		if (maxLengthOfString != searchLengthOfItems()) {
 			lengthChanged = true;
-			lengthOfItems = searchLengthOfItems();
+			maxLengthOfString = searchLengthOfItems();
 		}
 	}
 
@@ -125,7 +125,7 @@ public:
 	}
 
 	bool isLengthChanged() {
-		return lengthOfItems != searchLengthOfItems();
+		return lengthOfVisibleStrings != searchLengthOfItems();
 	}
 };
 

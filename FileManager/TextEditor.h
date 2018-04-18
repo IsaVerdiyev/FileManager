@@ -2,15 +2,16 @@
 #define TxtEdt
 
 #include "TemplateMenu.h"
-#include "InputForm.h"
+#include "TextEditorInputForm.h"
 
 
-class TextEditor : public TemplateMenu<InputForm> {
+class TextEditor : public TemplateMenu<TextEditorInputForm> {
 	int inputLineIndex;
 	Color activeColor;
 	Color deactiveColor;
 	Color cursorColor;
 	std::string pathToFile;
+	int lengthOfLineInTextEditor = 0;
 public:
 	TextEditor();
 	TextEditor(const std::vector<std::string> &itemsVector);
@@ -25,6 +26,8 @@ public:
 	void removeLine(HANDLE hndl);
 	void setPathToFile(const std::string &path);
 	void saveFile();
+	void setMenuItemButtons();
+	void setLengthOfLineInTextEditor(int l);
 };
 
 

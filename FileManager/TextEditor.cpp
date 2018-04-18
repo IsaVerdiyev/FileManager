@@ -45,8 +45,25 @@ void TextEditor::setColors() {
 }
 
 void TextEditor::setMenuItems(const std::vector<std::string> &itemsVector) {
-	TemplateMenu::setMenuItems(itemsVector);
+	setMenuItemStrings(itemsVector);
+	if (itemsVector.size() != menuItemButtons.size()) {
+		amountOfLinesChanged = true;
+	}
+	setMenuItemButtons();
 	setColors();
+}
+
+void TextEditor::setMenuItemButtons() {
+	menuItemButtons.clear();
+	for (int i = 0; i < menuItemStrings.size(); i++) {
+		menuItemButtons.push_back(TextEditorInputForm(menuItemStrings[i]));
+		menuItemButtons[i].setPosition({ startPositionOfDisplay.X, static_cast<short>(startPositionOfDisplay.Y + i) });
+		menuItemButtons[i].setMinLength(lengthOfLineInTextEditor);
+	}
+}
+
+void TextEditor::setLengthOfLineInTextEditor(int l) {
+	lengthOfLineInTextEditor = l;
 }
 
 void TextEditor::addNewLine(HANDLE hndl) {
