@@ -14,9 +14,11 @@ void TextEditorInputForm::takeInput(const INPUT_RECORD &event) {
 				int indexInLine = findIndexInTextLine(cursorPositionIndex - 1);
 				if (textInLine[indexInLine] == '\t') {
 					cursorPositionIndex -= 4;
+					setVisibleStringSize(stringSize - 4);
 				}
 				else {
 					cursorPositionIndex--;
+					setVisibleStringSize(stringSize - 1);
 				}
 				textInLine.erase(textInLine.begin() + indexInLine);
 				setTextAndColor(textInLine);
@@ -56,6 +58,7 @@ void TextEditorInputForm::takeInput(const INPUT_RECORD &event) {
 		c.Attributes = activeColor;
 		getSentenceSymbols().insert(getSentenceSymbols().begin() + getCursorIndexPosition(), c);
 		cursorPositionIndex++;
+		setVisibleStringSize(stringSize + 1);
 		if (c.Char.AsciiChar == '\t') {
 			CHAR_INFO space;
 			space.Attributes = activeColor;
@@ -64,6 +67,7 @@ void TextEditorInputForm::takeInput(const INPUT_RECORD &event) {
 				getSentenceSymbols().insert(getSentenceSymbols().begin() + cursorPositionIndex, space);
 			}
 			cursorPositionIndex += 3;
+			setVisibleStringSize(stringSize + 3);
 		}
 		std::string newTextInLine = getStringWithSlashT();
 		setTextAndColor(newTextInLine);
@@ -122,5 +126,52 @@ bool TextEditorInputForm::turnInputStateOn() {
 		return false;
 	}
 }
+
+void TextEditorInputForm::setVisibleStringSize(int s) {
+	stringSize = s;
+}
+
+std::string TextEditorInputForm::getStringWithSlashT() {
+	std::string stringWithSlashT = getVisibleString();
+	for (int i = 0; i < stringWithSlashT.size(); i++) {
+		if (stringWithSlashT[i] == '\t' && i != stringWithSlashT.size() - 1) {
+			stringWithSlashT.erase(stringWithSlashT.begin() + i + 1, stringWithSlashT.begin() + i + TextLine::slashT_SpaceCounts);
+		}
+	}
+	return stringWithSlashT;
+}
+
+std::string TextEditorInputForm::getVisibleString() {
+	std::string visibleString;
+	for (int i = 0; i < stringSize; i++) {
+		visibleString.push_back(sentenceSymbols[i].Char.AsciiChar);
+	}
+	return visibleString;
+}
+
+size_t TextEditorInputForm::findIndexInTextLine(int visibleIndex) {
+	std::string str = textInLine;
+	size_t i = 0;
+	for (int j = 0; i < str.size(); i++, j++) {
+		if (visibleIndex == j) {
+			break;
+		}
+		if (str[i] == '\t') {
+			bool found = false;
+			for (int z = 0; z < TextLine::slashT_SpaceCounts - 1; z++) {
+				j++;
+				if (j == visibleIndex) {
+					found = true;
+					return i;
+				}
+			}
+			if (found) {
+				break;
+			}
+		}
+	}
+	return i;
+}
+
 
 

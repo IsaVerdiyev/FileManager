@@ -55,7 +55,7 @@ public:
 	void removeIndentation(int slashTIndex); // removes \t when backspace is pressed for it
 	int getCursorIndexPosition(); // returns cursor position on object
 	int getVisibleStringSize(); // returns stringsize
-	int findIndexInTextLine(int i); // find index of symbol in origin string that matches it
+	size_t findIndexInTextLine(int i); // find index of symbol in origin string that matches it
 	// on string on screen
 	//int findVisibleIndex(int i); //makes reverse of findIndexInTextLine(int i)
 };

@@ -20,6 +20,10 @@ public:
 	bool turnInputStateOn(const INPUT_RECORD &event);
 	bool turnInputStateOn();
 	void setCursorPositionIndex(const INPUT_RECORD &event);
+	void setVisibleStringSize(int s);
+	std::string getStringWithSlashT();
+	std::string getVisibleString();
+	size_t findIndexInTextLine(int visibleIndex);
 };
 
 

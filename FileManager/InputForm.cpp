@@ -27,22 +27,33 @@ void InputForm::takeInput(const INPUT_RECORD &event) {
 	lengthChanged = true;
 	if (event.Event.KeyEvent.wVirtualKeyCode == VK_BACK) {
 		if (getCursorIndexPosition() != 0) {
-			if (getVisibleStringSize() >= getCursorIndexPosition()) {
-				int indexInLine = findIndexInTextLine(cursorPositionIndex - 1);
-				if (textInLine[indexInLine] == '\t') {
-					cursorPositionIndex -= 4;
+			//if (getVisibleStringSize() >= getCursorIndexPosition()) {
+				size_t indexInLine = findIndexInTextLine(cursorPositionIndex - 1);
+				if (indexInLine == std::string::npos && sentenceSymbols.size() > minLength) {
+					sentenceSymbols.erase(sentenceSymbols.begin() + cursorPositionIndex);
+					setCursorPositionIndex(cursorPositionIndex - 1);
+					return;
 				}
-				else {
-					cursorPositionIndex--;
+				else { 
+					if (indexInLine == std::string::npos) {
+						setCursorPositionIndex(cursorPositionIndex - 1);
+						return;
+					}
+					else if(textInLine[indexInLine] == '\t') {
+						setCursorPositionIndex(cursorPositionIndex - 4);
+					}
+					else {
+						setCursorPositionIndex(cursorPositionIndex - 1);
+					}
 				}
 				textInLine.erase(textInLine.begin() + indexInLine);
 				setTextAndColor(textInLine);
 			}
-			else {
+			/*else {
 				cursorPositionIndex--;
-			}
+			}*/
 		}
-	}
+	
 	else if (event.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
 		turnInputStateOff();
 	}
@@ -81,13 +92,21 @@ void InputForm::takeInput(const INPUT_RECORD &event) {
 			for (int i = 0; i < TextLine::slashT_SpaceCounts - 1; i++) {
 				getSentenceSymbols().insert(getSentenceSymbols().begin() + getCursorIndexPosition() + 1, space);
 			}
-			cursorPositionIndex += 4;
+			setCursorPositionIndex(cursorPositionIndex + 4);
 		}
 		else {
-			cursorPositionIndex++;
+			setCursorPositionIndex(cursorPositionIndex + 1);
 		}
 		std::string newString = getStringWithSlashT();
 		setTextAndColor(newString);
+		if (cursorPositionIndex >= sentenceSymbols.size()) {
+			CHAR_INFO c;
+			c.Attributes = sentenceSymbols[0].Attributes;
+			c.Char.AsciiChar = ' ';
+			for (int i = sentenceSymbols.size(); i <= cursorPositionIndex; i++) {
+				sentenceSymbols.push_back(c);
+			}
+		}
 	}
 }
 
@@ -236,28 +255,23 @@ int InputForm::getVisibleStringSize() {
 	return stringSize;
 }
 
-int InputForm::findIndexInTextLine(int visibleIndex) {
+size_t InputForm::findIndexInTextLine(int visibleIndex) {
 	std::string str = textInLine;
-	int i = 0;
+	size_t i = 0;
 	for (int j = 0; i < str.size(); i++, j++) {
 		if (visibleIndex == j) {
-			break;
+			return i;
 		}
 		if (str[i] == '\t') {
-			bool found = false;
 			for (int z = 0; z < TextLine::slashT_SpaceCounts - 1; z++) {
 				j++;
 				if (j == visibleIndex) {
-					found = true;
-					break;
+					return i;
 				}
-			}
-			if (found) {
-				break;
 			}
 		}
 	}
-	return i;
+	return std::string::npos;
 }
 
 
