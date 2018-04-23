@@ -77,7 +77,7 @@ public:
 	int getMinLength(); // returns minimum length of CHAR_INFO array
 	COORD getStartPosition(); // returns start position of displaying
 	std::string getTextInLine(); // returns string in its original std::string form
-	std::string getVisibleString(); // returns string that is converted for displaying (after \t there are spaces)
+	virtual std::string getVisibleString(); // returns string that is converted for displaying (after \t there are spaces)
 	void setVisibleStringSize(); // sets stringSize
 	void createEraseArray(HANDLE &hndl); // creates eraseArray that will be needed when removing object from screen
 };

@@ -44,7 +44,7 @@ public:
 	// cursor is put at the end of string
 
 	bool turnInputStateOff(); // sets object in not taking input mode and returns true if mode changed
-	virtual void setCursorPositionIndex(const INPUT_RECORD &event); // puts cursor where mouse clicked
+	void setCursorPositionIndex(const INPUT_RECORD &event); // puts cursor where mouse clicked
 	virtual void setCursorPositionIndex(int index); // puts cursor in specified position
 	
 	std::string getStringWithSlashT(); // converts string that contains spaces after \t in string 

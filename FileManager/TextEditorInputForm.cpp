@@ -74,13 +74,6 @@ void TextEditorInputForm::takeInput(const INPUT_RECORD &event) {
 	}
 }
 
-void TextEditorInputForm::setCursorPositionIndex(const INPUT_RECORD &event) {
-	for (int i = 0; i < sentenceSymbols.size(); i++) {
-		if (startPosition.X + i == event.Event.MouseEvent.dwMousePosition.X) {
-			setCursorPositionIndex(i);
-		}
-	}
-}
 
 
 void TextEditorInputForm::setCursorPositionIndex(int index) {
@@ -104,42 +97,14 @@ void TextEditorInputForm::setCursorPositionIndex(int index) {
 	}
 }
 
-bool TextEditorInputForm::turnInputStateOn(const INPUT_RECORD &event) {
-	if (!gettingInput) {
-		gettingInput = true;
-		setCursorPositionIndex(event);
-		return true;
-	}
-	else {
-		setCursorPositionIndex(event);
-		return false;
-	}
-}
 
-bool TextEditorInputForm::turnInputStateOn() {
-	if (!gettingInput) {
-		gettingInput = true;
-		setCursorPositionIndex(stringSize);
-		return true;
-	}
-	else {
-		return false;
-	}
-}
+
 
 void TextEditorInputForm::setVisibleStringSize(int s) {
 	stringSize = s;
 }
 
-std::string TextEditorInputForm::getStringWithSlashT() {
-	std::string stringWithSlashT = getVisibleString();
-	for (int i = 0; i < stringWithSlashT.size(); i++) {
-		if (stringWithSlashT[i] == '\t' && i != stringWithSlashT.size() - 1) {
-			stringWithSlashT.erase(stringWithSlashT.begin() + i + 1, stringWithSlashT.begin() + i + TextLine::slashT_SpaceCounts);
-		}
-	}
-	return stringWithSlashT;
-}
+
 
 std::string TextEditorInputForm::getVisibleString() {
 	std::string visibleString;

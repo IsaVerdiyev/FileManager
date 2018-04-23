@@ -18,11 +18,7 @@ public:
 	TextEditorInputForm(const std::string &s);
 	void takeInput(const INPUT_RECORD &event);
 	virtual void setCursorPositionIndex(int index) override;
-	bool turnInputStateOn(const INPUT_RECORD &event);
-	bool turnInputStateOn();
-	void setCursorPositionIndex(const INPUT_RECORD &event);
 	void setVisibleStringSize(int s);
-	std::string getStringWithSlashT();
 	std::string getVisibleString();
 	size_t findIndexInTextLine(int visibleIndex);
 };
